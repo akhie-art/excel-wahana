@@ -5,7 +5,15 @@ import { useAppStore } from "@/lib/store";
 import { EXCEL_MODULES } from "@/lib/modules";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuGroup, // <-- Added this missing import
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 import { AuthModal } from "./auth-modal";
 import { Award, Flame, LogOut, Moon, Sun, User, Database, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -56,31 +64,6 @@ export function Navbar() {
 
         {/* Action Controls */}
         <div className="flex items-center space-x-3">
-          {/* Role Switcher Pill */}
-          <div className="flex bg-muted/60 p-0.5 rounded-lg border border-border/40 mr-1 select-none">
-            <button
-              onClick={() => setRole("peserta")}
-              className={cn(
-                "px-2.5 py-1 rounded-md text-[10px] md:text-xs font-bold transition-all duration-150 cursor-pointer",
-                role === "peserta"
-                  ? "bg-background text-emerald-500 shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Peserta
-            </button>
-            <button
-              onClick={() => setRole("instruktur")}
-              className={cn(
-                "px-2.5 py-1 rounded-md text-[10px] md:text-xs font-bold transition-all duration-150 cursor-pointer",
-                role === "instruktur"
-                  ? "bg-background text-emerald-500 shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Instruktur
-            </button>
-          </div>
 
           {/* Daily Streak */}
           {progress && role === "peserta" && (
@@ -128,9 +111,11 @@ export function Navbar() {
                 </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 border border-border/80 bg-background/95 backdrop-blur-md">
-                <DropdownMenuLabel className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">
-                  Profil Saya
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">
+                    Profil Saya
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <div className="px-2 py-1.5 text-sm font-medium text-foreground truncate">
                   {user.email}
                 </div>

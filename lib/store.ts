@@ -52,10 +52,9 @@ interface AppState {
 
   // Methods
   loadUserAndProgress: () => Promise<void>;
-  signInWithPassword: (email: string) => Promise<{ error: any }>;
-  signUp: (email: string) => Promise<{ error: any }>;
+  signInWithPassword: (email: string, password?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password?: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  signInWithGithub: () => Promise<void>;
   
   setFormulaInput: (input: string) => void;
   validateFormula: () => Promise<boolean>;
@@ -248,10 +247,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ modules: updatedModules });
   },
 
-  signInWithPassword: async (email: string) => {
+  signInWithPassword: async (email: string, password?: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password: "dummy-password-for-simplification",
+      password: password || "dummy-password-for-simplification",
     });
     if (!error) {
       await get().loadUserAndProgress();
@@ -259,10 +258,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     return { error };
   },
 
-  signUp: async (email: string) => {
+  signUp: async (email: string, password?: string, fullName?: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
-      password: "dummy-password-for-simplification",
+      password: password || "dummy-password-for-simplification",
+      options: fullName ? {
+        data: {
+          name: fullName
+        }
+      } : undefined
     });
     if (!error) {
       await get().loadUserAndProgress();
@@ -284,12 +288,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       lastErrorHint: null
     });
     await get().loadUserAndProgress();
-  },
-
-  signInWithGithub: async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "github",
-    });
   },
 
   setFormulaInput: (input: string) => {

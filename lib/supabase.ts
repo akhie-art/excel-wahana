@@ -76,22 +76,22 @@ if (isSupabaseConfigured) {
         const user = getMockUser();
         return { data: { user }, error: null };
       },
-      signInWithPassword: async ({ email }: { email: string }) => {
+      signInWithPassword: async ({ email, options }: { email: string; options?: any }) => {
         const mockUser = {
           id: "mock-user-id",
           email,
-          user_metadata: { name: email.split("@")[0] },
+          user_metadata: { name: options?.data?.name || email.split("@")[0] },
         };
         localStorage.setItem(mockStorageKey, JSON.stringify(mockUser));
         const session = { user: mockUser, access_token: "mock-token" };
         listeners.forEach((cb) => cb("SIGNED_IN", session));
         return { data: { user: mockUser, session }, error: null };
       },
-      signUp: async ({ email }: { email: string }) => {
+      signUp: async ({ email, options }: { email: string; options?: any }) => {
         const mockUser = {
           id: "mock-user-id",
           email,
-          user_metadata: { name: email.split("@")[0] },
+          user_metadata: { name: options?.data?.name || email.split("@")[0] },
         };
         localStorage.setItem(mockStorageKey, JSON.stringify(mockUser));
         const session = { user: mockUser, access_token: "mock-token" };
