@@ -8,7 +8,6 @@ export interface StudentData {
   email: string;
   completedCount: number;
   completedSteps: string[];
-  streak: number;
   lastActive: string;
 }
 
@@ -39,6 +38,7 @@ interface AppState {
   // Dynamic Curriculum
   modules: ExcelModule[];
   addCustomStep: (moduleId: string, step: ModuleStep) => Promise<void>;
+  updateCustomStep: (moduleId: string, step: ModuleStep) => Promise<void>;
   deleteCustomStep: (moduleId: string, stepId: string) => Promise<void>;
 
   // Instructor Data
@@ -216,6 +216,8 @@ export const useAppStore = create<AppState>((set, get) => ({
             expectedResult: row.expected_result || row.expectedResult,
             resultCell: row.result_cell || row.resultCell,
             hint: row.hint,
+            tasks: row.tasks || undefined,
+            isCustom: true
           };
           
           const moduleId = row.module_id || row.moduleId;
@@ -366,7 +368,6 @@ export const useAppStore = create<AppState>((set, get) => ({
             email: row.email || "-",
             completedCount: row.completed_steps?.length || 0,
             completedSteps: row.completed_steps || [],
-            streak: row.streak_count || 0,
             lastActive: lastActiveStr
           };
         });
@@ -398,7 +399,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addCustomStep: async (moduleId: string, newStep: ModuleStep) => {
     // 1. Insert into Supabase table custom_steps
-    const dbStep = {
+    const dbStep: any = {
       id: newStep.id,
       module_id: moduleId,
       title: newStep.title,
@@ -413,19 +414,101 @@ export const useAppStore = create<AppState>((set, get) => ({
       hint: newStep.hint,
     };
 
+    if (newStep.tasks) {
+      dbStep.tasks = newStep.tasks;
+    }
+
     try {
-      await supabase.from("custom_steps").insert(dbStep);
+      const { error } = await supabase.from("custom_steps").insert(dbStep);
+      if (error) {
+        console.error("Supabase insert error details:", error);
+        throw error;
+      }
     } catch (err) {
       console.error("Failed to insert custom step into Supabase:", err);
+      throw err;
     }
 
     // 2. Update local state
     const updatedModules = get().modules.map((mod) => {
       if (mod.id === moduleId) {
         const exists = mod.steps.some(s => s.id === newStep.id);
+        const stepWithCustom = { ...newStep, isCustom: true };
         return {
           ...mod,
-          steps: exists ? mod.steps : [...mod.steps, newStep],
+          steps: exists
+            ? mod.steps.map((s) => (s.id === newStep.id ? stepWithCustom : s))
+            : [...mod.steps, stepWithCustom],
+        };
+      }
+      return mod;
+    });
+
+    set({ modules: updatedModules });
+  },
+
+  updateCustomStep: async (moduleId: string, updatedStep: ModuleStep) => {
+    // 1. Update in Supabase table custom_steps (Delete then Insert to bypass missing RLS update policy)
+    const dbStep: any = {
+      id: updatedStep.id,
+      module_id: moduleId,
+      title: updatedStep.title,
+      short_description: updatedStep.shortDescription,
+      concept_explanation: updatedStep.conceptExplanation,
+      instructions: updatedStep.instructions,
+      headers: updatedStep.headers,
+      dummy_data: updatedStep.dummyData,
+      valid_formulas: updatedStep.validFormulas,
+      expected_result: updatedStep.expectedResult,
+      result_cell: updatedStep.resultCell,
+      hint: updatedStep.hint,
+    };
+
+    if (updatedStep.tasks) {
+      dbStep.tasks = updatedStep.tasks;
+    } else {
+      dbStep.tasks = null;
+    }
+
+    try {
+      // Delete existing step first
+      await supabase
+        .from("custom_steps")
+        .delete()
+        .eq("id", updatedStep.id);
+
+      // Insert updated step
+      const { error } = await supabase
+        .from("custom_steps")
+        .insert(dbStep);
+
+      if (error) {
+        console.error("Supabase insert after delete error details:", error);
+        throw error;
+      }
+    } catch (err) {
+      console.error("Failed to update custom step in Supabase:", err);
+      throw err;
+    }
+
+    // 2. Update local state
+    const updatedModules = get().modules.map((mod) => {
+      const stepWithCustom = { ...updatedStep, isCustom: true };
+      // If module changed (moved to another module)
+      const stepExists = mod.steps.some(s => s.id === updatedStep.id);
+      if (stepExists && mod.id !== moduleId) {
+        return {
+          ...mod,
+          steps: mod.steps.filter(s => s.id !== updatedStep.id)
+        };
+      }
+      if (mod.id === moduleId) {
+        const exists = mod.steps.some(s => s.id === updatedStep.id);
+        return {
+          ...mod,
+          steps: exists
+            ? mod.steps.map((s) => (s.id === updatedStep.id ? stepWithCustom : s))
+            : [...mod.steps, stepWithCustom],
         };
       }
       return mod;
@@ -630,29 +713,10 @@ export const useAppStore = create<AppState>((set, get) => ({
             ? progress.completed_steps 
             : [...progress.completed_steps, stepId];
 
-          let newStreak = progress.streak_count || 0;
           const now = new Date();
-          const lastActive = progress.last_active_at ? new Date(progress.last_active_at) : null;
-          
-          if (!lastActive) {
-            newStreak = 1;
-          } else {
-            const diffTime = Math.abs(now.getTime() - lastActive.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 1) {
-              newStreak += 1;
-            } else if (diffDays > 1) {
-              newStreak = 1;
-            } else if (newStreak === 0) {
-              newStreak = 1;
-            }
-          }
-
           const updatedProgress = {
             ...progress,
             completed_steps,
-            streak_count: newStreak,
             last_active_at: now.toISOString(),
           };
 
@@ -662,7 +726,6 @@ export const useAppStore = create<AppState>((set, get) => ({
             .from("user_progress")
             .update({
               completed_steps,
-              streak_count: newStreak,
               last_active_at: now.toISOString(),
             })
             .eq("user_id", progress.user_id);
@@ -713,29 +776,10 @@ export const useAppStore = create<AppState>((set, get) => ({
             ? progress.completed_steps 
             : [...progress.completed_steps, stepId];
 
-          let newStreak = progress.streak_count || 0;
           const now = new Date();
-          const lastActive = progress.last_active_at ? new Date(progress.last_active_at) : null;
-          
-          if (!lastActive) {
-            newStreak = 1;
-          } else {
-            const diffTime = Math.abs(now.getTime() - lastActive.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 1) {
-              newStreak += 1;
-            } else if (diffDays > 1) {
-              newStreak = 1;
-            } else if (newStreak === 0) {
-              newStreak = 1;
-            }
-          }
-
           const updatedProgress = {
             ...progress,
             completed_steps,
-            streak_count: newStreak,
             last_active_at: now.toISOString(),
           };
 
@@ -745,7 +789,6 @@ export const useAppStore = create<AppState>((set, get) => ({
             .from("user_progress")
             .update({
               completed_steps,
-              streak_count: newStreak,
               last_active_at: now.toISOString(),
             })
             .eq("user_id", progress.user_id);

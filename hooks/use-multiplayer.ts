@@ -57,9 +57,18 @@ export function useMultiplayer() {
 
   const channelRef = useRef<any>(null);
   const bcRef = useRef<any>(null);
+  const isSubscribedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Clear any existing peer states if the user is a student (non-instructor)
+    if (role !== "instruktur") {
+      const storeState = useAppStore.getState();
+      Object.keys(storeState.peerStates).forEach((key) => {
+        storeState.setPeerState(key, null);
+      });
+    }
 
     if (isConfigured) {
       // 1. Supabase Realtime online synchronization
@@ -72,54 +81,63 @@ export function useMultiplayer() {
       });
       channelRef.current = channel;
 
-      channel
-        .on("presence", { event: "sync" }, () => {
-          const presenceState = channel.presenceState();
-          Object.keys(presenceState).forEach((key) => {
+      // Only listen to other peer updates if we are an instructor
+      if (role === "instruktur") {
+        channel
+          .on("presence", { event: "sync" }, () => {
+            const presenceState = channel.presenceState();
+            Object.keys(presenceState).forEach((key) => {
+              if (key === clientIdRef.current) return;
+              const presences = presenceState[key] as any[];
+              if (presences && presences.length > 0) {
+                setPeerState(key, presences[0] as PeerState);
+              }
+            });
+          })
+          .on("presence", { event: "join" }, ({ key, newPresences }: { key: string; newPresences: any[] }) => {
             if (key === clientIdRef.current) return;
-            const presences = presenceState[key] as any[];
-            if (presences && presences.length > 0) {
-              setPeerState(key, presences[0] as PeerState);
+            if (newPresences && newPresences.length > 0) {
+              setPeerState(key, newPresences[0] as PeerState);
             }
+          })
+          .on("presence", { event: "leave" }, ({ key }: { key: string }) => {
+            setPeerState(key, null);
           });
-        })
-        .on("presence", { event: "join" }, ({ key, newPresences }: { key: string; newPresences: any[] }) => {
-          if (key === clientIdRef.current) return;
-          if (newPresences && newPresences.length > 0) {
-            setPeerState(key, newPresences[0] as PeerState);
-          }
-        })
-        .on("presence", { event: "leave" }, ({ key }: { key: string }) => {
-          setPeerState(key, null);
-        });
 
-      channel.on("broadcast", { event: "cursor-move" }, (envelope: any) => {
-        const { clientId, state } = envelope.payload || {};
-        if (!clientId || clientId === clientIdRef.current) return;
-        setPeerState(clientId, state);
-      });
+        channel.on("broadcast", { event: "cursor-move" }, (envelope: any) => {
+          const { clientId, state } = envelope.payload || {};
+          if (!clientId || clientId === clientIdRef.current) return;
+          setPeerState(clientId, state);
+        });
+      }
 
       channel.subscribe(async (status: string) => {
         if (status === "SUBSCRIBED") {
+          isSubscribedRef.current = true;
           await channel.track(payloadRef.current);
+        } else {
+          isSubscribedRef.current = false;
         }
       });
 
       // Throttle mouse/cell updates to 300ms intervals
       const interval = setInterval(() => {
-        channel.send({
-          type: "broadcast",
-          event: "cursor-move",
-          payload: {
-            clientId: clientIdRef.current,
-            state: payloadRef.current,
-          },
-        });
+        if (channelRef.current && isSubscribedRef.current) {
+          channel.send({
+            type: "broadcast",
+            event: "cursor-move",
+            payload: {
+              clientId: clientIdRef.current,
+              state: payloadRef.current,
+            },
+          });
+        }
       }, 300);
 
       return () => {
         clearInterval(interval);
         channelRef.current = null;
+        isSubscribedRef.current = false;
         channel.unsubscribe();
       };
     } else {
@@ -131,12 +149,17 @@ export function useMultiplayer() {
         const { type, clientId, state } = event.data;
         if (clientId === clientIdRef.current) return;
 
-        if (type === "cursor-move") {
-          setPeerState(clientId, state);
-        } else if (type === "offline") {
-          setPeerState(clientId, null);
-        } else if (type === "ping") {
-          // Reply with current state
+        // Instructors listen to all updates
+        if (role === "instruktur") {
+          if (type === "cursor-move") {
+            setPeerState(clientId, state);
+          } else if (type === "offline") {
+            setPeerState(clientId, null);
+          }
+        }
+
+        // All users reply to pings so instructors can discover them
+        if (type === "ping") {
           bc.postMessage({
             type: "cursor-move",
             clientId: clientIdRef.current,
@@ -175,7 +198,7 @@ export function useMultiplayer() {
     if (typeof window === "undefined") return;
 
     if (isConfigured) {
-      if (channelRef.current) {
+      if (channelRef.current && isSubscribedRef.current) {
         channelRef.current.send({
           type: "broadcast",
           event: "cursor-move",

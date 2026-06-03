@@ -57,13 +57,17 @@ export default function BelajarPage() {
 
   // 2. Main learning UI (Unlocks when user is logged in)
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+      {/* Glow blobs background */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-500/5 blur-[120px] pointer-events-none z-0" />
+
       {/* Top Navigation */}
       {!isFullScreen && <Navbar />}
 
       {/* Main Content Layout */}
       <main className={cn(
-        "flex-1 flex flex-col overflow-hidden",
+        "flex-1 flex flex-col overflow-hidden relative z-10",
         isFullScreen
           ? "w-screen h-screen p-0 max-w-none bg-background"
           : "max-w-[1600px] w-full mx-auto px-5 py-5 h-[calc(100vh-64px)] overflow-hidden"
@@ -75,24 +79,24 @@ export default function BelajarPage() {
             "flex-1 flex",
             isFullScreen
               ? "flex-row gap-0 h-full overflow-hidden"
-              : "flex-col md:flex-row gap-5 h-full overflow-y-auto md:overflow-hidden pr-0 md:pr-1 scrollbar-thin"
+              : "flex-col gap-4 h-full overflow-hidden"
           )}>
-            {/* Left Panel: Theory & Instructions */}
+            {/* Top Panel: Theory & Instructions */}
             {!isFullScreen && (
-              <section className="flex flex-col w-full md:w-[380px] lg:w-[420px] xl:w-[460px] shrink-0 h-auto md:h-full min-h-[250px] bg-card border border-border/60 rounded-xl p-5 overflow-hidden order-2 md:order-1">
+              <section className="w-full shrink-0 bg-card/65 backdrop-blur-md border border-border/50 rounded-xl p-4.5 overflow-hidden shadow-sm">
                 <LeftPanel />
               </section>
             )}
 
-            {/* Right Panel: Interactive Canvas */}
+            {/* Bottom Panel: Interactive Canvas */}
             <section className={cn(
-              "w-full md:flex-1 flex flex-col sticky top-0 md:relative z-20 order-1 md:order-2 bg-background/95 backdrop-blur-sm pb-2 md:pb-0 md:bg-transparent min-h-0 min-w-0",
-              isFullScreen ? "h-full" : "h-[360px] sm:h-[440px] md:h-full shrink-0 md:shrink"
+              "w-full flex-1 flex flex-col min-h-0 min-w-0 bg-background/95 backdrop-blur-sm md:bg-transparent h-full",
+              isFullScreen ? "h-full" : "h-full"
             )}>
               {/* Interactive Sheet + Task Sidebar */}
               <div className={cn(
                 "flex-1 flex flex-row overflow-hidden min-h-0 min-w-0",
-                isFullScreen ? "gap-0" : "gap-5"
+                isFullScreen ? "gap-0" : "gap-4"
               )}>
                 <div className="flex-1 h-full overflow-hidden min-h-0 min-w-0">
                   <ExcelTable

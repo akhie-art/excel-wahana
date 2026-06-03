@@ -55,12 +55,17 @@ export function TaskSidebar({ onClose, isFullScreen = false }: TaskSidebarProps)
             <CheckSquare className="h-3.5 w-3.5" />
             <span>Tugas Kamu</span>
           </div>
-          <p
-            className="text-sm text-foreground/85 leading-relaxed"
+          <div
+            className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap"
             dangerouslySetInnerHTML={{
               __html: step.instructions
-                .replace(/\*\*(.*?)\*\*/g, "<strong class='text-emerald-600 dark:text-emerald-400 font-semibold'>$1</strong>")
-                .replace(/`(.*?)`/g, "<code class='bg-muted px-1.5 py-0.5 rounded font-mono text-xs border border-border/60'>$1</code>")
+                .replace(/([^\n])[ \t]*(\d+\.\s+)/g, "$1\n$2")
+                .replace(/([^\n*])[ \t]*(\*\s+)/g, "$1\n$2")
+                .replace(/([^\n])[ \t]*(-\s+)/g, "$1\n$2")
+                .replace(/\*\*(.*?)\*\*/g, "<strong class='text-emerald-600 dark:text-emerald-400 font-bold'>$1</strong>")
+                .replace(/\*(.*?)\*/g, "<em class='italic text-foreground/90'>$1</em>")
+                .replace(/_(.*?)_/g, "<em class='italic text-foreground/90'>$1</em>")
+                .replace(/`(.*?)`/g, "<code class='bg-muted px-1.5 py-0.5 rounded font-mono text-xs text-foreground border border-border/60'>$1</code>")
             }}
           />
         </div>

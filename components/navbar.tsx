@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store";
-import { EXCEL_MODULES } from "@/lib/modules";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Flame, Moon, Sun, User, Database, CheckCircle2, LogOut } from "lucide-react";
+import { Moon, Sun, CheckCircle2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -17,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
-  const { user, progress, isConfigured, role, setRole, signOut } = useAppStore();
+  const { user, progress, isConfigured, role, setRole, signOut, modules } = useAppStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -47,9 +46,10 @@ export function Navbar() {
     );
   }
 
-  // Calculate total completed steps vs total steps
-  const totalSteps = EXCEL_MODULES.reduce((acc, mod) => acc + mod.steps.length, 0);
-  const completedSteps = progress?.completed_steps?.length || 0;
+  // Calculate total completed steps vs total steps dynamically
+  const totalSteps = modules.reduce((acc, mod) => acc + mod.steps.length, 0);
+  const allStepIds = new Set(modules.flatMap(mod => mod.steps.map(s => s.id)));
+  const completedSteps = progress?.completed_steps?.filter(id => allStepIds.has(id)).length || 0;
   const progressPercent = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   const isInstructor = progress?.role === "instruktur" || user?.email === "instruktur@excel.com" || user?.email?.includes("instruktur");
@@ -70,34 +70,28 @@ export function Navbar() {
         </div>
 
         {/* Course Progress Dashboard */}
-        <div className="hidden md:flex items-center space-x-6 flex-1 max-w-lg mx-8">
-          <div className="w-full space-y-1.5">
-            <div className="flex justify-between text-xs font-semibold text-muted-foreground">
-              <span className="flex items-center space-x-1">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                <span>Progres Belajar</span>
-              </span>
-              <span>{completedSteps} dari {totalSteps} tantangan</span>
-            </div>
-            <div className="h-2 w-full bg-secondary/80 rounded-full overflow-hidden border border-border/40">
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
-                style={{ width: `${progressPercent}%` }}
-              />
+        {role !== "instruktur" && (
+          <div className="hidden md:flex items-center space-x-6 flex-1 max-w-lg mx-8">
+            <div className="w-full space-y-1.5">
+              <div className="flex justify-between text-xs font-semibold text-muted-foreground">
+                <span className="flex items-center space-x-1">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  <span>Progres Belajar</span>
+                </span>
+                <span>{completedSteps} dari {totalSteps} tantangan</span>
+              </div>
+              <div className="h-2 w-full bg-secondary/80 rounded-full overflow-hidden border border-border/40">
+                <div 
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Action Controls */}
         <div className="flex items-center space-x-3">
-
-          {/* Daily Streak */}
-          {progress && role === "peserta" && (
-            <div className="flex items-center space-x-1.5 bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/20 text-amber-500 rounded-lg px-3 py-1.5 text-xs font-bold select-none">
-              <Flame className="h-4 w-4 fill-amber-500 text-amber-500" />
-              <span>{progress.streak_count} Hari</span>
-            </div>
-          )}
 
           {/* Theme Toggle */}
           <Button
@@ -113,30 +107,7 @@ export function Navbar() {
 
 
 
-          {/* Role Switcher Toggle Button */}
-          {isInstructor && (
-            <Button
-              onClick={() => setRole(role === "instruktur" ? "peserta" : "instruktur")}
-              className={cn(
-                "h-9 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-xs border",
-                role === "instruktur"
-                  ? "bg-rose-500/10 text-rose-500 border-rose-500/20 hover:bg-rose-500/20"
-                  : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20"
-              )}
-            >
-              {role === "instruktur" ? (
-                <>
-                  <User className="h-3.5 w-3.5 text-rose-500" />
-                  <span>Lihat Sebagai Siswa</span>
-                </>
-              ) : (
-                <>
-                  <Database className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Lihat Sebagai Instruktur</span>
-                </>
-              )}
-            </Button>
-          )}
+
 
           {/* User Info Dropdown */}
           {user && (
@@ -166,38 +137,7 @@ export function Navbar() {
                 
                 <DropdownMenuSeparator />
                 
-                {isInstructor && (
-                  <>
-                    <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground px-2.5 pt-2 pb-1 select-none">
-                      Mode Tampilan
-                    </div>
-                    <DropdownMenuItem
-                      onClick={() => setRole("peserta")}
-                      className={cn(
-                        "flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs font-medium",
-                        role === "peserta" && "bg-accent font-bold"
-                      )}
-                    >
-                      <User className="h-3.5 w-3.5 text-rose-500" />
-                      <span>Tampilan Peserta</span>
-                      {role === "peserta" && <span className="ml-auto text-[9px] bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded-full font-bold">AKTIF</span>}
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem
-                      onClick={() => setRole("instruktur")}
-                      className={cn(
-                        "flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs font-medium",
-                        role === "instruktur" && "bg-accent font-bold"
-                      )}
-                    >
-                      <Database className="h-3.5 w-3.5 text-emerald-500" />
-                      <span>Tampilan Instruktur</span>
-                      {role === "instruktur" && <span className="ml-auto text-[9px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-full font-bold">AKTIF</span>}
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator />
-                  </>
-                )}
+
                 
                 <DropdownMenuItem
                   onClick={() => signOut()}

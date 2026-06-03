@@ -873,7 +873,7 @@ export default function LandingPage() {
               </motion.div>
               <motion.div style={{ x: floatX1 }} className="flex items-center gap-2 bg-card/90 border border-blue-500/20 px-3 py-2 rounded-xl shadow-lg backdrop-blur-md text-[11px]">
                 <TrendingUp className="w-4 h-4 text-blue-500" />
-                <div><div className="font-bold text-foreground">Progress Tersimpan</div><div className="text-muted-foreground text-[9px]">Streak 7 hari berturut</div></div>
+                <div><div className="font-bold text-foreground">Progress Tersimpan</div><div className="text-muted-foreground text-[9px]">Tersimpan otomatis</div></div>
               </motion.div>
             </div>
           </motion.div>

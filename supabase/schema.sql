@@ -82,6 +82,7 @@ create table public.custom_steps (
   expected_result text not null,
   result_cell jsonb not null,
   hint text not null,
+  tasks jsonb default '[]'::jsonb,
   created_at timestamp with time zone not null default timezone('utc'::text, now())
 );
 

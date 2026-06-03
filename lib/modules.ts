@@ -9,6 +9,9 @@ export interface ExcelCell {
   borderDouble?: boolean;
   bgColor?: string;
   className?: string;
+  rowSpan?: number;
+  colSpan?: number;
+  mergedHidden?: boolean;
 }
 
 export interface ExcelRow {
@@ -41,6 +44,7 @@ export interface ModuleStep {
   /** Label yang ditampilkan di curriculum list untuk keseluruhan group */
   groupLabel?: string;
   tasks?: CellTask[];
+  isCustom?: boolean;
 }
 
 export interface ExcelModule {

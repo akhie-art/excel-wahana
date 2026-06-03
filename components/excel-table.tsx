@@ -479,56 +479,25 @@ export function ExcelTable({
     }
   };
 
+  // Hitung koordinat sel target aktif
+  const activeCellRow = step.tasks && step.tasks.length > 0
+    ? step.tasks[selectedTaskIndex]?.resultCell.row
+    : step.resultCell?.row;
+  const activeCellCol = step.tasks && step.tasks.length > 0
+    ? step.tasks[selectedTaskIndex]?.resultCell.col
+    : step.resultCell?.col;
+
   return (
     <div
       id="excel-table-container"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="w-full h-full flex flex-col bg-card border border-border/80 rounded-xl overflow-hidden shadow-sm dark:shadow-black/30 focus:outline-none min-h-0 min-w-0"
+      className="w-full h-full flex flex-col bg-card/75 backdrop-blur-md border border-border/50 rounded-xl overflow-hidden shadow-md dark:shadow-black/40 focus:outline-none min-h-0 min-w-0"
     >
       
       {/* 1. Minimal top bar: only action buttons, no decorative text */}
       <div className="flex items-center justify-between px-3 py-2 bg-muted/20 border-b border-border/60 select-none shrink-0 gap-2">
-        {/* Active Peers Display */}
-        <div className="flex items-center space-x-1">
-          {Object.keys(peerStates).length > 0 ? (
-            <div className="flex items-center space-x-2">
-              <div className="flex -space-x-1.5 overflow-hidden">
-                {Object.values(peerStates).filter(Boolean).map((peer, idx) => {
-                  const peerColorMap: Record<string, string> = {
-                    emerald: "bg-emerald-500",
-                    indigo: "bg-indigo-500",
-                    rose: "bg-rose-500",
-                    amber: "bg-amber-500",
-                    violet: "bg-violet-500",
-                    sky: "bg-sky-500",
-                  };
-                  const colorClass = peerColorMap[peer.color] || "bg-emerald-500";
-                  return (
-                    <div
-                      key={peer.userId + idx}
-                      className={cn(
-                        "inline-block h-5 w-5 rounded-full ring-2 ring-card text-[9px] font-bold text-white flex items-center justify-center uppercase select-none",
-                        colorClass
-                      )}
-                      title={`${peer.name} (${peer.role})`}
-                    >
-                      {peer.name.charAt(0)}
-                    </div>
-                  );
-                })}
-              </div>
-              <span className="text-[10px] font-semibold text-muted-foreground font-sans">
-                {Object.keys(peerStates).length} pengguna lain online
-              </span>
-            </div>
-          ) : (
-            <span className="text-[10px] font-medium text-muted-foreground/60 font-sans flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-pulse"></span>
-              Menunggu teman belajar...
-            </span>
-          )}
-        </div>
+        <div />
 
         <div className="flex items-center gap-2">
           {/* Toggle Sidebar Button (Only visible in full screen mode) */}
@@ -572,10 +541,10 @@ export function ExcelTable({
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 rounded-xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/15 text-xs shadow-sm"
+              className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 rounded-xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 text-xs shadow-sm"
             >
               <div className="flex items-start gap-2.5">
-                <div className="h-7 w-7 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 font-bold select-none mt-0.5 shadow-inner">
+                <div className="h-7 w-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 font-bold select-none mt-0.5 shadow-inner">
                   <Target className="h-4 w-4" />
                 </div>
                 <div className="space-y-1">
@@ -583,23 +552,23 @@ export function ExcelTable({
                     <span className="font-semibold text-foreground">
                       Target Sel:
                     </span>
-                    <div className="flex items-center gap-1 bg-blue-500/10 border border-blue-500/20 rounded px-1 py-0.5">
+                    <div className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 rounded px-1 py-0.5">
                       {step.tasks && step.tasks.length > 1 && (
                         <button
                           onClick={handlePrevTask}
-                          className="p-0.5 rounded hover:bg-blue-500/15 text-blue-500 transition-colors"
+                          className="p-0.5 rounded hover:bg-emerald-500/15 text-emerald-500 transition-colors"
                           title="Tugas Sebelumnya"
                         >
                           <ChevronLeft className="h-3.5 w-3.5" />
                         </button>
                       )}
-                      <span className="font-mono font-bold text-blue-600 dark:text-blue-400 text-[10px] px-1 select-none">
+                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-[10px] px-1 select-none">
                         {activeTask.cellAddress}
                       </span>
                       {step.tasks && step.tasks.length > 1 && (
                         <button
                           onClick={handleNextTask}
-                          className="p-0.5 rounded hover:bg-blue-500/15 text-blue-500 transition-colors"
+                          className="p-0.5 rounded hover:bg-emerald-500/15 text-emerald-500 transition-colors"
                           title="Tugas Selanjutnya"
                         >
                           <ChevronRight className="h-3.5 w-3.5" />
@@ -627,7 +596,7 @@ export function ExcelTable({
                         e.stopPropagation();
                         setShowFormulaKey(!showFormulaKey);
                       }}
-                      className="h-7 px-2.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 rounded-md border border-blue-500/20 flex items-center gap-1"
+                      className="h-7 px-2.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 rounded-md border border-emerald-500/20 flex items-center gap-1"
                     >
                       {showFormulaKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       <span>{showFormulaKey ? "Sembunyikan" : "Lihat Rumus"}</span>
@@ -636,7 +605,7 @@ export function ExcelTable({
                       <Button
                         size="sm"
                         onClick={handleAutoFill}
-                        className="h-7 px-2.5 text-[10px] font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-md shadow-sm flex items-center gap-1"
+                        className="h-7 px-2.5 text-[10px] font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-md shadow-sm flex items-center gap-1"
                       >
                         <Sparkles className="h-3 w-3" />
                         <span>Masukkan Rumus</span>
@@ -751,13 +720,15 @@ export function ExcelTable({
             <tr className="bg-muted/40">
               {step.headers.map((header, idx) => {
                 const isBlocked = idx > 0 && (idx - 1) === blockedColIndex;
+                const isActiveCol = idx > 0 && (idx - 1) === activeCellCol;
                 return (
                   <th
                     key={idx}
                     onClick={() => handleColHeaderClick(idx)}
                     className={cn(
                       "border border-border p-2 text-center font-semibold text-xs text-muted-foreground bg-muted/20 cursor-pointer transition-all duration-150 hover:bg-muted/40 select-none relative group",
-                      isBlocked && "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-500 font-extrabold border-b-2 border-emerald-500/50 shadow-inner"
+                      isBlocked && "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-500 font-extrabold border-b-2 border-emerald-500/50 shadow-inner",
+                      isActiveCol && !isBlocked && "bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border-b border-b-emerald-500/40"
                     )}
                   >
                     {idx === 0 ? header : String.fromCharCode(65 + idx - 1)}
@@ -784,6 +755,7 @@ export function ExcelTable({
           <tbody>
             {step.dummyData.map((row, rowIdx) => {
               const isRowBlocked = rowIdx === blockedRowIndex;
+              const isActiveRow = rowIdx === activeCellRow;
               
               return (
                 <tr key={rowIdx} className="hover:bg-muted/10 transition-colors duration-150">
@@ -792,7 +764,8 @@ export function ExcelTable({
                     onClick={() => handleRowHeaderClick(rowIdx)}
                     className={cn(
                       "border border-border p-2 text-center text-xs font-semibold text-muted-foreground bg-muted/20 cursor-pointer transition-all duration-150 hover:bg-muted/40 select-none",
-                      isRowBlocked && "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-500 font-extrabold border-r-2 border-emerald-500/50 shadow-inner"
+                      isRowBlocked && "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-500 font-extrabold border-r-2 border-emerald-500/50 shadow-inner",
+                      isActiveRow && !isRowBlocked && "bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border-r border-r-emerald-500/40"
                     )}
                   >
                     {row.rowNum}
@@ -800,6 +773,7 @@ export function ExcelTable({
 
                   {/* Data Cells */}
                   {row.cells.map((cell, cellIdx) => {
+                    if (cell.mergedHidden) return null;
                     let taskIndex = -1;
                     if (step.tasks && step.tasks.length > 0) {
                       taskIndex = step.tasks.findIndex(
@@ -894,6 +868,8 @@ export function ExcelTable({
                     return (
                       <td
                         key={cellIdx}
+                        rowSpan={cell.rowSpan}
+                        colSpan={cell.colSpan}
                         onMouseDown={() => handleCellMouseDown(rowIdx, cellIdx, isResultCell, taskIndex)}
                         onMouseEnter={() => handleCellMouseEnter(rowIdx, cellIdx)}
                         onClick={() => handleCellClick(rowIdx, cellIdx, isResultCell, taskIndex)}
@@ -908,7 +884,7 @@ export function ExcelTable({
                           isCellSelected && "bg-blue-500/10 dark:bg-blue-500/15",
                           selectionBorderClasses,
                           peerBorderClasses,
-                          showAsEditing && "bg-blue-500/5 dark:bg-blue-500/10 ring-2 ring-blue-500 dark:ring-blue-400/80 z-10 text-blue-600 dark:text-blue-400 font-bold",
+                          showAsEditing && "bg-emerald-500/5 dark:bg-emerald-500/10 ring-2 ring-emerald-500 dark:ring-emerald-400 z-10 text-emerald-600 dark:text-emerald-400 font-bold shadow-[0_0_12px_rgba(16,185,129,0.25)]",
                           showAsPendingTask && "bg-amber-500/5 dark:bg-amber-500/10 border border-dashed border-amber-500/30 text-amber-500/80 dark:text-amber-400/80 font-semibold cursor-pointer hover:bg-amber-500/10 hover:border-amber-500/50 p-2.5 text-center",
                           showAsLockedTask && "bg-muted/15 border border-border text-muted-foreground/35 cursor-not-allowed p-2.5 text-center",
                           isAnyResultCell && showAsSuccess && "bg-emerald-500/20 dark:bg-emerald-500/25 border-emerald-500/50 text-emerald-600 dark:text-emerald-300 font-extrabold shadow-inner p-2.5",
@@ -953,7 +929,7 @@ export function ExcelTable({
                                 onMouseUp={(e) => e.stopPropagation()}
                                 onClick={(e) => e.stopPropagation()}
                                 onDoubleClick={(e) => e.stopPropagation()}
-                                className="w-full h-full bg-transparent border-none outline-none focus:ring-0 px-2 py-2 font-mono text-xs font-bold text-blue-600 dark:text-blue-400 text-center select-text"
+                                className="w-full h-full bg-transparent border-none outline-none focus:ring-0 px-2 py-2 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 text-center select-text"
                                 placeholder="=RUMUS"
                                 autoComplete="off"
                                 autoCorrect="off"

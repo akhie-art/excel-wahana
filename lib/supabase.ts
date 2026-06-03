@@ -284,6 +284,21 @@ if (isSupabaseConfigured) {
                 return Promise.resolve({ data: null, error: null }).then(cb);
               }
             })
+          }),
+          update: (data: any) => ({
+            eq: (col: string, val: any) => ({
+              then: (cb: any) => {
+                const current = getCustomSteps();
+                const updated = current.map((s: any) => {
+                  if (s[col] === val) {
+                    return { ...s, ...data };
+                  }
+                  return s;
+                });
+                setCustomSteps(updated);
+                return Promise.resolve({ data: data, error: null }).then(cb);
+              }
+            })
           })
         };
       }
