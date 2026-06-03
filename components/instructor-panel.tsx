@@ -221,8 +221,24 @@ function LiveSpectateView({ studentId, onBack }: LiveSpectateViewProps) {
                           isResultCell &&
                           studentAnswer &&
                           (isMultiTaskCell
-                            ? checkFormula(studentAnswer, spectatedStep.tasks![taskIndex].validFormulas)
-                            : checkFormula(studentAnswer, spectatedStep.validFormulas))
+                            ? checkFormula(
+                                studentAnswer,
+                                spectatedStep.tasks![taskIndex].validFormulas,
+                                spectatedStep.tasks![taskIndex].expectedResult,
+                                spectatedStep.dummyData,
+                                spectatedStep.headers,
+                                spectatedStudent.taskAnswers || [],
+                                spectatedStep.tasks!
+                              )
+                            : checkFormula(
+                                studentAnswer,
+                                spectatedStep.validFormulas,
+                                spectatedStep.expectedResult,
+                                spectatedStep.dummyData,
+                                spectatedStep.headers,
+                                [],
+                                []
+                              ))
                         );
 
                         const peerColorMap: Record<string, string> = {
@@ -377,7 +393,7 @@ function LiveSpectateView({ studentId, onBack }: LiveSpectateViewProps) {
     }
   };
 
-  const handleCreateStep = (e: React.FormEvent) => {
+  const handleCreateStep = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMessage(null);
 
@@ -416,7 +432,7 @@ function LiveSpectateView({ studentId, onBack }: LiveSpectateViewProps) {
       };
 
       // 4. Add to store
-      addCustomStep(selectedModuleId, newStep);
+      await addCustomStep(selectedModuleId, newStep);
       
       setStatusMessage({ 
         type: "success", 
@@ -1038,9 +1054,9 @@ function LiveSpectateView({ studentId, onBack }: LiveSpectateViewProps) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => {
+                              onClick={async () => {
                                 if (confirm(`Apakah Anda yakin ingin menghapus tantangan "${step.title}" dari kurikulum?`)) {
-                                  deleteCustomStep(module.id, step.id);
+                                  await deleteCustomStep(module.id, step.id);
                                 }
                               }}
                               className="h-7 w-7 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-md shrink-0"

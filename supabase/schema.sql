@@ -1,3 +1,8 @@
+-- Drop existing triggers and tables if they exist to allow re-running the script cleanly
+drop trigger if exists on_auth_user_created on auth.users;
+drop table if exists public.custom_steps cascade;
+drop table if exists public.user_progress cascade;
+
 -- Create user progress table
 create table public.user_progress (
   user_id uuid references auth.users(id) on delete cascade primary key,
@@ -51,3 +56,34 @@ $$ language plpgsql;
 create or replace trigger on_user_progress_updated
   before update on public.user_progress
   for each row execute procedure public.handle_update_timestamp();
+
+
+-- Create custom steps table for instructor persistence
+create table public.custom_steps (
+  id text primary key,
+  module_id text not null,
+  title text not null,
+  short_description text not null,
+  concept_explanation text not null,
+  instructions text not null,
+  headers text[] not null,
+  dummy_data jsonb not null,
+  valid_formulas text[] not null,
+  expected_result text not null,
+  result_cell jsonb not null,
+  hint text not null,
+  created_at timestamp with time zone not null default timezone('utc'::text, now())
+);
+
+-- Enable RLS
+alter table public.custom_steps enable row level security;
+
+-- Policies for custom_steps
+create policy "Anyone can view custom steps" on public.custom_steps
+  for select using (true);
+
+create policy "Authenticated users can insert custom steps" on public.custom_steps
+  for insert with check (auth.role() = 'authenticated');
+
+create policy "Authenticated users can delete custom steps" on public.custom_steps
+  for delete using (auth.role() = 'authenticated');

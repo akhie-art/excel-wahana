@@ -6,6 +6,7 @@ import { FormulaBar } from "./formula-bar";
 import { cn } from "@/lib/utils";
 import { motion, useAnimation } from "framer-motion";
 import { checkFormula, isTaskLocked } from "@/lib/modules";
+import { FORMULA_DOCS, type FormulaDoc } from "@/lib/formula-docs";
 
 import { Button } from "@/components/ui/button";
 import { Maximize2, Minimize2, BookOpen, ChevronLeft, ChevronRight, Eye, EyeOff, Sparkles, Target, Lock, Key } from "lucide-react";
@@ -134,6 +135,43 @@ export function ExcelTable({
 
   const activeTask = getActiveTaskDetails();
 
+  const getFormulaGuide = (input: string): 
+    | { type: "suggestions"; list: FormulaDoc[] } 
+    | { type: "guide"; doc: FormulaDoc; currentParamIdx: number } 
+    | null => {
+    if (!input.startsWith("=")) return null;
+    
+    const uppercase = input.toUpperCase().trim();
+    
+    // Check if user is typing parameters (has open parenthesis '(')
+    const openParenIndex = uppercase.indexOf("(");
+    
+    if (openParenIndex === -1) {
+      // User is typing function name, e.g. "=VL" or "=SU"
+      const typedQuery = uppercase.slice(1); // remove "="
+      if (!typedQuery) return { type: "suggestions", list: FORMULA_DOCS };
+      
+      const filtered = FORMULA_DOCS.filter(doc => doc.name.startsWith(typedQuery));
+      return filtered.length > 0 ? { type: "suggestions", list: filtered } : null;
+    } else {
+      // User is typing parameters, e.g. "=VLOOKUP("
+      const funcName = uppercase.slice(1, openParenIndex).trim();
+      const doc = FORMULA_DOCS.find(d => d.name === funcName);
+      if (!doc) return null;
+      
+      // Calculate which parameter they are on based on commas after '('
+      const paramText = input.slice(openParenIndex + 1);
+      const commaCount = (paramText.match(/,/g) || []).length;
+      const currentParamIdx = Math.min(commaCount, doc.params.length - 1);
+      
+      return {
+        type: "guide",
+        doc,
+        currentParamIdx
+      };
+    }
+  };
+
   const handlePrevTask = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (step.tasks && step.tasks.length > 0) {
@@ -215,12 +253,12 @@ export function ExcelTable({
   };
 
   const handleCellDoubleClick = (rowIdx: number, cellIdx: number, isResultCell: boolean, taskIndex?: number) => {
-    if (isSuccess) return;
-
     if (taskIndex !== undefined && taskIndex !== -1 && step.tasks) {
       const clickedTask = step.tasks[taskIndex];
-      const isLocked = isTaskLocked(clickedTask, taskAnswers, step.tasks);
-      if (isLocked) return;
+      if (!isSuccess) {
+        const isLocked = isTaskLocked(clickedTask, taskAnswers, step.tasks, step.dummyData, step.headers);
+        if (isLocked) return;
+      }
       setSelectedTaskIndex(taskIndex);
       setIsEditingInline(true);
       return;
@@ -372,16 +410,16 @@ export function ExcelTable({
 
   // Handle cell click: select task cell or clear selection
   const handleCellClick = (row: number, col: number, isResultCell: boolean, taskIndex?: number) => {
-    if (isSuccess) return;
-
     // Focus the table container to capture keyboard events (like Enter key validation)
     document.getElementById("excel-table-container")?.focus();
 
     // Task cell click: activate that task
     if (taskIndex !== undefined && taskIndex !== -1 && step.tasks) {
       const clickedTask = step.tasks[taskIndex];
-      const isLocked = isTaskLocked(clickedTask, taskAnswers, step.tasks);
-      if (isLocked) return;
+      if (!isSuccess) {
+        const isLocked = isTaskLocked(clickedTask, taskAnswers, step.tasks, step.dummyData, step.headers);
+        if (isLocked) return;
+      }
       setSelectedTaskIndex(taskIndex);
       setSelectionStart(null);
       setSelectionEnd(null);
@@ -619,12 +657,57 @@ export function ExcelTable({
                   <Key className="h-3.5 w-3.5 text-amber-500 mr-0.5" /> Kunci Rumus:
                 </span>
                 <code className="bg-muted px-2 py-0.5 rounded font-mono font-bold text-foreground border border-border/80 text-[11px] select-all">
-                  {activeTask.validFormulas[0]}
+              {activeTask.validFormulas[0]}
                 </code>
               </div>
               <span className="text-[10px] text-muted-foreground italic select-none">Klik "Masukkan Rumus" untuk otomatis mengisi</span>
             </motion.div>
           )}
+
+          {/* Detailed Formula Syntax Guide inside Top Panel */}
+          {!isSuccess && isEditingInline && (() => {
+            const guide = getFormulaGuide(formulaInput);
+            if (!guide || guide.type !== "guide") return null;
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3.5 rounded-xl bg-card border border-border/60 dark:border-border/40 text-xs space-y-2.5 shadow-sm border-t-2 border-t-emerald-500/50"
+              >
+                <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span className="text-[10px] font-semibold text-muted-foreground/80 dark:text-muted-foreground/60 tracking-wider uppercase">Panduan Argumentasi Rumus</span>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    {guide.doc.name}()
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {guide.doc.params[guide.currentParamIdx] && (
+                    <div className="space-y-0.5">
+                      <div className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+                        Argumen Saat Ini: {guide.doc.params[guide.currentParamIdx].name}
+                      </div>
+                      <p className="text-[11px] text-foreground/80 dark:text-foreground/70 leading-relaxed font-sans">
+                        {guide.doc.params[guide.currentParamIdx].desc}
+                      </p>
+                    </div>
+                  )}
+                  <div className="h-px bg-border/40" />
+                  <div className="space-y-0.5">
+                    <div className="text-[9px] font-semibold text-muted-foreground/75 dark:text-muted-foreground/50 uppercase tracking-wide">
+                      Deskripsi Fungsi
+                    </div>
+                    <p className="text-[10px] text-muted-foreground dark:text-muted-foreground/80 italic leading-relaxed font-sans">
+                      {guide.doc.desc}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })()}
 
           {/* Validation Feedback */}
           <FormulaBar />
@@ -649,7 +732,7 @@ export function ExcelTable({
           </div>
         ) : (
           <table
-            className="border-collapse border border-border font-mono text-sm table-fixed mx-auto"
+            className="border-collapse border border-border font-mono text-sm table-fixed"
             style={{ width: colWidths.length > 0 ? `${colWidths.reduce((sum, w) => sum + w, 0)}px` : "100%" }}
           >
           {/* Colgroup for Resizable Columns */}
@@ -725,6 +808,8 @@ export function ExcelTable({
 
                     const isAnyResultCell = isResultCell || isMultiTaskCell;
                     
+                    const isNearBottom = rowIdx >= step.dummyData.length - 4;
+                    
                     const isColRowBlocked = cellIdx === blockedColIndex || isRowBlocked;
 
                     // Calculate range selection bounds
@@ -750,18 +835,32 @@ export function ExcelTable({
                       if (cellIdx === maxC) selectionBorderClasses += " border-r-2 border-r-blue-500 dark:border-r-blue-400";
                     }
 
-                    const isEditingThisCell = !isSuccess && isResultCell && isEditingInline;
+                    const isEditingThisCell = isResultCell && isEditingInline;
 
                     const isTaskCorrect = isMultiTaskCell && step.tasks && step.tasks[taskIndex] && !isEditingThisCell
-                      ? checkFormula(taskAnswers[taskIndex] || "", step.tasks[taskIndex].validFormulas)
+                      ? checkFormula(
+                          taskAnswers[taskIndex] || "",
+                          step.tasks[taskIndex].validFormulas,
+                          step.tasks[taskIndex].expectedResult,
+                          step.dummyData,
+                          step.headers,
+                          taskAnswers,
+                          step.tasks
+                        )
                       : false;
 
                     const isCellLocked = isMultiTaskCell && step.tasks && step.tasks[taskIndex]
-                      ? isTaskLocked(step.tasks[taskIndex], taskAnswers, step.tasks)
+                      ? isTaskLocked(
+                          step.tasks[taskIndex],
+                          taskAnswers,
+                          step.tasks,
+                          step.dummyData,
+                          step.headers
+                        )
                       : false;
 
-                    const showAsSuccess = isAnyResultCell && (isSuccess || isTaskCorrect);
-                    const showAsEditing = !isSuccess && isResultCell && !isCellLocked;
+                    const showAsSuccess = isAnyResultCell && (isSuccess || isTaskCorrect) && !isEditingThisCell;
+                    const showAsEditing = isResultCell && !isCellLocked && (isEditingInline || !isSuccess);
                     const showAsPendingTask = !isSuccess && isMultiTaskCell && !isResultCell && !isTaskCorrect && !isCellLocked;
                     const showAsLockedTask = !isSuccess && isMultiTaskCell && isCellLocked && !isTaskCorrect;
 
@@ -796,7 +895,7 @@ export function ExcelTable({
                         onDoubleClick={() => handleCellDoubleClick(rowIdx, cellIdx, isResultCell, taskIndex)}
                         className={cn(
                           "border border-border relative transition-all duration-150 select-none",
-                          (hasPeer || cell.className?.includes("overflow-visible")) ? "overflow-visible" : "truncate",
+                          (hasPeer || cell.className?.includes("overflow-visible") || (showAsEditing && isEditingInline)) ? "overflow-visible" : "truncate",
                           !isAnyResultCell && "p-2.5 cursor-crosshair",
                           cell.header && "bg-muted/10 font-semibold text-foreground text-xs",
                           cell.highlight && "bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
@@ -836,21 +935,113 @@ export function ExcelTable({
                           </div>
                         ) : showAsEditing ? (
                           isEditingInline ? (
-                            <input
-                              id="inline-cell-input"
-                              ref={cellInputRef}
-                              type="text"
-                              value={formulaInput}
-                              onChange={(e) => setFormulaInput(e.target.value)}
-                              onKeyDown={handleInlineInputKeyDown}
-                              onBlur={handleInlineInputBlur}
-                              onMouseDown={(e) => e.stopPropagation()}
-                              onMouseUp={(e) => e.stopPropagation()}
-                              onClick={(e) => e.stopPropagation()}
-                              onDoubleClick={(e) => e.stopPropagation()}
-                              className="w-full h-full bg-transparent border-none outline-none focus:ring-0 px-2 py-2 font-mono text-xs font-bold text-blue-600 dark:text-blue-400 text-center select-text"
-                              placeholder="=RUMUS"
-                            />
+                            <div className="relative w-full h-full flex items-center justify-center">
+                              <input
+                                id="inline-cell-input"
+                                ref={cellInputRef}
+                                type="text"
+                                value={formulaInput}
+                                onChange={(e) => setFormulaInput(e.target.value)}
+                                onKeyDown={handleInlineInputKeyDown}
+                                onBlur={handleInlineInputBlur}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onMouseUp={(e) => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
+                                onDoubleClick={(e) => e.stopPropagation()}
+                                className="w-full h-full bg-transparent border-none outline-none focus:ring-0 px-2 py-2 font-mono text-xs font-bold text-blue-600 dark:text-blue-400 text-center select-text"
+                                placeholder="=RUMUS"
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                              />
+
+                              {/* Autocomplete / Syntax Guide Tooltip */}
+                              {(() => {
+                                if (isSelecting) return null;
+                                const guide = getFormulaGuide(formulaInput);
+                                if (!guide) return null;
+
+                                if (guide.type === "suggestions") {
+                                  const tooltipPositionClass = isNearBottom ? "bottom-full mb-1" : "top-full mt-1";
+                                  return (
+                                    <motion.div 
+                                      initial={{ opacity: 0, y: isNearBottom ? 8 : -8, scale: 0.96 }}
+                                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                                      transition={{ duration: 0.12, ease: "easeOut" }}
+                                      className={cn(
+                                        "absolute left-0 bg-background/95 dark:bg-slate-950/95 backdrop-blur-md border border-border/80 dark:border-slate-800 rounded-xl shadow-xl shadow-slate-200/20 dark:shadow-black/50 z-50 w-60 font-sans select-none overflow-hidden max-h-52 overflow-y-auto scrollbar-thin border-t-2 border-t-emerald-500/50",
+                                        tooltipPositionClass
+                                      )}
+                                      onMouseDown={(e) => e.preventDefault()} // Prevent blur
+                                    >
+                                      {guide.list.map((doc) => (
+                                        <button
+                                          key={doc.name}
+                                          onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setFormulaInput(`=${doc.name}(`);
+                                            // Keep input focused
+                                            setTimeout(() => {
+                                              const inlineInput = document.getElementById("inline-cell-input") as HTMLInputElement;
+                                              if (inlineInput) {
+                                                inlineInput.focus();
+                                                const length = inlineInput.value.length;
+                                                inlineInput.setSelectionRange(length, length);
+                                              }
+                                            }, 10);
+                                          }}
+                                          className="w-full text-left px-3.5 py-2.5 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/5 hover:text-foreground text-foreground border-b border-border/40 dark:border-slate-800/60 last:border-b-0 cursor-pointer transition-colors duration-100 flex flex-col gap-0.5 group"
+                                        >
+                                          <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-500">{doc.name}</span>
+                                          <span className="text-[10px] text-muted-foreground font-normal truncate group-hover:text-muted-foreground/80">{doc.desc}</span>
+                                        </button>
+                                      ))}
+                                    </motion.div>
+                                  );
+                                }
+
+                                if (guide.type === "guide") {
+                                  const tooltipPositionClass = isNearBottom ? "bottom-full mb-1" : "top-full mt-1";
+                                  return (
+                                    <motion.div 
+                                      initial={{ opacity: 0, y: isNearBottom ? 8 : -8, scale: 0.96 }}
+                                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                                      transition={{ duration: 0.12, ease: "easeOut" }}
+                                      className={cn(
+                                        "absolute left-0 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-800 rounded-lg shadow-xl px-2.5 py-1.5 z-50 whitespace-nowrap font-sans select-none pointer-events-none border-t border-t-emerald-500/50",
+                                        tooltipPositionClass
+                                      )}
+                                    >
+                                      <div className="text-[11px] font-mono font-semibold text-slate-300 flex items-center">
+                                        <span className="text-emerald-400 font-extrabold mr-1">{guide.doc.name}</span>
+                                        <span className="opacity-60 mr-0.5">(</span>
+                                        {guide.doc.params.map((param, pIdx) => {
+                                          const isCurrent = pIdx === guide.currentParamIdx;
+                                          return (
+                                            <span key={pIdx} className="flex items-center">
+                                              {pIdx > 0 && <span className="opacity-40 mx-0.5">,</span>}
+                                              <span className={cn(
+                                                "transition-all duration-150 px-1 py-0.2 rounded text-[10px]",
+                                                isCurrent 
+                                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold shadow-sm" 
+                                                  : "opacity-40 text-slate-300 font-normal"
+                                              )}>
+                                                {param.name}
+                                              </span>
+                                            </span>
+                                          );
+                                        })}
+                                        <span className="opacity-60 ml-0.5">)</span>
+                                      </div>
+                                    </motion.div>
+                                  );
+                                }
+
+                                return null;
+                              })()}
+                            </div>
                           ) : (
                             <div className="w-full h-full flex items-center justify-center font-bold text-xs select-none p-2.5 cursor-pointer">
                               {formulaInput || cell.value}

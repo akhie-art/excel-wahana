@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { EXCEL_MODULES } from "@/lib/modules";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Flame, Moon, Sun, User, Database, ShieldAlert, CheckCircle2, LogOut } from "lucide-react";
+import { Flame, Moon, Sun, User, Database, CheckCircle2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -18,6 +19,33 @@ import {
 export function Navbar() {
   const { user, progress, isConfigured, role, setRole, signOut } = useAppStore();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/85 backdrop-blur-md">
+        <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+          
+          {/* Logo and Brand */}
+          <div className="flex items-center space-x-3">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-md dark:shadow-teal-900/30">
+              <span className="text-white font-extrabold text-base font-mono">X</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold tracking-tight text-foreground text-sm md:text-base">ExcelMaster</span>
+              <span className="text-[10px] text-muted-foreground font-mono leading-none">Interactive LMS</span>
+            </div>
+          </div>
+
+          <div className="h-9 w-9" />
+        </div>
+      </header>
+    );
+  }
 
   // Calculate total completed steps vs total steps
   const totalSteps = EXCEL_MODULES.reduce((acc, mod) => acc + mod.steps.length, 0);
@@ -83,21 +111,7 @@ export function Navbar() {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          {/* Connection Status Banner (Demo Mode) */}
-          {!isConfigured && (
-            <div className="hidden lg:flex items-center space-x-1 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 rounded-lg px-3 py-1.5 text-[11px] font-medium select-none">
-              <ShieldAlert className="h-3.5 w-3.5" />
-              <span>Local Demo</span>
-            </div>
-          )}
 
-          {/* Supabase Status Banner (Connected) */}
-          {isConfigured && (
-            <div className="hidden lg:flex items-center space-x-1 bg-emerald-500/15 border border-emerald-500/25 text-emerald-500 rounded-lg px-3 py-1.5 text-[11px] font-medium select-none">
-              <Database className="h-3.5 w-3.5" />
-              <span>Supabase Cloud</span>
-            </div>
-          )}
 
           {/* Role Switcher Toggle Button */}
           {isInstructor && (

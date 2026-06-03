@@ -2389,17 +2389,415 @@ export function normalizeFormula(formula: string): string {
     .trim();
 }
 
-export function checkFormula(userInput: string, validFormulas: string[]): boolean {
+export function checkFormula(
+  userInput: string,
+  validFormulas: string[],
+  expectedResult?: string,
+  dummyData?: ExcelRow[],
+  headers?: string[],
+  taskAnswers?: string[],
+  tasks?: CellTask[]
+): boolean {
+  // 1. Static match check
   const normalizedInput = normalizeFormula(userInput);
-  return validFormulas.some(valid => normalizeFormula(valid) === normalizedInput);
+  const isStaticMatch = validFormulas.some(valid => normalizeFormula(valid) === normalizedInput);
+  if (isStaticMatch) return true;
+
+  // 2. Dynamic evaluation check
+  if (expectedResult && dummyData && headers) {
+    return checkFormulaDynamic(userInput, expectedResult, dummyData, headers, taskAnswers, tasks);
+  }
+
+  return false;
 }
 
-export function isTaskLocked(task: CellTask, taskAnswers: string[], tasks: CellTask[]): boolean {
+export function getCellValue(
+  rowIdx: number,
+  colIdx: number,
+  dummyData: ExcelRow[],
+  taskAnswers: string[] = [],
+  tasks: CellTask[] = [],
+  evalStack: string[] = []
+): any {
+  const cellId = `${rowIdx},${colIdx}`;
+  if (evalStack.includes(cellId)) {
+    return 0; // Prevent circular reference
+  }
+
+  if (tasks && tasks.length > 0) {
+    const taskIdx = tasks.findIndex(t => t.resultCell.row === rowIdx && t.resultCell.col === colIdx);
+    if (taskIdx !== -1) {
+      const ans = taskAnswers[taskIdx] || "";
+      if (ans) {
+        const task = tasks[taskIdx];
+        if (ans.startsWith("=")) {
+          const nextStack = [...evalStack, cellId];
+          const evaluated = evaluateExcelFormula(ans, dummyData, [], taskAnswers, tasks, nextStack);
+          return parseNumericValue(evaluated);
+        }
+        return parseNumericValue(ans);
+      }
+      return 0;
+    }
+  }
+
+  const cell = dummyData[rowIdx]?.cells[colIdx];
+  if (!cell) return 0;
+  return parseNumericValue(cell.value);
+}
+
+export function parseNumericValue(val: any): any {
+  if (val === undefined || val === null || val === "?") return 0;
+  if (typeof val === "number") return val;
+  const str = String(val).trim();
+  let cleaned = str.replace(/[Rp\s$]/gi, "");
+  if (/^\d{1,3}(\.\d{3})+$/.test(cleaned)) {
+    cleaned = cleaned.replace(/\./g, "");
+  } else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(cleaned)) {
+    cleaned = cleaned.replace(/,/g, "");
+  } else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(cleaned)) {
+    cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+  }
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? str : num;
+}
+
+export function evaluateExcelFormula(
+  formula: string,
+  dummyData: ExcelRow[],
+  headers: string[],
+  taskAnswers: string[] = [],
+  tasks: CellTask[] = [],
+  evalStack: string[] = []
+): any {
+  let expr = formula.trim();
+  if (!expr.startsWith("=")) return parseNumericValue(expr);
+  expr = expr.substring(1).trim();
+
+  const resolveCell = (cellRef: string): any => {
+    const match = cellRef.toUpperCase().match(/^([A-I])([1-9][0-9]*)$/);
+    if (!match) return parseNumericValue(cellRef);
+    const colLetter = match[1];
+    const rowNum = parseInt(match[2]);
+    const colIdx = colLetter.charCodeAt(0) - 65;
+    const rowIdx = rowNum - 1;
+    return getCellValue(rowIdx, colIdx, dummyData, taskAnswers, tasks, evalStack);
+  };
+
+  const resolveRange = (rangeStr: string): any[] => {
+    const parts = rangeStr.split(":");
+    if (parts.length !== 2) {
+      return [resolveCell(rangeStr)];
+    }
+    const startMatch = parts[0].toUpperCase().match(/^([A-I])([1-9][0-9]*)$/);
+    const endMatch = parts[1].toUpperCase().match(/^([A-I])([1-9][0-9]*)$/);
+    if (!startMatch || !endMatch) {
+      return [resolveCell(parts[0]), resolveCell(parts[1])];
+    }
+    
+    const startCol = startMatch[1].charCodeAt(0) - 65;
+    const startRow = parseInt(startMatch[2]) - 1;
+    const endCol = endMatch[1].charCodeAt(0) - 65;
+    const endRow = parseInt(endMatch[2]) - 1;
+    
+    const values: any[] = [];
+    const minRow = Math.min(startRow, endRow);
+    const maxRow = Math.max(startRow, endRow);
+    const minCol = Math.min(startCol, endCol);
+    const maxCol = Math.max(startCol, endCol);
+    
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        values.push(getCellValue(r, c, dummyData, taskAnswers, tasks, evalStack));
+      }
+    }
+    return values;
+  };
+
+  const evalExpr = (expression: string): any => {
+    expression = expression.trim();
+    if (!expression) return "";
+
+    if ((expression.startsWith('"') && expression.endsWith('"')) || 
+        (expression.startsWith("'") && expression.endsWith("'"))) {
+      return expression.substring(1, expression.length - 1);
+    }
+
+    if (/^-?\d+(\.\d+)?$/.test(expression)) {
+      return parseFloat(expression);
+    }
+
+    if (expression.toUpperCase() === "TRUE") return true;
+    if (expression.toUpperCase() === "FALSE") return false;
+
+    const funcMatch = expression.match(/^([A-Z_]+)\s*\((.*)\)$/i);
+    if (funcMatch) {
+      const funcName = funcMatch[1].toUpperCase();
+      const funcArgsRaw = funcMatch[2];
+
+      const args: any[] = [];
+      let currentArg = "";
+      let parenCount = 0;
+      let insideQuote = false;
+      let quoteChar = "";
+
+      for (let i = 0; i < funcArgsRaw.length; i++) {
+        const char = funcArgsRaw[i];
+        if ((char === '"' || char === "'") && (i === 0 || funcArgsRaw[i - 1] !== "\\")) {
+          if (!insideQuote) {
+            insideQuote = true;
+            quoteChar = char;
+          } else if (char === quoteChar) {
+            insideQuote = false;
+          }
+        }
+
+        if (!insideQuote) {
+          if (char === "(") parenCount++;
+          else if (char === ")") parenCount--;
+        }
+
+        if ((char === "," || char === ";") && parenCount === 0 && !insideQuote) {
+          args.push(currentArg.trim());
+          currentArg = "";
+        } else {
+          currentArg += char;
+        }
+      }
+      if (currentArg.trim() !== "") {
+        args.push(currentArg.trim());
+      }
+
+      const evaluatedArgs = args.map(arg => {
+        if (arg.includes(":") && !arg.includes("(") && !arg.includes('"') && !arg.includes("'")) {
+          return resolveRange(arg);
+        }
+        return evalExpr(arg);
+      });
+
+      switch (funcName) {
+        case "SUM": {
+          const flatValues = evaluatedArgs.flat(Infinity).map(v => typeof v === "number" ? v : parseFloat(v) || 0);
+          return flatValues.reduce((sum, val) => sum + val, 0);
+        }
+        case "AVERAGE": {
+          const flatValues = evaluatedArgs.flat(Infinity).map(v => typeof v === "number" ? v : parseFloat(v) || 0);
+          return flatValues.length > 0 ? flatValues.reduce((sum, val) => sum + val, 0) / flatValues.length : 0;
+        }
+        case "MAX": {
+          const flatValues = evaluatedArgs.flat(Infinity).map(v => typeof v === "number" ? v : parseFloat(v) || 0);
+          return flatValues.length > 0 ? Math.max(...flatValues) : 0;
+        }
+        case "MIN": {
+          const flatValues = evaluatedArgs.flat(Infinity).map(v => typeof v === "number" ? v : parseFloat(v) || 0);
+          return flatValues.length > 0 ? Math.min(...flatValues) : 0;
+        }
+        case "COUNT": {
+          const flatValues = evaluatedArgs.flat(Infinity).filter(v => typeof v === "number");
+          return flatValues.length;
+        }
+        case "TRIM": {
+          const val = String(evaluatedArgs[0] || "");
+          return val.replace(/\s+/g, " ").trim();
+        }
+        case "PROPER": {
+          const val = String(evaluatedArgs[0] || "").toLowerCase();
+          return val.replace(/\b\w/g, c => c.toUpperCase());
+        }
+        case "LEFT": {
+          const text = String(evaluatedArgs[0] || "");
+          const num = evaluatedArgs[1] !== undefined ? parseInt(evaluatedArgs[1]) : 1;
+          return text.substring(0, num);
+        }
+        case "RIGHT": {
+          const text = String(evaluatedArgs[0] || "");
+          const num = evaluatedArgs[1] !== undefined ? parseInt(evaluatedArgs[1]) : 1;
+          return text.substring(text.length - num);
+        }
+        case "MID": {
+          const text = String(evaluatedArgs[0] || "");
+          const start = evaluatedArgs[1] !== undefined ? parseInt(evaluatedArgs[1]) - 1 : 0;
+          const num = evaluatedArgs[2] !== undefined ? parseInt(evaluatedArgs[2]) : 0;
+          return text.substring(start, start + num);
+        }
+        case "LEN": {
+          return String(evaluatedArgs[0] || "").length;
+        }
+        case "CONCATENATE":
+        case "CONCAT": {
+          return evaluatedArgs.flat(Infinity).join("");
+        }
+        case "IF": {
+          const condition = evaluatedArgs[0];
+          const valTrue = evaluatedArgs[1] !== undefined ? evaluatedArgs[1] : true;
+          const valFalse = evaluatedArgs[2] !== undefined ? evaluatedArgs[2] : false;
+          return condition ? valTrue : valFalse;
+        }
+        case "AND": {
+          return evaluatedArgs.every(Boolean);
+        }
+        case "OR": {
+          return evaluatedArgs.some(Boolean);
+        }
+        case "VLOOKUP": {
+          const lookupValue = evaluatedArgs[0];
+          const tableArray = evaluatedArgs[1];
+          const colIndex = parseInt(evaluatedArgs[2]) - 1;
+          
+          if (!Array.isArray(tableArray) || tableArray.length === 0) return "#N/A";
+          
+          const tableRangeArg = args[1].toUpperCase();
+          const rangeParts = tableRangeArg.split(":");
+          if (rangeParts.length !== 2) return "#N/A";
+          const startCol = rangeParts[0].charCodeAt(0) - 65;
+          const endCol = rangeParts[1].charCodeAt(0) - 65;
+          const numCols = Math.abs(endCol - startCol) + 1;
+          
+          const rows: any[][] = [];
+          for (let i = 0; i < tableArray.length; i += numCols) {
+            rows.push(tableArray.slice(i, i + numCols));
+          }
+
+          const matchRow = rows.find(r => String(r[0]).toUpperCase() === String(lookupValue).toUpperCase());
+          if (matchRow) {
+            return matchRow[colIndex] !== undefined ? matchRow[colIndex] : "#N/A";
+          }
+          return "#N/A";
+        }
+        case "HLOOKUP": {
+          const lookupValue = evaluatedArgs[0];
+          const tableArray = evaluatedArgs[1];
+          const rowIndex = parseInt(evaluatedArgs[2]) - 1;
+          
+          const tableRangeArg = args[1].toUpperCase();
+          const rangeParts = tableRangeArg.split(":");
+          if (rangeParts.length !== 2) return "#N/A";
+          const startCol = rangeParts[0].charCodeAt(0) - 65;
+          const endCol = rangeParts[1].charCodeAt(0) - 65;
+          const numCols = Math.abs(endCol - startCol) + 1;
+          
+          const rows: any[][] = [];
+          for (let i = 0; i < tableArray.length; i += numCols) {
+            rows.push(tableArray.slice(i, i + numCols));
+          }
+
+          if (rows.length === 0) return "#N/A";
+          const firstRow = rows[0];
+          let matchedColIdx = -1;
+          for (let c = 0; c < firstRow.length; c++) {
+            if (String(firstRow[c]).toUpperCase() === String(lookupValue).toUpperCase()) {
+              matchedColIdx = c;
+              break;
+            }
+          }
+          if (matchedColIdx !== -1) {
+            return rows[rowIndex] && rows[rowIndex][matchedColIdx] !== undefined ? rows[rowIndex][matchedColIdx] : "#N/A";
+          }
+          return "#N/A";
+        }
+        default:
+          return `#NAME?`;
+      }
+    }
+
+    const ops = [">=", "<=", "<>", "=", ">", "<", "+", "-", "*", "/", "&"];
+    for (let op of ops) {
+      if (expression.includes(op)) {
+        const parts = expression.split(op);
+        if (parts.length === 2) {
+          const left = evalExpr(parts[0]);
+          const right = evalExpr(parts[1]);
+          switch (op) {
+            case ">=": return parseNumericValue(left) >= parseNumericValue(right);
+            case "<=": return parseNumericValue(left) <= parseNumericValue(right);
+            case "<>": return String(left).toUpperCase() !== String(right).toUpperCase();
+            case "=": return String(left).toUpperCase() === String(right).toUpperCase();
+            case ">": return parseNumericValue(left) > parseNumericValue(right);
+            case "<": return parseNumericValue(left) < parseNumericValue(right);
+            case "+": return parseNumericValue(left) + parseNumericValue(right);
+            case "-": return parseNumericValue(left) - parseNumericValue(right);
+            case "*": return parseNumericValue(left) * parseNumericValue(right);
+            case "/": return parseNumericValue(left) / (parseNumericValue(right) || 1);
+            case "&": return String(left) + String(right);
+          }
+        }
+      }
+    }
+
+    return resolveCell(expression);
+  };
+
+  try {
+    return evalExpr(expr);
+  } catch (err) {
+    return "#VALUE!";
+  }
+}
+
+export function checkFormulaDynamic(
+  userInput: string,
+  expectedResult: string,
+  dummyData: ExcelRow[],
+  headers: string[],
+  taskAnswers: string[] = [],
+  tasks: CellTask[] = []
+): boolean {
+  if (!userInput.startsWith("=")) return false;
+
+  const result = evaluateExcelFormula(userInput, dummyData, headers, taskAnswers, tasks);
+  if (result === "#VALUE!" || result === "#NAME?" || result === "#N/A") {
+    return false;
+  }
+
+  const normResult = normalizeResultValue(result);
+  const normExpected = normalizeResultValue(expectedResult);
+  
+  return normResult === normExpected;
+}
+
+export function normalizeResultValue(val: any): string {
+  if (val === undefined || val === null) return "";
+  if (typeof val === "boolean") return String(val).toUpperCase();
+  
+  let str = String(val).trim().toUpperCase();
+  let cleaned = str.replace(/[Rp\s$]/gi, "");
+  
+  if (/^\d{1,3}(\.\d{3})+$/.test(cleaned)) {
+    cleaned = cleaned.replace(/\./g, "");
+  } else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(cleaned)) {
+    cleaned = cleaned.replace(/,/g, "");
+  } else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(cleaned)) {
+    cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+  }
+  
+  const num = parseFloat(cleaned);
+  if (!isNaN(num)) {
+    return num.toFixed(2);
+  }
+  
+  return cleaned;
+}
+
+export function isTaskLocked(
+  task: CellTask,
+  taskAnswers: string[],
+  tasks: CellTask[],
+  dummyData?: ExcelRow[],
+  headers?: string[]
+): boolean {
   const checkTaskCompleted = (labelSubstring: string): boolean => {
     return tasks.every((t, idx) => {
       if (t.label.includes(labelSubstring)) {
         const answer = taskAnswers[idx] || "";
-        return checkFormula(answer, t.validFormulas);
+        return checkFormula(
+          answer,
+          t.validFormulas,
+          t.expectedResult,
+          dummyData,
+          headers,
+          taskAnswers,
+          tasks
+        );
       }
       return true;
     });
@@ -2426,4 +2824,72 @@ export function isTaskLocked(task: CellTask, taskAnswers: string[], tasks: CellT
   }
 
   return false;
+}
+
+export function generateSmartHint(userInput: string, validFormulas: string[]): string | null {
+  const trimmed = userInput.trim();
+  if (!trimmed) return "Kolom input masih kosong. Masukkan rumus Anda.";
+  
+  // 1. Missing "="
+  if (!trimmed.startsWith("=")) {
+    return "Setiap rumus Excel harus selalu diawali dengan tanda sama dengan (=). Contoh: =SUM(A1:A5)";
+  }
+
+  // 2. Parentheses mismatch
+  const openCount = (trimmed.match(/\(/g) || []).length;
+  const closeCount = (trimmed.match(/\)/g) || []).length;
+  if (openCount !== closeCount) {
+    return `Tanda kurung tidak seimbang. Anda memiliki ${openCount} kurung buka '(' dan ${closeCount} kurung tutup ')'. Pastikan semua kurung telah ditutup.`;
+  }
+
+  // 3. Extract uppercase formula name
+  const matchFuncName = trimmed.match(/^=([A-Z_]+)\(/i);
+  const typedFuncName = matchFuncName ? matchFuncName[1].toUpperCase() : null;
+
+  // Check if they spelled the function name wrong
+  const knownFunctions = ["SUM", "AVERAGE", "MAX", "MIN", "COUNT", "COUNTA", "PROPER", "TRIM", "MID", "VLOOKUP", "HLOOKUP", "IF", "COUNTIF", "LEFT", "RIGHT", "LEN"];
+  if (typedFuncName && !knownFunctions.includes(typedFuncName)) {
+    // Look for close matches
+    const closeMatch = knownFunctions.find(func => {
+      return func.startsWith(typedFuncName.slice(0, 3)) || typedFuncName.includes(func) || func.includes(typedFuncName);
+    });
+    if (closeMatch) {
+      return `Nama rumus '${typedFuncName}' tidak dikenal. Apakah maksud Anda '${closeMatch}'? Periksa kembali ejaan rumusnya.`;
+    }
+  }
+
+  // 4. Check for missing "$" in lookup tables (very common in VLOOKUP/HLOOKUP)
+  const hasVLookup = trimmed.toUpperCase().includes("VLOOKUP");
+  const hasHLookup = trimmed.toUpperCase().includes("HLOOKUP");
+  if ((hasVLookup || hasHLookup) && !trimmed.includes("$")) {
+    const tableExample = hasVLookup ? "$A$7:$B$8" : "$A$10:$D$11";
+    return `Periksa penguncian sel referensi. Saat menggunakan ${hasVLookup ? "VLOOKUP" : "HLOOKUP"}, tabel referensi harus dikunci dengan tanda dolar agar absolut (contoh: ${tableExample}).`;
+  }
+
+  // 5. Check text quotes in IF/COUNTIF formulas
+  const hasIf = trimmed.toUpperCase().includes("IF");
+  const hasCountIf = trimmed.toUpperCase().includes("COUNTIF");
+  
+  // Look for single quotes or letters without quotes where strings are expected
+  if ((hasIf || hasCountIf) && (trimmed.includes("'") || (trimmed.match(/[A-Z]/i) && !trimmed.includes('"') && !trimmed.includes("(") && !trimmed.includes(")")))) {
+    return 'Untuk memasukkan teks sebagai hasil atau kriteria (misal: "Tinggi", "Sedang", "Rendah", "I"), Anda harus mengapitnya dengan tanda kutip ganda ("..."), bukan kutip tunggal (\'...\') atau tanpa kutip.';
+  }
+
+  // 6. Check MID arguments count
+  if (typedFuncName === "MID") {
+    const commaCount = (trimmed.match(/,/g) || []).length + (trimmed.match(/;/g) || []).length;
+    if (commaCount < 2) {
+      return "Rumus MID memerlukan 3 argumen: teks, posisi_awal, dan jumlah_karakter (dipisahkan oleh koma atau titik koma). Contoh: =MID(A2, 5, 3)";
+    }
+  }
+
+  // 7. Check lookup arguments count
+  if (typedFuncName === "VLOOKUP" || typedFuncName === "HLOOKUP") {
+    const commaCount = (trimmed.match(/,/g) || []).length + (trimmed.match(/;/g) || []).length;
+    if (commaCount < 3) {
+      return `Rumus ${typedFuncName} memerlukan 4 argumen: nilai_kunci, tabel_referensi, nomor_indeks, dan [pencarian_persis]. Contoh: =${typedFuncName}(C2, $A$7:$B$8, 2, 0)`;
+    }
+  }
+
+  return null; // fallback to default hint
 }

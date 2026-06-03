@@ -81,7 +81,15 @@ export function TaskSidebar({ onClose, isFullScreen = false }: TaskSidebarProps)
                   const cellAddress = `${colLetter}${rowNumber}`;
 
                   const isCompleted = taskAnswers && taskAnswers[idx]
-                    ? checkFormula(taskAnswers[idx], task.validFormulas)
+                    ? checkFormula(
+                        taskAnswers[idx],
+                        task.validFormulas,
+                        task.expectedResult,
+                        step.dummyData,
+                        step.headers,
+                        taskAnswers,
+                        step.tasks!
+                      )
                     : false;
 
                   return (

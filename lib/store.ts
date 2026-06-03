@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { supabase, isSupabaseConfigured, UserProgress } from "./supabase";
-import { EXCEL_MODULES, checkFormula, ExcelModule, ModuleStep, isTaskLocked } from "./modules";
+import { EXCEL_MODULES, checkFormula, ExcelModule, ModuleStep, isTaskLocked, generateSmartHint } from "./modules";
 
 export interface StudentData {
   id: string;
@@ -38,8 +38,8 @@ interface AppState {
 
   // Dynamic Curriculum
   modules: ExcelModule[];
-  addCustomStep: (moduleId: string, step: ModuleStep) => void;
-  deleteCustomStep: (moduleId: string, stepId: string) => void;
+  addCustomStep: (moduleId: string, step: ModuleStep) => Promise<void>;
+  deleteCustomStep: (moduleId: string, stepId: string) => Promise<void>;
 
   // Instructor Data
   students: StudentData[];
@@ -141,6 +141,41 @@ export const useAppStore = create<AppState>((set, get) => ({
   loadUserAndProgress: async () => {
     set({ isLoading: true });
     try {
+      // 1. Fetch and merge custom steps first
+      const { data: customStepsData } = await supabase.from("custom_steps").select("*");
+      
+      const baseModules = EXCEL_MODULES.map(mod => ({
+        ...mod,
+        steps: [...mod.steps]
+      }));
+
+      if (customStepsData && Array.isArray(customStepsData)) {
+        customStepsData.forEach((row: any) => {
+          const step: ModuleStep = {
+            id: row.id,
+            title: row.title,
+            shortDescription: row.short_description || row.shortDescription,
+            conceptExplanation: row.concept_explanation || row.conceptExplanation,
+            instructions: row.instructions,
+            headers: row.headers,
+            dummyData: row.dummy_data || row.dummyData,
+            validFormulas: row.valid_formulas || row.validFormulas,
+            expectedResult: row.expected_result || row.expectedResult,
+            resultCell: row.result_cell || row.resultCell,
+            hint: row.hint,
+          };
+          
+          const moduleId = row.module_id || row.moduleId;
+          const targetModule = baseModules.find(m => m.id === moduleId);
+          if (targetModule) {
+            if (!targetModule.steps.some(s => s.id === step.id)) {
+              targetModule.steps.push(step);
+            }
+          }
+        });
+      }
+      set({ modules: baseModules });
+
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user || null;
       set({ user });
@@ -308,12 +343,36 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
-  addCustomStep: (moduleId: string, newStep: ModuleStep) => {
+  addCustomStep: async (moduleId: string, newStep: ModuleStep) => {
+    // 1. Insert into Supabase table custom_steps
+    const dbStep = {
+      id: newStep.id,
+      module_id: moduleId,
+      title: newStep.title,
+      short_description: newStep.shortDescription,
+      concept_explanation: newStep.conceptExplanation,
+      instructions: newStep.instructions,
+      headers: newStep.headers,
+      dummy_data: newStep.dummyData,
+      valid_formulas: newStep.validFormulas,
+      expected_result: newStep.expectedResult,
+      result_cell: newStep.resultCell,
+      hint: newStep.hint,
+    };
+
+    try {
+      await supabase.from("custom_steps").insert(dbStep);
+    } catch (err) {
+      console.error("Failed to insert custom step into Supabase:", err);
+    }
+
+    // 2. Update local state
     const updatedModules = get().modules.map((mod) => {
       if (mod.id === moduleId) {
+        const exists = mod.steps.some(s => s.id === newStep.id);
         return {
           ...mod,
-          steps: [...mod.steps, newStep],
+          steps: exists ? mod.steps : [...mod.steps, newStep],
         };
       }
       return mod;
@@ -322,7 +381,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ modules: updatedModules });
   },
 
-  deleteCustomStep: (moduleId: string, stepId: string) => {
+  deleteCustomStep: async (moduleId: string, stepId: string) => {
+    // 1. Delete from Supabase table custom_steps
+    try {
+      await supabase.from("custom_steps").delete().eq("id", stepId);
+    } catch (err) {
+      console.error("Failed to delete custom step from Supabase:", err);
+    }
+
+    // 2. Update local state
     const updatedModules = get().modules.map((mod) => {
       if (mod.id === moduleId) {
         return {
@@ -376,7 +443,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       isValidated: false,
       lastErrorHint: null
     });
-    await get().loadUserAndProgress();
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    } else {
+      await get().loadUserAndProgress();
+    }
   },
 
   setFormulaInput: (input: string) => {
@@ -409,14 +480,23 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (currentStep.tasks && currentStep.tasks.length > 0) {
       // Validate the CURRENT active task first
       const currentTask = currentStep.tasks[selectedTaskIndex];
-      const isCurrentValid = checkFormula(formulaInput, currentTask.validFormulas);
+      const isCurrentValid = checkFormula(
+        formulaInput,
+        currentTask.validFormulas,
+        currentTask.expectedResult,
+        currentStep.dummyData,
+        currentStep.headers,
+        taskAnswers,
+        currentStep.tasks
+      );
 
       if (!isCurrentValid) {
+        const smartHint = generateSmartHint(formulaInput, currentTask.validFormulas);
         set({ 
           isSuccess: false, 
           isValidated: true,
           shakeTrigger: !get().shakeTrigger, 
-          lastErrorHint: `${currentTask.label} salah: ${currentTask.hint}`
+          lastErrorHint: smartHint || `${currentTask.label} salah: ${currentTask.hint}`
         });
         return false;
       }
@@ -447,8 +527,22 @@ export const useAppStore = create<AppState>((set, get) => ({
         const checkIndex = (selectedTaskIndex + 1 + i) % currentStep.tasks.length;
         const task = currentStep.tasks[checkIndex];
         const answer = updatedAnswers[checkIndex] || "";
-        const isValid = checkFormula(answer, task.validFormulas);
-        const isLocked = isTaskLocked(task, updatedAnswers, currentStep.tasks);
+        const isValid = checkFormula(
+          answer,
+          task.validFormulas,
+          task.expectedResult,
+          currentStep.dummyData,
+          currentStep.headers,
+          updatedAnswers,
+          currentStep.tasks
+        );
+        const isLocked = isTaskLocked(
+          task,
+          updatedAnswers,
+          currentStep.tasks,
+          currentStep.dummyData,
+          currentStep.headers
+        );
         if (!isValid && !isLocked) {
           nextIncorrectIndex = checkIndex;
           break;
@@ -534,7 +628,15 @@ export const useAppStore = create<AppState>((set, get) => ({
         return true;
       }
     } else {
-      const isValid = checkFormula(formulaInput, currentStep.validFormulas);
+      const isValid = checkFormula(
+        formulaInput,
+        currentStep.validFormulas,
+        currentStep.expectedResult,
+        currentStep.dummyData,
+        currentStep.headers,
+        [],
+        []
+      );
 
       if (isValid) {
         set({ isSuccess: true, isValidated: true, lastErrorHint: null });
@@ -597,11 +699,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
         return true;
       } else {
+        const smartHint = generateSmartHint(formulaInput, currentStep.validFormulas);
         set({ 
           isSuccess: false, 
           isValidated: true,
           shakeTrigger: !get().shakeTrigger, 
-          lastErrorHint: currentStep.hint 
+          lastErrorHint: smartHint || currentStep.hint 
         });
         return false;
       }

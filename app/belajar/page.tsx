@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { Navbar } from "@/components/navbar";
 import { LeftPanel } from "@/components/left-panel";
@@ -12,20 +13,34 @@ import { useMultiplayer } from "@/hooks/use-multiplayer";
 import { cn } from "@/lib/utils";
 
 export default function BelajarPage() {
-  const { loadUserAndProgress, isLoading, role } = useAppStore();
+  const { loadUserAndProgress, isLoading, role, user } = useAppStore();
+  const router = useRouter();
 
+  const [mounted, setMounted] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Set mounted state
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load progress details and auth session on page load
   useEffect(() => {
     loadUserAndProgress();
   }, [loadUserAndProgress]);
 
+  // Auth route guard: redirect to landing page if not logged in
+  useEffect(() => {
+    if (mounted && !isLoading && !user) {
+      router.push("/?showLogin=true");
+    }
+  }, [mounted, isLoading, user, router]);
+
   // Activate multiplayer collaboration (presence & cursor sync)
   useMultiplayer();
 
-  if (isLoading) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground space-y-4 select-none">
         <div className="relative flex items-center justify-center">

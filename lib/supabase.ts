@@ -243,6 +243,51 @@ if (isSupabaseConfigured) {
           }),
         };
       }
+
+      if (table === "custom_steps") {
+        const getCustomSteps = () => {
+          if (typeof window === "undefined") return [];
+          const dataStr = localStorage.getItem("excel_lms_custom_steps");
+          return dataStr ? JSON.parse(dataStr) : [];
+        };
+
+        const setCustomSteps = (steps: any[]) => {
+          if (typeof window === "undefined") return;
+          localStorage.setItem("excel_lms_custom_steps", JSON.stringify(steps));
+        };
+
+        return {
+          select: () => ({
+            then: (cb: any) => Promise.resolve({ data: getCustomSteps(), error: null }).then(cb),
+            eq: (col: string, val: any) => ({
+              then: (cb: any) => {
+                const filtered = getCustomSteps().filter((s: any) => s[col] === val);
+                return Promise.resolve({ data: filtered, error: null }).then(cb);
+              }
+            })
+          }),
+          insert: (newStep: any) => ({
+            then: (cb: any) => {
+              const current = getCustomSteps();
+              const stepsArray = Array.isArray(newStep) ? newStep : [newStep];
+              const updated = [...current, ...stepsArray];
+              setCustomSteps(updated);
+              return Promise.resolve({ data: newStep, error: null }).then(cb);
+            }
+          }),
+          delete: () => ({
+            eq: (col: string, val: any) => ({
+              then: (cb: any) => {
+                const current = getCustomSteps();
+                const updated = current.filter((s: any) => s[col] !== val);
+                setCustomSteps(updated);
+                return Promise.resolve({ data: null, error: null }).then(cb);
+              }
+            })
+          })
+        };
+      }
+
       return {
         select: () => ({
           eq: () => ({
