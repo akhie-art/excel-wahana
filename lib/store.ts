@@ -7,8 +7,22 @@ export interface StudentData {
   name: string;
   email: string;
   completedCount: number;
+  completedSteps: string[];
   streak: number;
   lastActive: string;
+}
+
+export interface PeerState {
+  userId: string;
+  name: string;
+  role: "peserta" | "instruktur";
+  activeCell: { row: number; col: number } | null;
+  color: string;
+  stepId: string;
+  formulaInput?: string;
+  isSuccess?: boolean;
+  taskAnswers?: string[];
+  completedSteps?: string[];
 }
 
 interface AppState {
@@ -46,12 +60,17 @@ interface AppState {
   taskAnswers: string[];
   setSelectedTaskIndex: (index: number) => void;
 
+  // Multiplayer
+  peerStates: Record<string, PeerState>;
+  setPeerState: (clientId: string, state: PeerState | null) => void;
+
   // Getters
   getCurrentModule: () => ExcelModule;
   getCurrentStep: () => ModuleStep;
 
   // Methods
   loadUserAndProgress: () => Promise<void>;
+  loadStudents: () => Promise<void>;
   signInWithPassword: (email: string, password?: string) => Promise<{ error: any }>;
   signUp: (email: string, password?: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -63,12 +82,7 @@ interface AppState {
   jumpToStep: (moduleIndex: number, stepIndex: number) => void;
 }
 
-const MOCK_STUDENTS: StudentData[] = [
-  { id: "s1", name: "Rian Hidayat", email: "rian.hidayat@example.com", completedCount: 15, streak: 3, lastActive: "Baru saja" },
-  { id: "s2", name: "Siti Rahma", email: "siti.rahma@example.com", completedCount: 32, streak: 5, lastActive: "10 menit yang lalu" },
-  { id: "s3", name: "Budi Santoso", email: "budi.s@example.com", completedCount: 8, streak: 1, lastActive: "2 jam yang lalu" },
-  { id: "s4", name: "Aulia Putri", email: "aulia.putri@example.com", completedCount: 22, streak: 4, lastActive: "Kemarin" },
-];
+const MOCK_STUDENTS: StudentData[] = [];
 
 export const useAppStore = create<AppState>((set, get) => ({
   user: null,
@@ -102,6 +116,18 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
+  peerStates: {},
+  setPeerState: (clientId: string, state: PeerState | null) => {
+    const current = get().peerStates;
+    const next = { ...current };
+    if (state === null) {
+      delete next[clientId];
+    } else {
+      next[clientId] = state;
+    }
+    set({ peerStates: next });
+  },
+
   getCurrentModule: () => {
     const { modules, currentModuleIndex } = get();
     return modules[currentModuleIndex] || modules[0];
@@ -121,41 +147,58 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       let progressData: UserProgress | null = null;
       
-      const { data, error } = await supabase
-        .from("user_progress")
-        .select("*")
-        .single();
-
-      if (!error && data) {
-        progressData = data;
-      } else if (user) {
-        const newProgress: Omit<UserProgress, "last_active_at"> = {
-          user_id: user.id,
-          current_module_id: "basics",
-          current_step_id: "sum-basics",
-          completed_steps: [],
-          streak_count: 0,
-          role: "peserta",
-        };
-        const { data: insertedData } = await supabase
-          .from("user_progress")
-          .upsert(newProgress)
-          .select()
-          .single();
-          
-        if (insertedData) progressData = insertedData;
-      } else {
-        const { data: mockData } = await supabase
+      if (user) {
+        const { data, error } = await supabase
           .from("user_progress")
           .select("*")
-          .single();
-        progressData = mockData;
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (!error && data) {
+          progressData = data;
+        } else {
+          const isInstructor = user.email === "instruktur@excel.com" || user.email?.includes("instruktur");
+          const newProgress: Omit<UserProgress, "last_active_at"> = {
+            user_id: user.id,
+            current_module_id: "basics",
+            current_step_id: "sum-basics",
+            completed_steps: [],
+            streak_count: 0,
+            role: isInstructor ? "instruktur" : "peserta",
+            email: user.email,
+            name: user.user_metadata?.name || user.email?.split("@")[0],
+          };
+          const { data: insertedData } = await supabase
+            .from("user_progress")
+            .upsert(newProgress)
+            .select()
+            .single();
+            
+          if (insertedData) progressData = insertedData;
+        }
       }
+
+      const isInstructorAccount = user?.email === "instruktur@excel.com" || user?.email?.includes("instruktur");
+      const resolvedRole: "peserta" | "instruktur" = isInstructorAccount ? "instruktur" : "peserta";
 
       set({ 
         progress: progressData,
-        role: progressData?.role || "peserta"
+        role: resolvedRole
       });
+
+      // Self-heal the database role if it differs
+      if (progressData && progressData.role !== resolvedRole) {
+        const updatedProgress = { ...progressData, role: resolvedRole };
+        set({ progress: updatedProgress });
+        await supabase
+          .from("user_progress")
+          .update({ role: resolvedRole })
+          .eq("user_id", progressData.user_id);
+      }
+
+      if (resolvedRole === "instruktur") {
+        await get().loadStudents();
+      }
 
       if (progressData) {
         let matchedModuleIdx = 0;
@@ -204,6 +247,48 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
+  loadStudents: async () => {
+    try {
+      const { data, error } = await supabase
+        .from("user_progress")
+        .select("*")
+        .eq("role", "peserta");
+
+      if (!error && data) {
+        const mappedStudents: StudentData[] = data.map((row: any) => {
+          const lastActiveDate = row.last_active_at ? new Date(row.last_active_at) : new Date();
+          const now = new Date();
+          const diffMs = now.getTime() - lastActiveDate.getTime();
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMins / 60);
+          const diffDays = Math.floor(diffHours / 24);
+
+          let lastActiveStr = "Baru saja";
+          if (diffDays > 0) {
+            lastActiveStr = `${diffDays} hari yang lalu`;
+          } else if (diffHours > 0) {
+            lastActiveStr = `${diffHours} jam yang lalu`;
+          } else if (diffMins > 0) {
+            lastActiveStr = `${diffMins} menit yang lalu`;
+          }
+
+          return {
+            id: row.user_id,
+            name: row.name || row.email?.split("@")[0] || `User_${row.user_id.substring(0, 5)}`,
+            email: row.email || "-",
+            completedCount: row.completed_steps?.length || 0,
+            completedSteps: row.completed_steps || [],
+            streak: row.streak_count || 0,
+            lastActive: lastActiveStr
+          };
+        });
+        set({ students: mappedStudents });
+      }
+    } catch (err) {
+      console.error("Error loading students list:", err);
+    }
+  },
+
   setRole: async (newRole: "peserta" | "instruktur") => {
     set({ role: newRole });
     const { progress } = get();
@@ -216,6 +301,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         .from("user_progress")
         .update({ role: newRole })
         .eq("user_id", progress.user_id);
+    }
+
+    if (newRole === "instruktur") {
+      await get().loadStudents();
     }
   },
 

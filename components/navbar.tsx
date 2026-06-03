@@ -1,32 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { EXCEL_MODULES } from "@/lib/modules";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuGroup, // <-- Added this missing import
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { AuthModal } from "./auth-modal";
-import { Award, Flame, LogOut, Moon, Sun, User, Database, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { Flame, Moon, Sun, User, Database, ShieldAlert, CheckCircle2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
-  const { user, progress, isConfigured, signOut, role, setRole } = useAppStore();
+  const { user, progress, isConfigured, role, setRole, signOut } = useAppStore();
   const { theme, setTheme } = useTheme();
-  const [authOpen, setAuthOpen] = useState(false);
 
   // Calculate total completed steps vs total steps
   const totalSteps = EXCEL_MODULES.reduce((acc, mod) => acc + mod.steps.length, 0);
   const completedSteps = progress?.completed_steps?.length || 0;
   const progressPercent = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+
+  const isInstructor = progress?.role === "instruktur" || user?.email === "instruktur@excel.com" || user?.email?.includes("instruktur");
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/85 backdrop-blur-md">
@@ -101,53 +99,105 @@ export function Navbar() {
             </div>
           )}
 
-          {/* User Profile / Auth Action */}
-          {user ? (
+          {/* Role Switcher Toggle Button */}
+          {isInstructor && (
+            <Button
+              onClick={() => setRole(role === "instruktur" ? "peserta" : "instruktur")}
+              className={cn(
+                "h-9 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-xs border",
+                role === "instruktur"
+                  ? "bg-rose-500/10 text-rose-500 border-rose-500/20 hover:bg-rose-500/20"
+                  : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20"
+              )}
+            >
+              {role === "instruktur" ? (
+                <>
+                  <User className="h-3.5 w-3.5 text-rose-500" />
+                  <span>Lihat Sebagai Siswa</span>
+                </>
+              ) : (
+                <>
+                  <Database className="h-3.5 w-3.5 text-emerald-500" />
+                  <span>Lihat Sebagai Instruktur</span>
+                </>
+              )}
+            </Button>
+          )}
+
+          {/* User Info Dropdown */}
+          {user && (
             <DropdownMenu>
-              <DropdownMenuTrigger className="h-9 px-3 space-x-2 border border-border/80 bg-background/50 hover:bg-accent/40 rounded-lg flex items-center cursor-pointer text-xs font-semibold text-foreground transition-all duration-150 outline-hidden">
-                <User className="h-4 w-4 text-emerald-500 shrink-0" />
-                <span className="max-w-[120px] truncate">
-                  {user.email?.split("@")[0]}
+              <DropdownMenuTrigger
+                className="h-9 px-3 text-xs font-semibold rounded-lg flex items-center gap-2 border border-border/80 bg-background/50 hover:bg-accent/40 select-none cursor-pointer text-foreground"
+              >
+                <div className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] uppercase">
+                  {user.user_metadata?.name?.[0] || user.email?.[0] || "U"}
+                </div>
+                <span className="hidden sm:inline-block max-w-[100px] truncate">
+                  {user.user_metadata?.name || user.email?.split("@")[0]}
                 </span>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 border border-border/80 bg-background/95 backdrop-blur-md">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">
-                    Profil Saya
-                  </DropdownMenuLabel>
-                </DropdownMenuGroup>
-                <div className="px-2 py-1.5 text-sm font-medium text-foreground truncate">
-                  {user.email}
+              <DropdownMenuContent align="end" className="w-56 mt-1 border border-border/85 bg-card/95 backdrop-blur-md">
+                <div className="flex flex-col space-y-1 px-2.5 py-2">
+                  <span className="text-xs font-bold text-foreground truncate">
+                    {user.user_metadata?.name || "Pengguna"}
+                  </span>
+                  <span className="text-[10px] font-mono text-muted-foreground truncate">
+                    {user.email}
+                  </span>
+                  <span className="inline-flex items-center self-start text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-muted mt-1 uppercase tracking-wide text-muted-foreground">
+                    {progress?.role === "instruktur" ? "Instruktur" : "Peserta"}
+                  </span>
                 </div>
+                
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-xs font-semibold text-muted-foreground select-none">
-                  Streak: {progress?.streak_count} Hari
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-xs font-semibold text-muted-foreground select-none">
-                  Tantangan: {completedSteps} Selesai
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={signOut}
-                  className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer font-semibold text-xs"
+                
+                {isInstructor && (
+                  <>
+                    <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground px-2.5 pt-2 pb-1 select-none">
+                      Mode Tampilan
+                    </div>
+                    <DropdownMenuItem
+                      onClick={() => setRole("peserta")}
+                      className={cn(
+                        "flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs font-medium",
+                        role === "peserta" && "bg-accent font-bold"
+                      )}
+                    >
+                      <User className="h-3.5 w-3.5 text-rose-500" />
+                      <span>Tampilan Peserta</span>
+                      {role === "peserta" && <span className="ml-auto text-[9px] bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded-full font-bold">AKTIF</span>}
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuItem
+                      onClick={() => setRole("instruktur")}
+                      className={cn(
+                        "flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs font-medium",
+                        role === "instruktur" && "bg-accent font-bold"
+                      )}
+                    >
+                      <Database className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>Tampilan Instruktur</span>
+                      {role === "instruktur" && <span className="ml-auto text-[9px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-full font-bold">AKTIF</span>}
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                
+                <DropdownMenuItem
+                  onClick={() => signOut()}
+                  variant="destructive"
+                  className="flex items-center gap-2 px-2 py-1.5 cursor-pointer text-xs font-medium text-rose-500 hover:bg-rose-500/10"
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut className="h-3.5 w-3.5 text-rose-500" />
                   <span>Keluar</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <Button
-              onClick={() => setAuthOpen(true)}
-              className="h-9 bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold text-xs rounded-lg transition-colors px-4"
-            >
-              Masuk
-            </Button>
           )}
         </div>
       </div>
-
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
     </header>
   );
 }

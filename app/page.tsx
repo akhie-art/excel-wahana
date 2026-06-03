@@ -241,7 +241,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <div className="text-[10px] font-bold text-foreground">Formula Benar!</div>
-                  <div className="text-[8px] text-muted-foreground">Confetti dilepaskan 🎉</div>
+                  <div className="text-[8px] text-muted-foreground">Confetti dilepaskan</div>
                 </div>
               </div>
 

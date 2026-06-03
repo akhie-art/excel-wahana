@@ -8,7 +8,7 @@ import { motion, useAnimation } from "framer-motion";
 import { checkFormula, isTaskLocked } from "@/lib/modules";
 
 import { Button } from "@/components/ui/button";
-import { Maximize2, Minimize2, BookOpen, ChevronLeft, ChevronRight, Eye, EyeOff, Sparkles, Target, Lock } from "lucide-react";
+import { Maximize2, Minimize2, BookOpen, ChevronLeft, ChevronRight, Eye, EyeOff, Sparkles, Target, Lock, Key } from "lucide-react";
 
 interface CellCoordinate {
   row: number;
@@ -38,7 +38,8 @@ export function ExcelTable({
     shakeTrigger,
     selectedTaskIndex,
     taskAnswers,
-    setSelectedTaskIndex
+    setSelectedTaskIndex,
+    peerStates
   } = useAppStore();
 
   const step = getCurrentStep();
@@ -448,37 +449,80 @@ export function ExcelTable({
     >
       
       {/* 1. Minimal top bar: only action buttons, no decorative text */}
-      <div className="flex items-center justify-end px-3 py-2 bg-muted/20 border-b border-border/60 select-none shrink-0 gap-2">
-        {/* Toggle Sidebar Button (Only visible in full screen mode) */}
-        {isFullScreen && onToggleSidebar && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleSidebar}
-            className="h-7 px-2.5 text-[10px] font-medium flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md select-none"
-            title={isSidebarOpen ? "Sembunyikan Petunjuk" : "Tampilkan Petunjuk"}
-          >
-            <BookOpen className={cn("h-3.5 w-3.5", isSidebarOpen ? "text-emerald-500" : "")} />
-            <span>{isSidebarOpen ? "Tutup Petunjuk" : "Buka Petunjuk"}</span>
-          </Button>
-        )}
+      <div className="flex items-center justify-between px-3 py-2 bg-muted/20 border-b border-border/60 select-none shrink-0 gap-2">
+        {/* Active Peers Display */}
+        <div className="flex items-center space-x-1">
+          {Object.keys(peerStates).length > 0 ? (
+            <div className="flex items-center space-x-2">
+              <div className="flex -space-x-1.5 overflow-hidden">
+                {Object.values(peerStates).filter(Boolean).map((peer, idx) => {
+                  const peerColorMap: Record<string, string> = {
+                    emerald: "bg-emerald-500",
+                    indigo: "bg-indigo-500",
+                    rose: "bg-rose-500",
+                    amber: "bg-amber-500",
+                    violet: "bg-violet-500",
+                    sky: "bg-sky-500",
+                  };
+                  const colorClass = peerColorMap[peer.color] || "bg-emerald-500";
+                  return (
+                    <div
+                      key={peer.userId + idx}
+                      className={cn(
+                        "inline-block h-5 w-5 rounded-full ring-2 ring-card text-[9px] font-bold text-white flex items-center justify-center uppercase select-none",
+                        colorClass
+                      )}
+                      title={`${peer.name} (${peer.role})`}
+                    >
+                      {peer.name.charAt(0)}
+                    </div>
+                  );
+                })}
+              </div>
+              <span className="text-[10px] font-semibold text-muted-foreground font-sans">
+                {Object.keys(peerStates).length} pengguna lain online
+              </span>
+            </div>
+          ) : (
+            <span className="text-[10px] font-medium text-muted-foreground/60 font-sans flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-pulse"></span>
+              Menunggu teman belajar...
+            </span>
+          )}
+        </div>
 
-        {/* Toggle Full Screen Button */}
-        {onToggleFullScreen && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleFullScreen}
-            className="h-7 px-2.5 text-[10px] font-medium flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md select-none"
-            title={isFullScreen ? "Tampilan Normal" : "Lebar Penuh"}
-          >
-            {isFullScreen ? (
-              <><Minimize2 className="h-3.5 w-3.5" /><span>Kecilkan</span></>
-            ) : (
-              <><Maximize2 className="h-3.5 w-3.5" /><span>Lebar Penuh</span></>
-            )}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Toggle Sidebar Button (Only visible in full screen mode) */}
+          {isFullScreen && onToggleSidebar && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleSidebar}
+              className="h-7 px-2.5 text-[10px] font-medium flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md select-none"
+              title={isSidebarOpen ? "Sembunyikan Petunjuk" : "Tampilkan Petunjuk"}
+            >
+              <BookOpen className={cn("h-3.5 w-3.5", isSidebarOpen ? "text-emerald-500" : "")} />
+              <span>{isSidebarOpen ? "Tutup Petunjuk" : "Buka Petunjuk"}</span>
+            </Button>
+          )}
+
+          {/* Toggle Full Screen Button */}
+          {onToggleFullScreen && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleFullScreen}
+              className="h-7 px-2.5 text-[10px] font-medium flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md select-none"
+              title={isFullScreen ? "Tampilan Normal" : "Lebar Penuh"}
+            >
+              {isFullScreen ? (
+                <><Minimize2 className="h-3.5 w-3.5" /><span>Kecilkan</span></>
+              ) : (
+                <><Maximize2 className="h-3.5 w-3.5" /><span>Lebar Penuh</span></>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* 2. Active Task Helper & Feedback */}
@@ -572,7 +616,7 @@ export function ExcelTable({
             >
               <div className="flex items-center gap-2">
                 <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1 select-none">
-                  🔑 Kunci Rumus:
+                  <Key className="h-3.5 w-3.5 text-amber-500 mr-0.5" /> Kunci Rumus:
                 </span>
                 <code className="bg-muted px-2 py-0.5 rounded font-mono font-bold text-foreground border border-border/80 text-[11px] select-all">
                   {activeTask.validFormulas[0]}
@@ -718,6 +762,28 @@ export function ExcelTable({
                     const showAsPendingTask = !isSuccess && isMultiTaskCell && !isResultCell && !isTaskCorrect && !isCellLocked;
                     const showAsLockedTask = !isSuccess && isMultiTaskCell && isCellLocked && !isTaskCorrect;
 
+                    const peersOnThisCell = Object.values(peerStates).filter(
+                      (p) => p && p.stepId === step.id && p.activeCell && p.activeCell.row === rowIdx && p.activeCell.col === cellIdx
+                    );
+                    const hasPeer = peersOnThisCell.length > 0;
+
+                    const peerColorMap: Record<string, { border: string, bg: string, text: string }> = {
+                      emerald: { border: "border-emerald-500", bg: "bg-emerald-500", text: "text-emerald-500" },
+                      indigo: { border: "border-indigo-500", bg: "bg-indigo-500", text: "text-indigo-500" },
+                      rose: { border: "border-rose-500", bg: "bg-rose-500", text: "text-rose-500" },
+                      amber: { border: "border-amber-500", bg: "bg-amber-500", text: "text-amber-500" },
+                      violet: { border: "border-violet-500", bg: "bg-violet-500", text: "text-violet-500" },
+                      sky: { border: "border-sky-500", bg: "bg-sky-500", text: "text-sky-500" },
+                    };
+
+                    const firstPeer = peersOnThisCell[0];
+                    const peerColor = firstPeer ? (peerColorMap[firstPeer.color] || peerColorMap.emerald) : null;
+                    
+                    let peerBorderClasses = "";
+                    if (hasPeer && peerColor) {
+                      peerBorderClasses = `ring-2 ring-inset ${peerColor.border} z-20`;
+                    }
+
                     return (
                       <td
                         key={cellIdx}
@@ -727,13 +793,14 @@ export function ExcelTable({
                         onDoubleClick={() => handleCellDoubleClick(rowIdx, cellIdx, isResultCell, taskIndex)}
                         className={cn(
                           "border border-border relative transition-all duration-150 select-none",
-                          !cell.className?.includes("overflow-visible") && "truncate",
+                          (hasPeer || cell.className?.includes("overflow-visible")) ? "overflow-visible" : "truncate",
                           !isAnyResultCell && "p-2.5 cursor-crosshair",
                           cell.header && "bg-muted/10 font-semibold text-foreground text-xs",
                           cell.highlight && "bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
                           isColRowBlocked && "bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/20",
                           isCellSelected && "bg-blue-500/10 dark:bg-blue-500/15",
                           selectionBorderClasses,
+                          peerBorderClasses,
                           showAsEditing && "bg-blue-500/5 dark:bg-blue-500/10 ring-2 ring-blue-500 dark:ring-blue-400/80 z-10 text-blue-600 dark:text-blue-400 font-bold",
                           showAsPendingTask && "bg-amber-500/5 dark:bg-amber-500/10 border border-dashed border-amber-500/30 text-amber-500/80 dark:text-amber-400/80 font-semibold cursor-pointer hover:bg-amber-500/10 hover:border-amber-500/50 p-2.5 text-center",
                           showAsLockedTask && "bg-muted/15 border border-border text-muted-foreground/35 cursor-not-allowed p-2.5 text-center",
@@ -794,6 +861,23 @@ export function ExcelTable({
                         {isAnyResultCell && showAsSuccess && (
                           <div className="absolute bottom-0 right-0 h-1.5 w-1.5 border border-white bg-emerald-500" />
                         )}
+
+                        {/* Peer active flag */}
+                        {peersOnThisCell.map((peer, pIdx) => {
+                          const c = peerColorMap[peer.color] || peerColorMap.emerald;
+                          return (
+                            <div
+                              key={peer.userId + pIdx}
+                              className={cn(
+                                "absolute -top-3.5 left-0 text-[8px] text-white px-1 py-0.5 rounded font-sans select-none z-30 pointer-events-none whitespace-nowrap leading-none font-bold",
+                                c.bg
+                              )}
+                              style={{ transform: `translateY(${-pIdx * 12}px)` }}
+                            >
+                              {peer.name}
+                            </div>
+                          );
+                        })}
                       </td>
                     );
                   })}

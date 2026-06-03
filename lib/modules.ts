@@ -458,7 +458,7 @@ export const EXCEL_MODULES: ExcelModule[] = [
       },
       {
         id: "studi-kasus-hitung",
-        title: "🏆 Studi Kasus Final: Laporan Kas Toko ATK Mandiri",
+        title: "Studi Kasus Final: Laporan Kas Toko ATK Mandiri",
         shortDescription: "Ujian mandiri: lengkapi seluruh laporan Toko ATK dari nol tanpa panduan — buktikan penguasaan 10 rumus sekaligus!",
         conceptExplanation: "Selamat! Kamu telah mempelajari dan berlatih 10 rumus menghitung data secara bertahap di tabel Toko ATK yang sama.\n\nSekarang tiba saatnya **ujian mandiri sesungguhnya**. Tabel di sebelah kanan adalah laporan Toko ATK yang SAMA persis — namun seluruh 10 sel formula dikosongkan sekaligus.\n\nTanpa petunjuk tambahan, isi semua sel dari ingatanmu. Ini adalah bukti nyata bahwa kamu sudah benar-benar menguasai ke-10 rumus tersebut!",
         instructions: "Lengkapi **semua 10 sel** bertanda tanya (D5–D14) sekaligus. Klik sel mana saja untuk mulai. Tidak ada urutan wajib — kerjakan sesuai yang kamu ingat lebih dulu!",

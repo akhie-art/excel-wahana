@@ -14,6 +14,8 @@ export interface UserProgress {
   streak_count: number;
   last_active_at: string;
   role: "peserta" | "instruktur";
+  email?: string | null;
+  name?: string | null;
 }
 
 // Create real or mock Supabase client
@@ -24,7 +26,6 @@ if (isSupabaseConfigured) {
 } else {
   // Mock client implementation for local-only execution
   const mockStorageKey = "excel_lms_mock_user";
-  const mockProgressKey = "excel_lms_mock_progress";
 
   const getMockUser = () => {
     if (typeof window === "undefined") return null;
@@ -34,28 +35,59 @@ if (isSupabaseConfigured) {
 
   const getMockProgress = () => {
     if (typeof window === "undefined") return null;
-    const progressStr = localStorage.getItem(mockProgressKey);
-    if (progressStr) return JSON.parse(progressStr);
+    const user = getMockUser();
+    if (!user) return null;
+
+    const key = `excel_lms_mock_progress_${user.id}`;
+    const progressStr = localStorage.getItem(key);
+    if (progressStr) {
+      const progress = JSON.parse(progressStr);
+      if (!progress.email || !progress.name) {
+        progress.email = user.email;
+        progress.name = user.user_metadata?.name || user.email?.split("@")[0];
+        localStorage.setItem(key, JSON.stringify(progress));
+      }
+      return progress;
+    }
+    
+    // Check if the user is an instructor
+    const isInstructor = user.email === "instruktur@excel.com" || user.email?.includes("instruktur");
     
     // Default initial progress
     const defaultProgress: UserProgress = {
-      user_id: "mock-user-id",
+      user_id: user.id,
       current_module_id: "basics",
       current_step_id: "sum-basics",
       completed_steps: [],
       streak_count: 0,
       last_active_at: new Date().toISOString(),
-      role: "peserta",
+      role: isInstructor ? "instruktur" : "peserta",
+      email: user.email,
+      name: user.user_metadata?.name || user.email?.split("@")[0],
     };
-    localStorage.setItem(mockProgressKey, JSON.stringify(defaultProgress));
+    localStorage.setItem(key, JSON.stringify(defaultProgress));
     return defaultProgress;
   };
 
   const setMockProgress = (progress: Partial<UserProgress>) => {
     if (typeof window === "undefined") return;
-    const current = getMockProgress();
+    const user = getMockUser();
+    if (!user) return;
+
+    const key = `excel_lms_mock_progress_${user.id}`;
+    const current = getMockProgress() || {
+      user_id: user.id,
+      current_module_id: "basics",
+      current_step_id: "sum-basics",
+      completed_steps: [],
+      streak_count: 0,
+      last_active_at: new Date().toISOString(),
+      role: (user.email === "instruktur@excel.com" || user.email?.includes("instruktur")) ? "instruktur" : "peserta",
+      email: user.email,
+      name: user.user_metadata?.name || user.email?.split("@")[0],
+    };
     const updated = { ...current, ...progress, last_active_at: new Date().toISOString() };
-    localStorage.setItem(mockProgressKey, JSON.stringify(updated));
+    localStorage.setItem(key, JSON.stringify(updated));
     return updated;
   };
 
@@ -77,10 +109,12 @@ if (isSupabaseConfigured) {
         return { data: { user }, error: null };
       },
       signInWithPassword: async ({ email, options }: { email: string; options?: any }) => {
+        const cleanEmail = email.trim().toLowerCase();
+        const id = "mock-user-" + cleanEmail.replace(/[^a-zA-Z0-9]/g, "_");
         const mockUser = {
-          id: "mock-user-id",
-          email,
-          user_metadata: { name: options?.data?.name || email.split("@")[0] },
+          id,
+          email: cleanEmail,
+          user_metadata: { name: options?.data?.name || cleanEmail.split("@")[0] },
         };
         localStorage.setItem(mockStorageKey, JSON.stringify(mockUser));
         const session = { user: mockUser, access_token: "mock-token" };
@@ -88,10 +122,12 @@ if (isSupabaseConfigured) {
         return { data: { user: mockUser, session }, error: null };
       },
       signUp: async ({ email, options }: { email: string; options?: any }) => {
+        const cleanEmail = email.trim().toLowerCase();
+        const id = "mock-user-" + cleanEmail.replace(/[^a-zA-Z0-9]/g, "_");
         const mockUser = {
-          id: "mock-user-id",
-          email,
-          user_metadata: { name: options?.data?.name || email.split("@")[0] },
+          id,
+          email: cleanEmail,
+          user_metadata: { name: options?.data?.name || cleanEmail.split("@")[0] },
         };
         localStorage.setItem(mockStorageKey, JSON.stringify(mockUser));
         const session = { user: mockUser, access_token: "mock-token" };
@@ -105,7 +141,7 @@ if (isSupabaseConfigured) {
       },
       signInWithOAuth: async ({ provider }: { provider: string }) => {
         const mockUser = {
-          id: "mock-user-id",
+          id: "mock-user-oauth",
           email: `${provider}-user@example.com`,
           user_metadata: { name: `GitHub Explorer` },
         };
@@ -131,24 +167,57 @@ if (isSupabaseConfigured) {
     },
     from: (table: string) => {
       if (table === "user_progress") {
+        const queryResult = {
+          single: async () => {
+            const user = getMockUser();
+            if (!user) return { data: null, error: new Error("Unauthorized") };
+            return { data: getMockProgress(), error: null };
+          },
+          maybeSingle: async () => {
+            const user = getMockUser();
+            if (!user) return { data: null, error: null };
+            return { data: getMockProgress(), error: null };
+          },
+        };
         return {
-          select: () => ({
-            single: async () => {
-              const user = getMockUser();
-              if (!user) return { data: null, error: new Error("Unauthorized") };
-              return { data: getMockProgress(), error: null };
-            },
-            eq: (col: string, val: any) => ({
-              single: async () => {
-                const user = getMockUser();
-                if (!user) return { data: null, error: new Error("Unauthorized") };
-                return { data: getMockProgress(), error: null };
+          select: () => {
+            const getProgressList = () => {
+              if (typeof window === "undefined") return [];
+              const list = [];
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith("excel_lms_mock_progress_")) {
+                  const val = localStorage.getItem(key);
+                  if (val) list.push(JSON.parse(val));
+                }
+              }
+              return list;
+            };
+
+            return {
+              single: queryResult.single,
+              maybeSingle: queryResult.maybeSingle,
+              eq: (col: string, val: any) => {
+                if (col === "role") {
+                  const filtered = getProgressList().filter((p) => p[col] === val);
+                  return {
+                    then: (cb: any) => Promise.resolve({ data: filtered, error: null }).then(cb),
+                  };
+                }
+                return {
+                  single: queryResult.single,
+                  maybeSingle: queryResult.maybeSingle,
+                };
               },
-            }),
-          }),
+            };
+          },
           upsert: (data: any) => ({
             select: () => ({
               single: async () => {
+                const updated = setMockProgress(data);
+                return { data: updated, error: null };
+              },
+              maybeSingle: async () => {
                 const updated = setMockProgress(data);
                 return { data: updated, error: null };
               },
@@ -158,6 +227,10 @@ if (isSupabaseConfigured) {
             eq: (col: string, val: any) => ({
               select: () => ({
                 single: async () => {
+                  const updated = setMockProgress(data);
+                  return { data: updated, error: null };
+                },
+                maybeSingle: async () => {
                   const updated = setMockProgress(data);
                   return { data: updated, error: null };
                 },
@@ -174,6 +247,7 @@ if (isSupabaseConfigured) {
         select: () => ({
           eq: () => ({
             single: async () => ({ data: null, error: new Error("Table not found") }),
+            maybeSingle: async () => ({ data: null, error: null }),
           }),
         }),
       };
