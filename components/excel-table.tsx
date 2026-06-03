@@ -445,7 +445,7 @@ export function ExcelTable({
       id="excel-table-container"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="w-full h-full flex flex-col bg-card border border-border/80 rounded-xl overflow-hidden shadow-sm dark:shadow-black/30 focus:outline-none min-h-0"
+      className="w-full h-full flex flex-col bg-card border border-border/80 rounded-xl overflow-hidden shadow-sm dark:shadow-black/30 focus:outline-none min-h-0 min-w-0"
     >
       
       {/* 1. Minimal top bar: only action buttons, no decorative text */}
@@ -632,9 +632,9 @@ export function ExcelTable({
       )}
 
       {/* 3. Grid Canvas Wrapper */}
-      <div className="flex-1 overflow-auto p-4 bg-background/50 select-none flex flex-col justify-start items-center md:py-8 min-h-0">
+      <div className="flex-1 overflow-auto w-full max-w-full p-4 bg-background/50 select-none md:py-8 min-h-0">
         {step.headers.length === 0 ? (
-          <div className="text-center p-8 max-w-sm space-y-4">
+          <div className="text-center p-8 max-w-sm space-y-4 mx-auto">
             <div className="h-14 w-14 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto border border-emerald-500/25">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
@@ -648,7 +648,10 @@ export function ExcelTable({
             </div>
           </div>
         ) : (
-          <table className="w-full border-collapse border border-border font-mono text-sm table-fixed">
+          <table
+            className="border-collapse border border-border font-mono text-sm table-fixed mx-auto"
+            style={{ width: colWidths.length > 0 ? `${colWidths.reduce((sum, w) => sum + w, 0)}px` : "100%" }}
+          >
           {/* Colgroup for Resizable Columns */}
           <colgroup>
             {colWidths.map((width, idx) => (

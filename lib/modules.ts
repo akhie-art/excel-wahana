@@ -2218,7 +2218,7 @@ export const EXCEL_MODULES: ExcelModule[] = [
           {
             rowNum: 5,
             cells: [
-              { value: "=== REFERENSI GOLONGAN (VLOOKUP) ===", className: "font-bold text-slate-700 dark:text-slate-200 text-xs overflow-visible whitespace-nowrap z-10 px-4", borderTop: true, borderLeft: true, borderBottom: true, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
+              { value: "REFERENSI GOLONGAN (VLOOKUP)", className: "font-bold text-slate-700 dark:text-slate-200 text-xs overflow-visible whitespace-nowrap z-10 px-4", borderTop: true, borderLeft: true, borderBottom: true, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
               { value: "", borderTop: true, borderBottom: true, borderLeft: false, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
               { value: "", borderTop: true, borderBottom: true, borderLeft: false, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
               { value: "", borderTop: true, borderBottom: true, borderLeft: false, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
@@ -2274,7 +2274,7 @@ export const EXCEL_MODULES: ExcelModule[] = [
           {
             rowNum: 9,
             cells: [
-              { value: "=== REFERENSI TUNJANGAN DEPT (HLOOKUP) ===", className: "font-bold text-slate-700 dark:text-slate-200 text-xs overflow-visible whitespace-nowrap z-10 px-4", borderTop: true, borderLeft: true, borderBottom: true, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
+              { value: "REFERENSI TUNJANGAN DEPT (HLOOKUP)", className: "font-bold text-slate-700 dark:text-slate-200 text-xs overflow-visible whitespace-nowrap z-10 px-4", borderTop: true, borderLeft: true, borderBottom: true, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
               { value: "", borderTop: true, borderBottom: true, borderLeft: false, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
               { value: "", borderTop: true, borderBottom: true, borderLeft: false, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },
               { value: "", borderTop: true, borderBottom: true, borderLeft: false, borderRight: false, bgColor: "bg-slate-100 dark:bg-slate-800/80" },

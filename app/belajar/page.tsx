@@ -64,22 +64,22 @@ export default function BelajarPage() {
           )}>
             {/* Left Panel: Theory & Instructions */}
             {!isFullScreen && (
-              <section className="flex flex-col w-full md:w-[36%] h-auto md:h-full min-h-[250px] bg-card border border-border/60 rounded-xl p-5 overflow-hidden order-2 md:order-1">
+              <section className="flex flex-col w-full md:w-[380px] lg:w-[420px] xl:w-[460px] shrink-0 h-auto md:h-full min-h-[250px] bg-card border border-border/60 rounded-xl p-5 overflow-hidden order-2 md:order-1">
                 <LeftPanel />
               </section>
             )}
 
             {/* Right Panel: Interactive Canvas */}
             <section className={cn(
-              "w-full md:flex-1 flex flex-col sticky top-0 md:relative z-20 order-1 md:order-2 bg-background/95 backdrop-blur-sm pb-2 md:pb-0 md:bg-transparent min-h-0",
+              "w-full md:flex-1 flex flex-col sticky top-0 md:relative z-20 order-1 md:order-2 bg-background/95 backdrop-blur-sm pb-2 md:pb-0 md:bg-transparent min-h-0 min-w-0",
               isFullScreen ? "h-full" : "h-[360px] sm:h-[440px] md:h-full shrink-0 md:shrink"
             )}>
               {/* Interactive Sheet + Task Sidebar */}
               <div className={cn(
-                "flex-1 flex flex-row overflow-hidden min-h-0",
+                "flex-1 flex flex-row overflow-hidden min-h-0 min-w-0",
                 isFullScreen ? "gap-0" : "gap-5"
               )}>
-                <div className="flex-1 h-full overflow-hidden min-h-0">
+                <div className="flex-1 h-full overflow-hidden min-h-0 min-w-0">
                   <ExcelTable
                      isFullScreen={isFullScreen}
                      isSidebarOpen={isSidebarOpen}
