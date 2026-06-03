@@ -141,13 +141,66 @@ export const useAppStore = create<AppState>((set, get) => ({
   loadUserAndProgress: async () => {
     set({ isLoading: true });
     try {
-      // 1. Fetch and merge custom steps first
+      // 1. Fetch modules, steps, and custom steps from database
       const { data: customStepsData } = await supabase.from("custom_steps").select("*");
       
-      const baseModules = EXCEL_MODULES.map(mod => ({
-        ...mod,
-        steps: [...mod.steps]
-      }));
+      let baseModules: ExcelModule[] = [];
+
+      if (isSupabaseConfigured) {
+        try {
+          const { data: dbModules, error: modErr } = await supabase
+            .from("modules")
+            .select("*")
+            .order("sort_order", { ascending: true });
+          
+          const { data: dbSteps, error: stepErr } = await supabase
+            .from("steps")
+            .select("*")
+            .order("sort_order", { ascending: true });
+
+          if (dbModules && dbSteps && !modErr && !stepErr) {
+            baseModules = dbModules.map((mod: any) => ({
+              id: mod.id,
+              title: mod.title,
+              description: mod.description || "",
+              steps: dbSteps
+                .filter((step: any) => step.module_id === mod.id)
+                .map((step: any) => ({
+                  id: step.id,
+                  title: step.title,
+                  shortDescription: step.short_description || "",
+                  conceptExplanation: step.concept_explanation || "",
+                  instructions: step.instructions || "",
+                  headers: step.headers || [],
+                  dummyData: step.dummy_data || [],
+                  validFormulas: step.valid_formulas || [],
+                  expectedResult: step.expected_result || "",
+                  resultCell: step.result_cell || null,
+                  hint: step.hint || "",
+                  tasks: step.tasks || []
+                }))
+            }));
+          } else {
+            // Fallback to static if query fails
+            baseModules = EXCEL_MODULES.map(mod => ({
+              ...mod,
+              steps: [...mod.steps]
+            }));
+          }
+        } catch (e) {
+          // Fallback to static on exception
+          baseModules = EXCEL_MODULES.map(mod => ({
+            ...mod,
+            steps: [...mod.steps]
+          }));
+        }
+      } else {
+        // Fallback to static if Supabase is not configured
+        baseModules = EXCEL_MODULES.map(mod => ({
+          ...mod,
+          steps: [...mod.steps]
+        }));
+      }
 
       if (customStepsData && Array.isArray(customStepsData)) {
         customStepsData.forEach((row: any) => {
@@ -195,8 +248,8 @@ export const useAppStore = create<AppState>((set, get) => ({
           const isInstructor = user.email === "instruktur@excel.com" || user.email?.includes("instruktur");
           const newProgress: Omit<UserProgress, "last_active_at"> = {
             user_id: user.id,
-            current_module_id: "basics",
-            current_step_id: "sum-basics",
+            current_module_id: "hitung-data",
+            current_step_id: "sum",
             completed_steps: [],
             streak_count: 0,
             role: isInstructor ? "instruktur" : "peserta",

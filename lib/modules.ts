@@ -52,78 +52,6 @@ export interface ExcelModule {
 
 export const EXCEL_MODULES: ExcelModule[] = [
   {
-    id: "pendahuluan",
-    title: "PENDAHULUAN",
-    description: "Memahami mengapa Excel sangat penting dan dasar-dasar sebelum menggunakan rumus.",
-    steps: [
-      {
-        id: "intro-why-excel",
-        title: "Kenapa Harus Excel?",
-        shortDescription: "Alasan mengapa Microsoft Excel menjadi alat industri paling wajib dikuasai.",
-        conceptExplanation: "Microsoft Excel adalah aplikasi spreadsheet paling populer di dunia kerja. Dari administrasi kantor, analis data, keuangan, hingga manajer proyek, hampir seluruh pekerjaan profesional menggunakan Excel.\n\nExcel membantu menyederhanakan pengolahan data angka yang rumit menjadi hitungan cepat dan rapi. Menguasai Excel akan melipatgandakan produktivitas kerja Anda dan membuat Anda lebih bernilai di mata perusahaan.",
-        instructions: "Pelajaran pertama ini adalah pengenalan teori. Silakan baca dan pahami pentingnya Excel, lalu klik tombol **Tantangan Berikutnya** untuk melanjutkan.",
-        headers: [],
-        dummyData: [],
-        validFormulas: [],
-        expectedResult: "",
-        resultCell: { row: 0, col: 0 },
-        hint: ""
-      },
-      {
-        id: "intro-benefits",
-        title: "Apa Manfaat E-book Ini?",
-        shortDescription: "Cara efektif belajar langsung dengan praktek interaktif.",
-        conceptExplanation: "LMS Interaktif ini dirancang agar Anda bisa langsung mempraktikkan teori secara real-time. Anda tidak hanya membaca, melainkan langsung mengetik rumus di dalam sel lembar kerja simulasi kami.\n\nDengan mempraktikkan langsung, ingatan motorik dan logika Anda dalam memecahkan masalah menggunakan formula Excel akan terlatih jauh lebih cepat dibanding hanya membaca buku manual biasa.",
-        instructions: "Silakan baca penjelasan manfaat belajar interaktif ini, lalu klik **Tantangan Berikutnya**.",
-        headers: [],
-        dummyData: [],
-        validFormulas: [],
-        expectedResult: "",
-        resultCell: { row: 0, col: 0 },
-        hint: ""
-      },
-      {
-        id: "intro-tips-formula",
-        title: "Tips Menentukan Rumus Mana Yang Harus Dipakai",
-        shortDescription: "Gunakan cara berpikir logis ini sebelum menulis rumus.",
-        conceptExplanation: "Sebelum menulis rumus Excel, tanyakan 3 hal berikut pada diri Anda:\n1. **Apa tipe data saya?** (Apakah angka, tanggal, atau huruf/teks)\n2. **Kalkulasi apa yang ingin dicapai?** (Apakah penjumlahan, pembulatan, pencarian tabel, atau kondisi tertentu)\n3. **Apakah ada syarat (kriteria)?** (Jika ada syarat, biasanya fungsi dasar ditambahi akhiran 'IF', misalnya `SUMIF` atau `COUNTIF`).\n\nDengan memetakan masalah ini terlebih dahulu, Anda akan dengan mudah menebak fungsi mana yang tepat untuk digunakan.",
-        instructions: "Pahami tips pemetaan logika rumus ini, lalu klik **Tantangan Berikutnya**.",
-        headers: [],
-        dummyData: [],
-        validFormulas: [],
-        expectedResult: "",
-        resultCell: { row: 0, col: 0 },
-        hint: ""
-      },
-      {
-        id: "intro-scope",
-        title: "Apa Aja Yang Dibahas dan Ga Dibahas di E-book Ini?",
-        shortDescription: "Batasan cakupan materi dalam modul pembelajaran ini.",
-        conceptExplanation: "Dalam pembelajaran ini, kita akan membahas secara lengkap **78 Rumus Penting Excel** mulai dari kalkulasi matematika, statistik, manipulasi teks, ekstraksi kata, VLOOKUP/HLOOKUP, fungsi logika syarat (IF), pengolahan tanggal/waktu, hingga statistik tingkat menengah.\n\nMateri yang **TIDAK** dibahas adalah pengkodean VBA/Macro tingkat lanjut, pembuatan koneksi PowerQuery eksternal, atau konfigurasi server database SharePoint, karena fokus utama kita adalah penguasaan formula harian yang paling sering dipakai di dunia kantor nyata.",
-        instructions: "Pahami cakupan materi yang akan kita pelajari bersama, lalu klik **Tantangan Berikutnya**.",
-        headers: [],
-        dummyData: [],
-        validFormulas: [],
-        expectedResult: "",
-        resultCell: { row: 0, col: 0 },
-        hint: ""
-      },
-      {
-        id: "intro-before-read",
-        title: "Sebelum Kamu Membaca E-book Ini",
-        shortDescription: "Hal penting mengenai format separator (koma/titik koma) regional PC.",
-        conceptExplanation: "PENTING: Di Excel nyata, pemisah argumen rumus (argument separator) bisa berbeda tergantung pengaturan regional komputer Anda:\n- **Regional Indonesia/Eropa**: Menggunakan titik koma (`;`). Contoh: `=SUM(A1;A2)`\n- **Regional AS/Internasional**: Menggunakan koma (`,`). Contoh: `=SUM(A1,A2)`\n\nKabar baiknya! Simulator ini **sangat toleran** dan otomatis menerjemahkan keduanya. Anda bisa menggunakan koma (`,`) maupun titik koma (`;`) dan sistem akan tetap memvalidasinya secara adil.",
-        instructions: "Selamat belajar! Klik **Tantangan Berikutnya** untuk memulai latihan penulisan rumus pertama Anda!",
-        headers: [],
-        dummyData: [],
-        validFormulas: [],
-        expectedResult: "",
-        resultCell: { row: 0, col: 0 },
-        hint: ""
-      }
-    ]
-  },
-  {
     id: "hitung-data",
     title: "RUMUS UNTUK MENGHITUNG DATA",
     description: "Kumpulan fungsi dasar matematika untuk menjumlahkan, merata-rata, mencari ekstrem, dan menghitung data.",
@@ -1846,6 +1774,45 @@ export const EXCEL_MODULES: ExcelModule[] = [
         expectedResult: "9",
         resultCell: { row: 1, col: 2 },
         hint: "Ketik: =NETWORKDAYS.INTL(A2, B2, 11)"
+      },
+      {
+        id: "studi-kasus-waktu",
+        title: "Studi Kasus: Laporan Pelacakan Proyek & Waktu Kerja",
+        shortDescription: "Tantangan mandiri: hitung durasi proyek, hari kerja, dan estimasi selesai menggunakan rumus waktu.",
+        conceptExplanation: "Sebagai Manajer Proyek, Anda perlu menyusun rencana kerja tim. Mari buat laporan pelacakan proyek terintegrasi menggunakan rumus waktu:\n\n1. **Durasi Hari Kalender (C2)**: Hitung total hari kalender di antara Tanggal Mulai (A2) dan Tanggal Selesai (B2).\n   *Syntax*: `=DAYS(B2, A2)`\n2. **Total Hari Kerja (D2)**: Hitung total hari kerja (Senin-Jumat) di antara Tanggal Mulai (A2) dan Tanggal Selesai (B2).\n   *Syntax*: `=NETWORKDAYS(A2, B2)`\n3. **Estimasi Selesai (F2)**: Proyek Baru dimulai tanggal **2026-06-01** (E2) dan membutuhkan waktu pengerjaan **10 hari kerja** (Senin-Jumat). Hitung tanggal estimasi selesai proyek baru.\n   *Syntax*: `=WORKDAY(E2, 10)`",
+        instructions: "Isi sel bertanda tanya (C2, D2, F2) dengan rumus waktu yang sesuai berdasarkan penjelasan di atas.",
+        headers: ["", "Mulai", "Selesai", "Hari Kalender", "Hari Kerja", "Mulai Baru", "Selesai Estimasi"],
+        dummyData: [
+          { rowNum: 1, cells: [{ value: "Mulai", header: true }, { value: "Selesai", header: true }, { value: "Hari Kalender", header: true }, { value: "Hari Kerja", header: true }, { value: "Mulai Baru", header: true }, { value: "Selesai Estimasi", header: true }] },
+          { rowNum: 2, cells: [{ value: "2026-06-01" }, { value: "2026-06-15" }, { value: "?", highlight: true }, { value: "?", highlight: true }, { value: "2026-06-01" }, { value: "?", highlight: true }] }
+        ],
+        validFormulas: [],
+        expectedResult: "",
+        resultCell: { row: 0, col: 0 },
+        hint: "",
+        tasks: [
+          {
+            label: "Hari Kalender (DAYS)",
+            resultCell: { row: 1, col: 2 },
+            validFormulas: ["=DAYS(B2,A2)", "=DAYS(B2, A2)", "=DAYS(B2;A2)"],
+            expectedResult: "14",
+            hint: "Hitung beda hari: =DAYS(B2, A2)"
+          },
+          {
+            label: "Hari Kerja (NETWORKDAYS)",
+            resultCell: { row: 1, col: 3 },
+            validFormulas: ["=NETWORKDAYS(A2,B2)", "=NETWORKDAYS(A2, B2)", "=NETWORKDAYS(A2;B2)"],
+            expectedResult: "11",
+            hint: "Hitung hari kerja penuh: =NETWORKDAYS(A2, B2)"
+          },
+          {
+            label: "Selesai Estimasi (WORKDAY)",
+            resultCell: { row: 1, col: 5 },
+            validFormulas: ["=WORKDAY(E2,10)", "=WORKDAY(E2, 10)", "=WORKDAY(E2;10)"],
+            expectedResult: "15/06/2026",
+            hint: "Tambahkan 10 hari kerja ke tanggal mulai E2: =WORKDAY(E2, 10)"
+          }
+        ]
       }
     ]
   },
@@ -1990,6 +1957,55 @@ export const EXCEL_MODULES: ExcelModule[] = [
         expectedResult: "FALSE",
         resultCell: { row: 1, col: 2 },
         hint: "Ketik: =EXACT(A2, B2). Hasilnya FALSE karena huruf 'A' pada sandi 1 berbeda kapital dengan sandi 2."
+      },
+      {
+        id: "studi-kasus-pernyataan",
+        title: "Studi Kasus: Evaluasi Kelulusan Seleksi Karyawan",
+        shortDescription: "Tantangan mandiri: uji kondisi kelulusan peserta menggunakan fungsi logika AND, OR, dan IFERROR.",
+        conceptExplanation: "Sebagai bagian dari tim HRD, Anda perlu menguji kelayakan calon karyawan secara otomatis berdasarkan kriteria berikut:\n\n1. **Status Kelulusan (D2)**: Calon lulus jika Nilai Tes Teknis (B2) >= 70 DAN Nilai Wawancara (C2) >= 75.\n   *Syntax*: `=IF(AND(B2>=70,C2>=75),\"Lulus\",\"Gagal\")`\n2. **Rekomendasi Penempatan (E2)**: Calon mendapat rekomendasi jika Nilai Tes Teknis (B2) >= 90 ATAU Nilai Wawancara (C2) >= 90.\n   *Syntax*: `=IF(OR(B2>=90,C2>=90),\"Rekomendasi\",\"Biasa\")`\n3. **Cek Sandi (F2)**: Pastikan kode verifikasi Sandi 1 (A2) dan Sandi 2 (B2) dari sistem sama persis.\n   *Syntax*: `=EXACT(A2,B2)`",
+        instructions: "Isi sel bertanda tanya (D2, E2, F2) dengan rumus logika yang sesuai berdasarkan kriteria di atas.",
+        headers: ["", "Sandi 1 / Teknis", "Sandi 2 / Wawancara", "Lulus?", "Rekomendasi?", "Sandi Cocok?"],
+        dummyData: [
+          { rowNum: 1, cells: [{ value: "Sandi 1 / Teknis", header: true }, { value: "Sandi 2 / Wawancara", header: true }, { value: "Lulus?", header: true }, { value: "Rekomendasi?", header: true }, { value: "Sandi Cocok?", header: true }] },
+          { rowNum: 2, cells: [{ value: 85 }, { value: 70 }, { value: "?", highlight: true }, { value: "?", highlight: true }, { value: "?", highlight: true }] }
+        ],
+        validFormulas: [],
+        expectedResult: "",
+        resultCell: { row: 0, col: 0 },
+        hint: "",
+        tasks: [
+          {
+            label: "Lulus? (AND)",
+            resultCell: { row: 1, col: 2 },
+            validFormulas: [
+              "=IF(AND(B2>=70,C2>=75),\"Lulus\",\"Gagal\")",
+              "=IF(AND(B2>=70, C2>=75), \"Lulus\", \"Gagal\")",
+              "=IF(AND(B2>=70;C2>=75);\"Lulus\";\"Gagal\")",
+              "=IF(AND(B2>=70; C2>=75); \"Lulus\"; \"Gagal\")"
+            ],
+            expectedResult: "Gagal",
+            hint: "Syarat: B2 >= 70 DAN C2 >= 75. Gunakan =IF(AND(B2>=70,C2>=75),\"Lulus\",\"Gagal\")"
+          },
+          {
+            label: "Rekomendasi? (OR)",
+            resultCell: { row: 1, col: 3 },
+            validFormulas: [
+              "=IF(OR(B2>=90,C2>=90),\"Rekomendasi\",\"Biasa\")",
+              "=IF(OR(B2>=90, C2>=90), \"Rekomendasi\", \"Biasa\")",
+              "=IF(OR(B2>=90;C2>=90);\"Rekomendasi\";\"Biasa\")",
+              "=IF(OR(B2>=90; C2>=90); \"Rekomendasi\"; \"Biasa\")"
+            ],
+            expectedResult: "Biasa",
+            hint: "Syarat: B2 >= 90 ATAU C2 >= 90: =IF(OR(B2>=90,C2>=90),\"Rekomendasi\",\"Biasa\")"
+          },
+          {
+            label: "Sandi Cocok? (EXACT)",
+            resultCell: { row: 1, col: 4 },
+            validFormulas: ["=EXACT(A2,B2)", "=EXACT(A2, B2)", "=EXACT(A2;B2)"],
+            expectedResult: "FALSE",
+            hint: "Periksa apakah teks Sandi 1 (A2) dan Sandi 2 (B2) sama persis: =EXACT(A2, B2)"
+          }
+        ]
       }
     ]
   },
@@ -2117,6 +2133,54 @@ export const EXCEL_MODULES: ExcelModule[] = [
         expectedResult: "18",
         resultCell: { row: 1, col: 1 },
         hint: "Ketik: =ARABIC(A2)"
+      },
+      {
+        id: "studi-kasus-statistik",
+        title: "Studi Kasus: Analisis Statistik Nilai Ujian Sekolah",
+        shortDescription: "Tantangan mandiri: hitung rata-rata, median, peringkat, dan nilai tengah kelas menggunakan rumus statistik.",
+        conceptExplanation: "Sebagai guru kelas, Anda ingin menganalisis rekapitulasi nilai ujian matematika siswa menggunakan rumus statistik dasar:\n\n1. **Peringkat Siswa pertama (C2)**: Cari peringkat nilai siswa pertama (B2) dibanding seluruh siswa di kelas (B2:B5).\n   *Syntax*: `=RANK(B2,$B$2:$B$5)` atau `=RANK(B2,B2:B5)`\n2. **Nilai Tengah / Median (B6)**: Cari nilai tengah (median) dari seluruh nilai siswa (B2:B5).\n   *Syntax*: `=MEDIAN(B2:B5)`\n3. **Ubah ke Romawi (D2)**: Konversi nilai peringkat siswa pertama (C2) menjadi angka Romawi.\n   *Syntax*: `=ROMAN(C2)`",
+        instructions: "Isi sel bertanda tanya (C2, B6, D2) dengan rumus statistik yang sesuai berdasarkan kriteria di atas.",
+        headers: ["", "Nama Siswa / Statistik", "Nilai / Hasil", "Peringkat", "Peringkat Romawi"],
+        dummyData: [
+          { rowNum: 1, cells: [{ value: "Nama Siswa / Statistik", header: true }, { value: "Nilai / Hasil", header: true }, { value: "Peringkat", header: true }, { value: "Peringkat Romawi", header: true }] },
+          { rowNum: 2, cells: [{ value: "Andi" }, { value: 90 }, { value: "?", highlight: true }, { value: "?", highlight: true }] },
+          { rowNum: 3, cells: [{ value: "Budi" }, { value: 75 }, { value: "" }, { value: "" }] },
+          { rowNum: 4, cells: [{ value: "Cici" }, { value: 85 }, { value: "" }, { value: "" }] },
+          { rowNum: 5, cells: [{ value: "Dedi" }, { value: 80 }, { value: "" }, { value: "" }] },
+          { rowNum: 6, cells: [{ value: "Median Nilai Kelas" }, { value: "?", highlight: true }, { value: "" }, { value: "" }] }
+        ],
+        validFormulas: [],
+        expectedResult: "",
+        resultCell: { row: 0, col: 0 },
+        hint: "",
+        tasks: [
+          {
+            label: "Peringkat Andi (RANK)",
+            resultCell: { row: 1, col: 2 },
+            validFormulas: [
+              "=RANK(B2,$B$2:$B$5)",
+              "=RANK(B2,B2:B5)",
+              "=RANK(B2;$B$2:$B$5)",
+              "=RANK(B2;B2:B5)"
+            ],
+            expectedResult: "1",
+            hint: "Bandingkan B2 dengan rentang B2:B5: =RANK(B2,$B$2:$B$5)"
+          },
+          {
+            label: "Median Kelas (MEDIAN)",
+            resultCell: { row: 5, col: 1 },
+            validFormulas: ["=MEDIAN(B2:B5)", "=MEDIAN(B2;B5)"],
+            expectedResult: "82.5",
+            hint: "Cari nilai tengah dari B2:B5: =MEDIAN(B2:B5)"
+          },
+          {
+            label: "Peringkat Romawi Andi (ROMAN)",
+            resultCell: { row: 1, col: 3 },
+            validFormulas: ["=ROMAN(C2)", "=roman(c2)"],
+            expectedResult: "I",
+            hint: "Ubah nilai peringkat C2 ke format Romawi: =ROMAN(C2)"
+          }
+        ]
       }
     ]
   },

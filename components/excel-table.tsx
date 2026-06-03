@@ -40,7 +40,8 @@ export function ExcelTable({
     selectedTaskIndex,
     taskAnswers,
     setSelectedTaskIndex,
-    peerStates
+    peerStates,
+    role
   } = useAppStore();
 
   const step = getCurrentStep();
@@ -631,14 +632,16 @@ export function ExcelTable({
                       {showFormulaKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       <span>{showFormulaKey ? "Sembunyikan" : "Lihat Rumus"}</span>
                     </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleAutoFill}
-                      className="h-7 px-2.5 text-[10px] font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-md shadow-sm flex items-center gap-1"
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      <span>Masukkan Rumus</span>
-                    </Button>
+                    {role === "instruktur" && (
+                      <Button
+                        size="sm"
+                        onClick={handleAutoFill}
+                        className="h-7 px-2.5 text-[10px] font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-md shadow-sm flex items-center gap-1"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        <span>Masukkan Rumus</span>
+                      </Button>
+                    )}
                   </>
                 )}
               </div>
@@ -660,7 +663,9 @@ export function ExcelTable({
               {activeTask.validFormulas[0]}
                 </code>
               </div>
-              <span className="text-[10px] text-muted-foreground italic select-none">Klik "Masukkan Rumus" untuk otomatis mengisi</span>
+              {role === "instruktur" && (
+                <span className="text-[10px] text-muted-foreground italic select-none">Klik "Masukkan Rumus" untuk otomatis mengisi</span>
+              )}
             </motion.div>
           )}
 
@@ -724,9 +729,9 @@ export function ExcelTable({
               </svg>
             </div>
             <div className="space-y-1.5">
-              <h3 className="text-sm font-bold text-foreground">Sesi Membaca Pendahuluan</h3>
+              <h3 className="text-sm font-bold text-foreground">Sesi Membaca Materi</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Bab ini berisi materi pengantar teoritis. Silakan pelajari penjelasan konsep di panel kiri, lalu klik <strong>Tantangan Berikutnya</strong> jika sudah siap!
+                Bab ini berisi penjelasan materi secara teoritis. Silakan pelajari penjelasan konsep di panel kiri, lalu klik <strong>Tantangan Berikutnya</strong> jika sudah siap!
               </p>
             </div>
           </div>

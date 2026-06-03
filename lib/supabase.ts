@@ -56,8 +56,8 @@ if (isSupabaseConfigured) {
     // Default initial progress
     const defaultProgress: UserProgress = {
       user_id: user.id,
-      current_module_id: "basics",
-      current_step_id: "sum-basics",
+      current_module_id: "hitung-data",
+      current_step_id: "sum",
       completed_steps: [],
       streak_count: 0,
       last_active_at: new Date().toISOString(),
@@ -77,8 +77,8 @@ if (isSupabaseConfigured) {
     const key = `excel_lms_mock_progress_${user.id}`;
     const current = getMockProgress() || {
       user_id: user.id,
-      current_module_id: "basics",
-      current_step_id: "sum-basics",
+      current_module_id: "hitung-data",
+      current_step_id: "sum",
       completed_steps: [],
       streak_count: 0,
       last_active_at: new Date().toISOString(),
