@@ -303,6 +303,38 @@ if (isSupabaseConfigured) {
         };
       }
 
+      if (table === "excel_formulas") {
+        const getMockFormulas = () => {
+          try {
+            // Require JSON data
+            return require("./formulas-data.json");
+          } catch (e) {
+            return [];
+          }
+        };
+        return {
+          select: () => {
+            const data = getMockFormulas();
+            return {
+              then: (cb: any) => Promise.resolve({ data, error: null }).then(cb),
+              order: (col: string, { ascending }: any = {}) => {
+                const sorted = [...data];
+                sorted.sort((a: any, b: any) => {
+                  const valA = String(a[col] || "").toLowerCase();
+                  const valB = String(b[col] || "").toLowerCase();
+                  if (valA < valB) return ascending ? -1 : 1;
+                  if (valA > valB) return ascending ? 1 : -1;
+                  return 0;
+                });
+                return {
+                  then: (cb: any) => Promise.resolve({ data: sorted, error: null }).then(cb)
+                };
+              }
+            };
+          }
+        };
+      }
+
       return {
         select: () => ({
           eq: () => ({

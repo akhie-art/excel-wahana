@@ -142,7 +142,7 @@ export function useMultiplayer() {
       };
     } else {
       // 2. Offline Fallback (Local Tab Sync via BroadcastChannel)
-      const bc = new BroadcastChannel("excelmaster_multiplayer");
+      const bc = new BroadcastChannel("excelwahana_multiplayer");
       bcRef.current = bc;
 
       bc.onmessage = (event) => {

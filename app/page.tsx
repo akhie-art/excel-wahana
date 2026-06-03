@@ -7,6 +7,13 @@ import { useAppStore } from "@/lib/store";
 import { AuthModal } from "@/components/auth-modal";
 import { useTheme } from "next-themes";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   motion,
   useScroll,
   useTransform,
@@ -28,6 +35,7 @@ import {
   GraduationCap,
   BookOpen,
   UserCheck,
+  LayoutDashboard,
   Sun,
   Moon,
   Menu,
@@ -39,6 +47,9 @@ import {
   Lightbulb,
   BarChart2,
 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 // ─── Typing Animation Hook ─────────────────────────────────────────────────
 function useTypingEffect(
@@ -361,7 +372,7 @@ function MiniPlayground() {
 const FAQ_ITEMS = [
   {
     q: "Apakah platform belajar ini gratis?",
-    a: "Ya! Platform ExcelMaster sepenuhnya gratis. Anda tidak perlu membayar langganan apa pun untuk mengakses seluruh materi dan studi kasus penggajian.",
+    a: "Ya! Platform Excel Wahana sepenuhnya gratis. Anda tidak perlu membayar langganan apa pun untuk mengakses seluruh materi dan studi kasus penggajian.",
   },
   {
     q: "Bagaimana platform memvalidasi jawaban saya?",
@@ -373,7 +384,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Apakah saya perlu menginstall software tambahan?",
-    a: "Tidak sama sekali! ExcelMaster berjalan sepenuhnya di browser Anda. Tidak perlu menginstall Microsoft Excel, Google Sheets, atau software apa pun. Cukup buka browser dan mulai belajar.",
+    a: "Tidak sama sekali! Excel Wahana berjalan sepenuhnya di browser Anda. Tidak perlu menginstall Microsoft Excel, Google Sheets, atau software apa pun. Cukup buka browser dan mulai belajar.",
   },
   {
     q: "Apa perbedaan akun Peserta dan Instruktur?",
@@ -523,6 +534,209 @@ const colorMap: Record<string, { dot: string; badge: string; formula: string; ho
   },
 };
 
+const DUMMY_ARTICLES = [
+  {
+    id: 1,
+    title: "Cara Menggunakan Rumus VLOOKUP untuk Pemula di Excel Wahana",
+    excerpt: "Pelajari langkah-langkah dasar menggunakan fungsi pencarian VLOOKUP untuk menghubungkan data antar tabel secara otomatis dengan simulator interaktif.",
+    content: "Fungsi VLOOKUP (Vertical Lookup) merupakan salah satu rumus pencarian paling populer di Excel. Rumus ini digunakan untuk mencari suatu nilai di kolom paling kiri dari suatu rentang tabel, lalu mengembalikan nilai di baris yang sama dari kolom lain yang Anda tentukan.\n\nStruktur rumusnya adalah:\n`=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])`\n\n- `lookup_value`: Nilai atau sel kunci yang ingin dicari.\n- `table_array`: Rentang tabel tempat pencarian data dilakukan.\n- `col_index_num`: Nomor indeks kolom hasil (dimulai dari 1 untuk kolom paling kiri).\n- `range_lookup`: Gunakan `FALSE` untuk pencarian presisi (exact match).\n\nDi Excel Wahana, Anda dapat mempraktikkan langsung rumus ini menggunakan simulator interaktif kami yang memberikan umpan balik (feedback) instan begitu Anda mengetikkan rumus di sel target.",
+    category: "Rumus Lookup",
+    date: "04 Juni 2026",
+    readTime: "5 menit baca",
+    gradient: "from-emerald-500/10 to-teal-500/10 border-emerald-500/20"
+  },
+  {
+    id: 2,
+    title: "10 Rumus Matematika Dasar Excel yang Wajib Dikuasai di Excel Wahana",
+    excerpt: "Daftar lengkap rumus matematika dasar dari SUM, AVERAGE, hingga COUNT yang akan melipatgandakan produktivitas harian Anda di dunia kerja.",
+    content: "Menguasai rumus matematika dasar adalah kunci utama melipatgandakan kecepatan kerja administratif Anda. Berikut adalah beberapa rumus wajib:\n\n1. `SUM`: Menjumlahkan angka dalam suatu rentang.\n2. `AVERAGE`: Mencari nilai rata-rata.\n3. `COUNT`: Menghitung jumlah sel yang berisi angka.\n4. `MAX`: Menampilkan nilai tertinggi.\n5. `MIN`: Menampilkan nilai terendah.\n\nDengan simulator Excel Wahana, Anda tidak hanya menghafal rumus melainkan langsung diuji pada tabel rekapitulasi data keuangan nyata tanpa perlu menginstal aplikasi tambahan di komputer Anda.",
+    category: "Tips & Trik",
+    date: "02 Juni 2026",
+    readTime: "7 menit baca",
+    gradient: "from-blue-500/10 to-indigo-500/10 border-blue-500/20"
+  },
+  {
+    id: 3,
+    title: "Mengenal Perbedaan VLOOKUP, HLOOKUP, dan XLOOKUP di Excel Wahana",
+    excerpt: "Bingung memilih fungsi pencarian yang tepat? Simak panduan perbandingan fitur dan efisiensi VLOOKUP, HLOOKUP, dan fungsi modern XLOOKUP.",
+    content: "Excel memiliki beberapa rumus pencarian (lookup) dengan karakteristik berbeda:\n\n- **VLOOKUP**: Mencari data secara vertikal (ke bawah) berdasarkan kolom kunci paling kiri.\n- **HLOOKUP**: Mencari data secara horizontal (ke kanan) berdasarkan baris kunci paling atas.\n- **XLOOKUP**: Fitur modern yang fleksibel. Bisa mencari data ke segala arah (kanan maupun kiri, atas maupun bawah) tanpa takut susunan tabel berubah.\n\nPelajari kapan harus menggunakan masing-masing rumus di Excel Wahana dan uji kemampuan Anda menyusun argumen parameter pencarian secara tepat melalui tantangan bertahap.",
+    category: "Analisis Data",
+    date: "29 Mei 2026",
+    readTime: "6 menit baca",
+    gradient: "from-purple-500/10 to-violet-500/10 border-purple-500/20"
+  },
+  {
+    id: 4,
+    title: "Tips Membersihkan Data Teks yang Berantakan dengan TRIM dan PROPER",
+    excerpt: "Data nama atau alamat sering memiliki spasi ganda atau huruf kapital acak? Rapikan secara otomatis menggunakan formula TRIM dan PROPER.",
+    content: "Data mentah sering kali kotor akibat kesalahan entri manual, seperti huruf kapital acak-acakan atau spasi ganda tak terlihat yang bisa merusak validasi rumus lookup.\n\n- `TRIM(teks)`: Menghapus spasi ekstra di awal, tengah, dan akhir kalimat, menyisakan hanya satu spasi bersih antar kata.\n- `PROPER(teks)`: Mengubah karakter pertama setiap kata menjadi huruf kapital dan huruf lainnya menjadi kecil.\n\nAnda dapat menggabungkan keduanya menjadi `=PROPER(TRIM(A2))` untuk menghasilkan nama yang rapi secara instan. Cobalah modul khusus pembersihan teks kami di dashboard belajar Excel Wahana!",
+    category: "Pembersihan Data",
+    date: "25 Mei 2026",
+    readTime: "4 menit baca",
+    gradient: "from-amber-500/10 to-orange-500/10 border-amber-500/20"
+  },
+  {
+    id: 5,
+    title: "Panduan Lengkap Menggunakan Fungsi Logika IF Bertingkat (Nested IF)",
+    excerpt: "Kuasai logika bercabang di Excel. Panduan praktis menyusun rumus Nested IF untuk mengevaluasi banyak kondisi tanpa terjadi error sintaks.",
+    content: "Fungsi `IF` bertingkat (Nested IF) digunakan jika Anda perlu menguji lebih dari satu kondisi logika secara berurutan.\n\nRumus umumnya:\n`=IF(Kondisi1, Hasil1, IF(Kondisi2, Hasil2, HasilAlternatif))`\n\nMisalnya untuk menentukan grade nilai siswa:\n`=IF(B2>=85, \"A\", IF(B2>=70, \"B\", \"C\"))`\n\nHal paling krusial dalam Nested IF adalah memastikan tanda kurung tutup `)` di akhir rumus sama jumlahnya dengan total fungsi `IF` yang Anda buka. Latih kemampuan logika logaritma bercabang Anda di simulator interaktif Excel Wahana.",
+    category: "Fungsi Logika",
+    date: "21 Mei 2026",
+    readTime: "8 menit baca",
+    gradient: "from-rose-500/10 to-pink-500/10 border-rose-500/20"
+  },
+  {
+    id: 6,
+    title: "Cara Menghitung Payroll Gaji Karyawan Menggunakan Excel Wahana",
+    excerpt: "Simulasi studi kasus nyata: Menggabungkan rumus logika, pencarian data, dan statistik untuk menyusun laporan payroll bulanan secara otomatis.",
+    content: "Menyusun sistem penggajian (payroll) adalah tugas harian divisi HRD. Proses ini biasanya melibatkan penggabungan beberapa rumus:\n\n1. Gunakan `VLOOKUP` untuk menarik Gaji Pokok berdasarkan golongan jabatan karyawan.\n2. Terapkan logika `IF` untuk menentukan bonus lembur berdasarkan jam kerja tambahan.\n3. Jumlahkan seluruh komponen gaji dengan rumus `SUM`.\n\nExcel Wahana menyediakan Ujian Laporan Payroll Terintegrasi pada modul akhir untuk menguji kemampuan Anda menyelesaikan kasus nyata secara mandiri.",
+    category: "Studi Kasus",
+    date: "18 Mei 2026",
+    readTime: "10 menit baca",
+    gradient: "from-teal-500/10 to-emerald-500/10 border-teal-500/20"
+  },
+  {
+    id: 7,
+    title: "Mengenal Fungsi INDEX dan MATCH sebagai Alternatif Terbaik VLOOKUP",
+    excerpt: "Mengapa para profesional Excel lebih memilih INDEX & MATCH dibanding VLOOKUP? Pelajari kelebihan fleksibilitas pencarian ke arah kiri.",
+    content: "Meskipun VLOOKUP sangat populer, ia memiliki keterbatasan besar yaitu tidak bisa mengambil data di sebelah kiri kolom kunci.\n\nKombinasi `INDEX` dan `MATCH` hadir untuk mengatasi keterbatasan tersebut:\n- `MATCH(lookup_value, lookup_array, 0)`: Mencari posisi indeks baris dari nilai kunci.\n- `INDEX(array, row_num)`: Mengambil nilai pada baris/kolom tertentu di rentang data.\n\nDengan menggabungkannya: `=INDEX(kolom_hasil, MATCH(nilai_kunci, kolom_kunci, 0))`, Anda mendapatkan pencarian dua arah yang fleksibel dan hemat memori pada file berukuran besar. Pelajari trik lanjutan ini di Excel Wahana.",
+    category: "Rumus Tingkat Lanjut",
+    date: "14 Mei 2026",
+    readTime: "6 menit baca",
+    gradient: "from-indigo-500/10 to-sky-500/10 border-indigo-500/20"
+  },
+  {
+    id: 8,
+    title: "Cara Mudah Menghitung Nilai Rata-Rata Kelas dengan Rumus AVERAGE",
+    excerpt: "Panduan praktis bagi pendidik untuk mengkalkulasi rata-rata nilai ujian murid serta menyaring data nilai secara cepat dan efisien.",
+    content: "Mencari rata-rata nilai adalah salah satu operasi dasar yang paling sering digunakan pendidik.\n\nRumus dasarnya adalah:\n`=AVERAGE(sel_awal:sel_akhir)`\n\nMisalnya untuk menghitung nilai rata-rata dari baris 2 sampai baris 10 di kolom C:\n`=AVERAGE(C2:C10)`\n\nSimulator Excel Wahana menyediakan studi kasus rekap nilai ujian kelas, membantu Anda mempraktikkan langsung rumus rata-rata dan menganalisis nilai murid secara dinamis.",
+    category: "Rumus Dasar",
+    date: "10 Mei 2026",
+    readTime: "3 menit baca",
+    gradient: "from-sky-500/10 to-blue-500/10 border-sky-500/20"
+  },
+  {
+    id: 9,
+    title: "Cara Menggunakan Rumus Statistik Dasar: MAX, MIN, dan COUNT di Excel",
+    excerpt: "Pelajari cara menyaring nilai tertinggi, mencari nilai terendah, dan menghitung jumlah entri data numerik secara otomatis dalam sekali klik.",
+    content: "Statistik dasar membantu Anda menarik simpulan cepat dari sekumpulan data:\n\n- `MAX(A2:A10)`: Mengetahui nilai terbesar (misal penjualan tertinggi).\n- `MIN(A2:A10)`: Mengetahui nilai terkecil (misal pengeluaran paling minim).\n- `COUNT(A2:A10)`: Menghitung berapa jumlah sel yang terisi angka (mengabaikan sel kosong atau berisi huruf).\n\nPelajari cara menyaring visualisasi data ekstrem ini di simulator interaktif Excel Wahana.",
+    category: "Statistik Dasar",
+    date: "06 Mei 2026",
+    readTime: "4 menit baca",
+    gradient: "from-violet-500/10 to-fuchsia-500/10 border-violet-500/20"
+  },
+  {
+    id: 10,
+    title: "Mendeteksi Kesalahan Formula Excel dan Cara Cepat Mengatasinya",
+    excerpt: "Sering menemui error #DIV/0!, #N/A, atau #VALUE! di Excel? Temukan arti dari masing-masing kode error tersebut dan cara memperbaikinya.",
+    content: "Error formula di Excel sering kali membingungkan pemula. Berikut arti dan cara mengatasinya:\n\n- `#DIV/0!`: Pembagian dengan angka nol atau sel kosong. Perbaiki data pembagi Anda.\n- `#N/A`: Data pencarian VLOOKUP tidak ditemukan di tabel referensi. Periksa kembali kecocokan karakter data kunci.\n- `#VALUE!`: Tipe data tidak cocok, misalnya menjumlahkan angka dengan huruf. Periksa format angka di dalam sel Anda.\n\nDi Excel Wahana, simulator kami akan mendeteksi dan menjelaskan kesalahan pengetikan rumus Anda secara real-time untuk mempercepat proses pembelajaran.",
+    category: "Penyelesaian Masalah",
+    date: "02 Mei 2026",
+    readTime: "5 menit baca",
+    gradient: "from-pink-500/10 to-rose-500/10 border-pink-500/20"
+  },
+  {
+    id: 11,
+    title: "Cara Menggunakan Rumus VLOOKUP dengan Kriteria Ganda di Excel Wahana",
+    excerpt: "Secara bawaan, VLOOKUP hanya mencari satu kriteria. Pelajari trik membuat kolom pembantu (helper) untuk mencari data dengan kriteria ganda.",
+    content: "Secara bawaan, `VLOOKUP` hanya mencari satu kriteria di kolom terkiri. Untuk menggunakan kriteria ganda, Anda dapat membuat kolom pembantu (*helper column*) yang menggabungkan dua kriteria kunci tersebut menggunakan simbol ampersand `&`.\n\nMisalnya di sel A2: `=B2&C2`.\nSetelah itu, lakukan pencarian menggunakan nilai gabungan tersebut:\n`=VLOOKUP(nilai1&nilai2, A:D, 4, FALSE)`\n\nCara ini sangat efektif, cepat, dan mudah diimplementasikan tanpa memerlukan rumus array yang rumit di simulator Excel Wahana.",
+    category: "Rumus Tingkat Lanjut",
+    date: "28 April 2026",
+    readTime: "7 menit baca",
+    gradient: "from-emerald-500/10 to-teal-500/10 border-emerald-500/20"
+  },
+  {
+    id: 12,
+    title: "Mengenal Fungsi IFERROR untuk Menangani Pesan Error Excel di Excel Wahana",
+    excerpt: "Laporan Excel Anda terlihat kurang rapi karena pesan error? Bungkus rumus Anda dengan IFERROR untuk menampilkan pesan khusus yang bersih.",
+    content: "Ketika rumus Anda menghasilkan error seperti `#N/A` atau `#DIV/0!`, laporan Anda akan terlihat kurang profesional. Gunakan fungsi `IFERROR` di Excel Wahana untuk menangani hal tersebut secara elegan.\n\nRumus umumnya:\n`=IFERROR(rumus_utama, nilai_alternatif)`\n\nContoh:\n`=IFERROR(VLOOKUP(A2, B:D, 3, FALSE), \"Data Tidak Ditemukan\")`\n\nDengan begitu, jika terjadi kesalahan pencarian, Excel akan menampilkan teks *'Data Tidak Ditemukan'* alih-alih menampilkan kode error bawaan yang membingungkan pembaca.",
+    category: "Penyelesaian Masalah",
+    date: "24 April 2026",
+    readTime: "4 menit baca",
+    gradient: "from-blue-500/10 to-indigo-500/10 border-blue-500/20"
+  },
+  {
+    id: 13,
+    title: "Panduan Rumus COUNTIF dan COUNTIFS Bersyarat di Excel Wahana",
+    excerpt: "Hitung jumlah sel yang memenuhi kondisi tertentu secara otomatis. Kuasai penggunaan COUNTIF untuk satu syarat dan COUNTIFS untuk banyak syarat.",
+    content: "Untuk menghitung jumlah sel berdasarkan kondisi tertentu, Excel menyediakan fungsi `COUNTIF` dan `COUNTIFS`:\n\n- `COUNTIF(range, kriteria)`: Digunakan untuk satu syarat tunggal.\n  Contoh: `=COUNTIF(A2:A10, \"DEV\")` untuk menghitung jumlah karyawan di divisi DEV.\n- `COUNTIFS(range1, kriteria1, range2, kriteria2, ...)`: Digunakan untuk banyak syarat sekaligus.\n  Contoh: `=COUNTIFS(A2:A10, \"DEV\", B2:B10, \">5000000\")` untuk menghitung berapa karyawan DEV yang memiliki gaji di atas 5 juta.\n\nKedua rumus ini sangat berguna untuk membuat ringkasan dashboard data sekolah atau bisnis Anda di platform Excel Wahana.",
+    category: "Analisis Data",
+    date: "20 April 2026",
+    readTime: "6 menit baca",
+    gradient: "from-purple-500/10 to-violet-500/10 border-purple-500/20"
+  },
+  {
+    id: 14,
+    title: "Cara Menggunakan Rumus SUMIF untuk Menjumlahkan Data Kriteria di Excel Wahana",
+    excerpt: "Pelajari cara menjumlahkan nominal transaksi atau nilai angka secara selektif berdasarkan divisi atau kategori menggunakan SUMIF.",
+    content: "Rumus `SUMIF` membantu Anda menjumlahkan nilai numerik hanya jika sel terkait memenuhi kriteria tertentu.\n\nStruktur rumusnya:\n`=SUMIF(range_kriteria, kriteria, [range_jumlah])`\n\nContoh di Excel Wahana:\n`=SUMIF(A2:A10, \"DEV\", B2:B10)`\n\nRumus di atas akan menjumlahkan total nominal di kolom B (Gaji) khusus untuk divisi \"DEV\" di kolom A. Jika Anda memiliki lebih dari satu kriteria (misal departemen DEV dan status Kontrak), Anda dapat menggunakan fungsi `SUMIFS`.",
+    category: "Rumus Dasar",
+    date: "16 April 2026",
+    readTime: "5 menit baca",
+    gradient: "from-amber-500/10 to-orange-500/10 border-amber-500/20"
+  },
+  {
+    id: 15,
+    title: "Tips Menggunakan Rumus CONCATENATE dan Simbol Ampersand (&) di Excel Wahana",
+    excerpt: "Gabungkan nama depan, nama belakang, atau kode barang secara dinamis. Simak tips menyatukan teks dengan spasi pemisah di Excel.",
+    content: "Menggabungkan data teks dari sel yang berbeda sering kali diperlukan, misalnya menggabungkan Nama Depan dan Nama Belakang karyawan agar mempermudah pembuatan slip gaji.\n\nAda dua cara utama yang bisa dicoba di Excel Wahana:\n1. Menggunakan fungsi `CONCATENATE`:\n   `=CONCATENATE(A2, \" \", B2)`\n2. Menggunakan simbol ampersand `&` (lebih cepat dan direkomendasikan):\n   `=A2 & \" \" & B2`\n\nTanda `\" \"` (spasi di dalam tanda kutip) berfungsi memberikan jarak pemisah antar teks agar tidak menempel satu sama lain.",
+    category: "Pembersihan Data",
+    date: "12 April 2026",
+    readTime: "4 menit baca",
+    gradient: "from-rose-500/10 to-pink-500/10 border-rose-500/20"
+  },
+  {
+    id: 16,
+    title: "Mengenal Fungsi DATE, DAY, MONTH, dan YEAR untuk Waktu di Excel Wahana",
+    excerpt: "Kuasai manipulasi data tanggal di Excel. Pecah dan satukan kembali data hari, bulan, dan tahun untuk mempermudah laporan berkala.",
+    content: "Manajemen tanggal adalah salah satu kebutuhan utama dalam penyusunan database payroll atau proyek.\n\n- `DATE(tahun, bulan, tanggal)`: Membuat format tanggal yang valid di Excel.\n- `DAY(sel)`: Mengambil angka hari dari suatu tanggal.\n- `MONTH(sel)`: Mengambil angka bulan.\n- `YEAR(sel)`: Mengambil angka tahun.\n\nContoh jika sel A2 berisi `04/06/2026`, maka `=MONTH(A2)` akan mengembalikan hasil `6` (Juni). Ini mempermudah Anda melakukan filter laporan bulanan di Excel Wahana secara otomatis.",
+    category: "Manipulasi Tanggal",
+    date: "08 April 2026",
+    readTime: "5 menit baca",
+    gradient: "from-teal-500/10 to-emerald-500/10 border-teal-500/20"
+  },
+  {
+    id: 17,
+    title: "Cara Menghitung Persentase Kenaikan dan Penurunan Angka di Excel Wahana",
+    excerpt: "Analisis performa penjualan atau kenaikan gaji karyawan secara objektif. Simak rumus dasar perhitungan persentase selisih data.",
+    content: "Menghitung persentase perubahan (kenaikan atau penurunan) antara nilai lama dan nilai baru sangat penting untuk analisis data.\n\nRumus dasarnya adalah:\n`=(Nilai Baru - Nilai Lama) / Nilai Lama`\n\nContoh di Excel Wahana:\nJika target penjualan lama ada di sel B2 dan hasil baru di sel C2, rumusnya:\n`=(C2-B2)/B2`\n\nSetelah memasukkan rumus tersebut, ubah format sel menjadi *Percentage* (%) agar Excel otomatis menampilkan lambang persen secara rapi.",
+    category: "Tips & Trik",
+    date: "04 April 2026",
+    readTime: "3 menit baca",
+    gradient: "from-indigo-500/10 to-sky-500/10 border-indigo-500/20"
+  },
+  {
+    id: 18,
+    title: "Panduan Membuat Grafik Sederhana di Excel Wahana dari Hasil Rekap",
+    excerpt: "Ubah baris data numerik Anda menjadi grafik yang informatif dan menarik. Simak cara memilih jenis chart yang tepat untuk dashboard Anda.",
+    content: "Setelah selesai merangkum data menggunakan rumus `SUM` atau `AVERAGE`, langkah berikutnya adalah menyajikan data tersebut secara visual agar mudah dipahami atasan.\n\nLangkahnya:\n1. Blok seluruh tabel ringkasan data Anda.\n2. Klik menu *Insert* lalu pilih jenis grafik (*Chart*) yang sesuai.\n   - **Bar/Column Chart**: Sangat baik untuk perbandingan antar divisi.\n   - **Line Chart**: Cocok untuk melihat tren perkembangan dari waktu ke waktu.\n\nGrafik yang informatif selalu didasarkan pada data sumber rumus yang bersih dan terstruktur di Excel Wahana.",
+    category: "Visualisasi Data",
+    date: "30 Maret 2026",
+    readTime: "6 menit baca",
+    gradient: "from-sky-500/10 to-blue-500/10 border-sky-500/20"
+  },
+  {
+    id: 19,
+    title: "Menggunakan Fungsi UPPER, LOWER, dan PROPER untuk Huruf Kapital di Excel Wahana",
+    excerpt: "Rapikan teks nama atau alamat dalam sekali seret. Ubah semua teks menjadi huruf besar, kecil, atau kapital di setiap awal kata.",
+    content: "Mengatur konsistensi huruf kapital sangat penting untuk kerapian dokumen sebelum dicetak atau dianalisis.\n\n- `UPPER(teks)`: Mengubah seluruh teks menjadi huruf besar (kapital) semua.\n- `LOWER(teks)`: Mengubah seluruh teks menjadi huruf kecil semua.\n- `PROPER(teks)`: Mengubah huruf pertama di setiap kata menjadi huruf kapital, dan sisanya menjadi huruf kecil.\n\nContoh: jika sel A2 berisi *\"laporan payroll\"*, maka `=PROPER(A2)` akan menghasilkan *\"Laporan Payroll\"* secara otomatis. Kombinasikan ini untuk merapikan nama karyawan Anda di platform Excel Wahana.",
+    category: "Pembersihan Data",
+    date: "26 Maret 2026",
+    readTime: "4 menit baca",
+    gradient: "from-violet-500/10 to-fuchsia-500/10 border-violet-500/20"
+  },
+  {
+    id: 20,
+    title: "Tips Produktif Excel Wahana: Mengunci Sel dengan Absolute Reference ($)",
+    excerpt: "Rumus Anda menghasilkan error saat disalin ke bawah? Pelajari cara menyematkan simbol dolar ($) untuk mengunci referensi sel tabel lookup.",
+    content: "Saat Anda menyalin rumus ke baris di bawahnya, alamat sel di dalamnya akan otomatis bergeser ke bawah. Untuk mengunci referensi sel tertentu agar tidak ikut bergeser (misalnya tabel referensi VLOOKUP), Anda harus menggunakan **Absolute Reference** dengan simbol dolar `$` di Excel Wahana.\n\n- `$B$2`: Mengunci sel B2 secara penuh (kolom dan baris tidak akan bergeser).\n- `B$2`: Hanya mengunci baris 2 (kolom bebas bergeser).\n- `$B2`: Hanya mengunci kolom B (baris bebas bergeser).\n\nTekan tombol `F4` pada keyboard Anda setelah menunjuk sel untuk menyisipkan simbol `$` secara otomatis dan cepat.",
+    category: "Tips & Trik",
+    date: "22 Maret 2026",
+    readTime: "5 menit baca",
+    gradient: "from-pink-500/10 to-rose-500/10 border-pink-500/20"
+  }
+];
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const { user, loadUserAndProgress } = useAppStore();
@@ -538,6 +752,8 @@ export default function LandingPage() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [defaultSignUp, setDefaultSignUp] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [visibleArticles, setVisibleArticles] = useState(6);
+  const [activeReadingArticle, setActiveReadingArticle] = useState<typeof DUMMY_ARTICLES[0] | null>(null);
 
   const openAuthModal = (signUp: boolean) => {
     setDefaultSignUp(signUp);
@@ -622,7 +838,7 @@ export default function LandingPage() {
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-md shadow-emerald-500/30">
               <span className="font-mono text-sm font-bold text-white">XL</span>
             </div>
-            <span className="font-bold tracking-tight text-foreground text-base">ExcelMaster</span>
+            <span className="font-bold tracking-tight text-foreground text-base">Excel Wahana</span>
           </div>
 
           {/* Desktop Nav */}
@@ -630,6 +846,7 @@ export default function LandingPage() {
             <a href="#fitur" className="hover:text-emerald-500 transition-colors">Fitur</a>
             <a href="#kurikulum" className="hover:text-emerald-500 transition-colors">Kurikulum</a>
             <a href="#playground" className="hover:text-emerald-500 transition-colors">Playground</a>
+            <a href="#artikel" className="hover:text-emerald-500 transition-colors">Artikel</a>
             <a href="#faq" className="hover:text-emerald-500 transition-colors">FAQ</a>
           </nav>
 
@@ -692,7 +909,7 @@ export default function LandingPage() {
               className="md:hidden absolute inset-x-0 top-16 bg-background/98 backdrop-blur-xl border-b border-border/40 z-40 p-6 flex flex-col space-y-6 shadow-xl"
             >
               <nav className="flex flex-col space-y-1">
-                {["#fitur|Fitur Utama", "#kurikulum|Kurikulum", "#playground|Playground", "#faq|FAQ"].map(item => {
+                {["#fitur|Fitur Utama", "#kurikulum|Kurikulum", "#playground|Playground", "#artikel|Artikel Edukasi", "#faq|FAQ"].map(item => {
                   const [href, label] = item.split("|");
                   return (
                     <a
@@ -885,7 +1102,7 @@ export default function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
-              <Zap className="w-3.5 h-3.5" /> Kenapa ExcelMaster?
+              <Zap className="w-3.5 h-3.5" /> Kenapa Excel Wahana?
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
               Sistem Pembelajaran Paling Modern
@@ -978,31 +1195,39 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Big Card 2: Dual POV */}
-            <div className="lg:col-span-2 group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-5 hover:border-teal-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-500/5">
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            {/* Big Card 2: Dashboard Progres Belajar */}
+            <div className="lg:col-span-2 group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-5 hover:border-emerald-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="flex items-start justify-between">
-                <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 group-hover:scale-110 group-hover:bg-teal-500/20 transition-all duration-300">
-                  <UserCheck className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300">
+                  <LayoutDashboard className="w-6 h-6" />
                 </div>
+                <span className="text-[10px] font-mono text-emerald-400/70 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">Self-Paced Learning</span>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-teal-400 transition-colors">Instructor & Peserta POV</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Dua sudut pandang interaktif: belajar sebagai peserta dengan progres yang tersimpan, atau kelola seluruh kelas, buat soal kustom, dan pantau perkembangan semua peserta sebagai instruktur.</p>
+                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-emerald-400 transition-colors">Dashboard Progres Belajar Mandiri</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Pantau perkembangan belajar Anda secara real-time. Setiap modul formula, tantangan studi kasus, dan latihan interaktif yang Anda selesaikan akan terekam otomatis dalam profil personal Anda.</p>
               </div>
-              <div className="mt-auto flex flex-wrap gap-3">
-                {[
-                  { icon: GraduationCap, label: "Mode Peserta", desc: "Belajar & Selesaikan Soal", color: "text-teal-400 bg-teal-500/10 border-teal-500/20" },
-                  { icon: UserCheck, label: "Mode Instruktur", desc: "Kelola & Evaluasi Kelas", color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
-                ].map(item => (
-                  <div key={item.label} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${item.color} transition-all`}>
-                    <item.icon className="w-4 h-4" />
-                    <div>
-                      <div className="text-xs font-bold">{item.label}</div>
-                      <div className="text-[10px] text-muted-foreground">{item.desc}</div>
-                    </div>
+              {/* Visual Mini Progress Bar */}
+              <div className="mt-auto space-y-3 p-4 bg-muted/20 border border-border/20 rounded-xl select-none">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs font-semibold text-foreground">
+                    <span>Modul 1: VLOOKUP & Pencarian Data</span>
+                    <span className="text-emerald-400 font-mono text-[10px]">100% Selesai</span>
                   </div>
-                ))}
+                  <div className="w-full h-2 bg-border/40 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: "100%" }} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs font-semibold text-foreground">
+                    <span>Modul 2: Formula IF Bertingkat (Nested IF)</span>
+                    <span className="text-amber-400 font-mono text-[10px]">60% Sedang Berjalan</span>
+                  </div>
+                  <div className="w-full h-2 bg-border/40 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{ width: "60%" }} />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1134,6 +1359,86 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ═══ ARTIKEL & EDUKASI SECTION ═══════════════════════════════════════ */}
+      <section id="artikel" className="relative z-10 py-28 border-t border-border/40 bg-muted/5">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+              <BookOpen className="w-3.5 h-3.5" /> Artikel & Edukasi Excel
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+              Wawasan & Panduan Rumus Excel
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Tingkatkan pemahaman teori Anda dengan kumpulan tips, panduan formula, dan studi kasus spreadsheet terpopuler.
+            </p>
+          </div>
+
+          {/* Grid of Articles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {DUMMY_ARTICLES.slice(0, visibleArticles).map((article) => (
+              <motion.article
+                key={article.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4 }}
+                className={cn(
+                  "group relative overflow-hidden bg-card border border-border/60 hover:border-emerald-500/30 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/[0.02]"
+                )}
+              >
+                {/* Background soft glow gradient */}
+                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -z-10", article.gradient.split(" ")[0], article.gradient.split(" ")[1])} />
+                
+                <div className="space-y-4">
+                  {/* Meta tag & Read time */}
+                  <div className="flex items-center justify-between text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+                    <span className="text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/10">{article.category}</span>
+                    <span>{article.readTime}</span>
+                  </div>
+
+                  {/* Title & Description */}
+                  <div className="space-y-2">
+                    <h3 className="text-base font-bold text-foreground group-hover:text-emerald-500 transition-colors line-clamp-2 leading-snug">
+                      {article.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 font-sans">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Footer card */}
+                <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/40 text-[11px] font-medium text-muted-foreground select-none">
+                  <span>{article.date}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveReadingArticle(article);
+                    }}
+                    className="inline-flex items-center gap-1 text-emerald-500 font-bold hover:text-emerald-400 transition-colors cursor-pointer bg-transparent border-none p-0"
+                  >
+                    Mulai Membaca <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+
+          {/* Show More Button */}
+          {visibleArticles < DUMMY_ARTICLES.length && (
+            <div className="flex justify-center mt-12">
+              <Button
+                onClick={() => setVisibleArticles(DUMMY_ARTICLES.length)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs px-6 py-3 rounded-xl shadow-md shadow-emerald-500/20 transition-all hover:-translate-y-px cursor-pointer"
+              >
+                Tampilkan Semua Artikel ({DUMMY_ARTICLES.length})
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ═══ FAQ ACCORDION ═══════════════════════════════════════════════════ */}
       <section id="faq" className="relative z-10 py-28">
         <div className="max-w-[860px] mx-auto px-6">
@@ -1192,7 +1497,7 @@ export default function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-muted-foreground">
           <div className="flex items-center space-x-2.5">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-mono text-[11px] font-bold">XL</div>
-            <span className="font-bold tracking-tight text-foreground">ExcelMaster</span>
+            <span className="font-bold tracking-tight text-foreground">Excel Wahana</span>
           </div>
           <p className="text-xs">© {new Date().getFullYear()} Wahana Prestasi. Platform pembelajaran Excel interaktif gratis.</p>
           <div className="flex space-x-6 text-xs">
@@ -1212,6 +1517,70 @@ export default function LandingPage() {
 
       {/* Auth Modal */}
       <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} defaultSignUp={defaultSignUp} />
+
+      {/* Article Detail Modal */}
+      <Dialog open={activeReadingArticle !== null} onOpenChange={(open) => !open && setActiveReadingArticle(null)}>
+        <DialogContent className="max-w-xs sm:max-w-lg p-6 overflow-hidden border border-border/60 bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl">
+          {activeReadingArticle && (
+            <>
+              <DialogHeader className="space-y-2.5 select-none text-left">
+                <div className="flex items-center justify-between text-[9px] font-extrabold tracking-wider uppercase text-muted-foreground">
+                  <span className="text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/15">
+                    {activeReadingArticle.category}
+                  </span>
+                  <span>{activeReadingArticle.readTime}</span>
+                </div>
+                <DialogTitle className="text-base sm:text-xl font-bold tracking-tight text-foreground leading-snug">
+                  {activeReadingArticle.title}
+                </DialogTitle>
+                <DialogDescription className="text-[10px] text-muted-foreground font-mono">
+                  Dipublikasikan pada: {activeReadingArticle.date}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div 
+                className="my-4 text-xs sm:text-sm text-foreground/90 dark:text-foreground/80 leading-relaxed font-sans border-y border-border/40 py-4 max-h-[300px] overflow-y-auto pr-1.5 scrollbar-thin select-text whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: activeReadingArticle.content
+                    .replace(/`(.*?)`/g, '<code class="bg-muted dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px] text-emerald-600 dark:text-emerald-400 border border-border/60 font-semibold">$1</code>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em class="italic text-foreground/90">$1</em>')
+                }}
+              />
+
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-1 select-none">
+                {mounted && user ? (
+                  <Link
+                    href="/belajar"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all hover:-translate-y-px cursor-pointer"
+                    onClick={() => setActiveReadingArticle(null)}
+                  >
+                    <span>Coba Latihan di Simulator</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <button
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all hover:-translate-y-px cursor-pointer"
+                    onClick={() => {
+                      setActiveReadingArticle(null);
+                      openAuthModal(true);
+                    }}
+                  >
+                    <span>Daftar Gratis & Latihan</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+                <button
+                  onClick={() => setActiveReadingArticle(null)}
+                  className="px-4 py-3 rounded-xl border border-border bg-muted/40 hover:bg-muted/80 text-muted-foreground hover:text-foreground font-semibold text-xs transition-all cursor-pointer"
+                >
+                  Tutup
+                </button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

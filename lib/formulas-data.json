@@ -1,0 +1,3376 @@
+[
+  {
+    "no": 1,
+    "nama_rumus": "ABS",
+    "versi": "-",
+    "syntax": "ABS(number)",
+    "penjelasan": "Mengembalikan nilai absolut (positif) dari suatu angka"
+  },
+  {
+    "no": 2,
+    "nama_rumus": "ACCRINT",
+    "versi": "-",
+    "syntax": "ACCRINT(issue, first_interest, settlement, rate, par, frequency, [basis], [calc_method])",
+    "penjelasan": "Menghitung bunga yang bertambah untuk sekuritas yang membayar bunga berkala"
+  },
+  {
+    "no": 3,
+    "nama_rumus": "ACCRINTM",
+    "versi": "-",
+    "syntax": "ACCRINTM(issue, settlement, rate, par, [basis])",
+    "penjelasan": "Menghitung bunga yang bertambah untuk sekuritas yang membayar bunga pada saat jatuh tempo"
+  },
+  {
+    "no": 4,
+    "nama_rumus": "ACOS",
+    "versi": "-",
+    "syntax": "ACOS(number)",
+    "penjelasan": "Mengembalikan arkkosinus (kosinus invers) dari suatu angka dalam radian"
+  },
+  {
+    "no": 5,
+    "nama_rumus": "ACOSH",
+    "versi": "-",
+    "syntax": "ACOSH(number)",
+    "penjelasan": "Mengembalikan arkkosinus hiperbolik invers dari suatu angka"
+  },
+  {
+    "no": 6,
+    "nama_rumus": "ACOT",
+    "versi": "Excel 2013+",
+    "syntax": "ACOT(number)",
+    "penjelasan": "Mengembalikan arkkotangen (kotangen invers) dari suatu angka dalam radian"
+  },
+  {
+    "no": 7,
+    "nama_rumus": "ACOTH",
+    "versi": "Excel 2013+",
+    "syntax": "ACOTH(number)",
+    "penjelasan": "Mengembalikan arkkotangen hiperbolik invers dari suatu angka"
+  },
+  {
+    "no": 8,
+    "nama_rumus": "AGGREGATE",
+    "versi": "-",
+    "syntax": "AGGREGATE(function_num, options, ref1, [ref2], ...)",
+    "penjelasan": "Mengembalikan agregat dalam daftar atau database, dapat mengabaikan baris tersembunyi dan nilai error"
+  },
+  {
+    "no": 9,
+    "nama_rumus": "ADDRESS",
+    "versi": "-",
+    "syntax": "ADDRESS(row_num, column_num, [abs_num], [a1], [sheet_text])",
+    "penjelasan": "Membuat referensi sel sebagai teks berdasarkan nomor baris dan kolom"
+  },
+  {
+    "no": 10,
+    "nama_rumus": "AMORDEGRC",
+    "versi": "-",
+    "syntax": "AMORDEGRC(cost, date_purchased, first_period, salvage, period, rate, [basis])",
+    "penjelasan": "Mengembalikan depresiasi untuk setiap periode akuntansi menggunakan koefisien depresiasi"
+  },
+  {
+    "no": 11,
+    "nama_rumus": "AMORLINC",
+    "versi": "-",
+    "syntax": "AMORLINC(cost, date_purchased, first_period, salvage, period, rate, [basis])",
+    "penjelasan": "Mengembalikan depresiasi untuk setiap periode akuntansi secara linear"
+  },
+  {
+    "no": 12,
+    "nama_rumus": "AND",
+    "versi": "-",
+    "syntax": "AND(logical1, [logical2], ...)",
+    "penjelasan": "Mengembalikan TRUE jika semua argumen bernilai TRUE"
+  },
+  {
+    "no": 13,
+    "nama_rumus": "ARABIC",
+    "versi": "Excel 2013+",
+    "syntax": "ARABIC(text)",
+    "penjelasan": "Mengkonversi angka Romawi menjadi angka Arab"
+  },
+  {
+    "no": 14,
+    "nama_rumus": "AREAS",
+    "versi": "-",
+    "syntax": "AREAS(reference)",
+    "penjelasan": "Mengembalikan jumlah area dalam suatu referensi"
+  },
+  {
+    "no": 15,
+    "nama_rumus": "ARRAYTOTEXT",
+    "versi": "Excel 2021+",
+    "syntax": "ARRAYTOTEXT(array, [format])",
+    "penjelasan": "Mengembalikan array nilai teks dari rentang yang ditentukan"
+  },
+  {
+    "no": 16,
+    "nama_rumus": "ASC",
+    "versi": "-",
+    "syntax": "ASC(text)",
+    "penjelasan": "Mengubah karakter full-width (double-byte) menjadi half-width (single-byte) dalam teks"
+  },
+  {
+    "no": 17,
+    "nama_rumus": "ASIN",
+    "versi": "-",
+    "syntax": "ASIN(number)",
+    "penjelasan": "Mengembalikan arksinus (sinus invers) dari suatu angka dalam radian"
+  },
+  {
+    "no": 18,
+    "nama_rumus": "ASINH",
+    "versi": "-",
+    "syntax": "ASINH(number)",
+    "penjelasan": "Mengembalikan arksinus hiperbolik invers dari suatu angka"
+  },
+  {
+    "no": 19,
+    "nama_rumus": "ATAN",
+    "versi": "-",
+    "syntax": "ATAN(number)",
+    "penjelasan": "Mengembalikan arktangen (tangen invers) dari suatu angka dalam radian"
+  },
+  {
+    "no": 20,
+    "nama_rumus": "ATAN2",
+    "versi": "-",
+    "syntax": "ATAN2(x_num, y_num)",
+    "penjelasan": "Mengembalikan arktangen dari koordinat x dan y dalam radian"
+  },
+  {
+    "no": 21,
+    "nama_rumus": "ATANH",
+    "versi": "-",
+    "syntax": "ATANH(number)",
+    "penjelasan": "Mengembalikan arktangen hiperbolik invers dari suatu angka"
+  },
+  {
+    "no": 22,
+    "nama_rumus": "AVEDEV",
+    "versi": "-",
+    "syntax": "AVEDEV(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan rata-rata deviasi absolut dari rata-rata sebuah kumpulan data"
+  },
+  {
+    "no": 23,
+    "nama_rumus": "AVERAGE",
+    "versi": "-",
+    "syntax": "AVERAGE(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan rata-rata (mean aritmatika) dari argumen"
+  },
+  {
+    "no": 24,
+    "nama_rumus": "AVERAGEA",
+    "versi": "-",
+    "syntax": "AVERAGEA(value1, [value2], ...)",
+    "penjelasan": "Mengembalikan rata-rata dari argumen termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 25,
+    "nama_rumus": "AVERAGEIF",
+    "versi": "-",
+    "syntax": "AVERAGEIF(range, criteria, [average_range])",
+    "penjelasan": "Mengembalikan rata-rata dari sel yang memenuhi kriteria tertentu"
+  },
+  {
+    "no": 26,
+    "nama_rumus": "AVERAGEIFS",
+    "versi": "-",
+    "syntax": "AVERAGEIFS(average_range, criteria_range1, criteria1, ...)",
+    "penjelasan": "Mengembalikan rata-rata dari sel yang memenuhi beberapa kriteria"
+  },
+  {
+    "no": 27,
+    "nama_rumus": "BAHTTEXT",
+    "versi": "-",
+    "syntax": "BAHTTEXT(number)",
+    "penjelasan": "Mengkonversi angka menjadi teks dalam format mata uang Thai Baht"
+  },
+  {
+    "no": 28,
+    "nama_rumus": "BASE",
+    "versi": "-",
+    "syntax": "BASE(number, radix, [min_length])",
+    "penjelasan": "Mengkonversi angka menjadi representasi teks dengan basis bilangan yang diberikan"
+  },
+  {
+    "no": 29,
+    "nama_rumus": "BESSELI",
+    "versi": "-",
+    "syntax": "BESSELI(x, n)",
+    "penjelasan": "Mengembalikan fungsi Bessel termodifikasi In(x)"
+  },
+  {
+    "no": 30,
+    "nama_rumus": "BESSELJ",
+    "versi": "-",
+    "syntax": "BESSELJ(x, n)",
+    "penjelasan": "Mengembalikan fungsi Bessel Jn(x)"
+  },
+  {
+    "no": 31,
+    "nama_rumus": "BESSELK",
+    "versi": "-",
+    "syntax": "BESSELK(x, n)",
+    "penjelasan": "Mengembalikan fungsi Bessel termodifikasi Kn(x)"
+  },
+  {
+    "no": 32,
+    "nama_rumus": "BESSELY",
+    "versi": "-",
+    "syntax": "BESSELY(x, n)",
+    "penjelasan": "Mengembalikan fungsi Bessel Yn(x)"
+  },
+  {
+    "no": 33,
+    "nama_rumus": "BETADIST",
+    "versi": "-",
+    "syntax": "BETADIST(x, alpha, beta, [A], [B])",
+    "penjelasan": "Fungsi lama: Mengembalikan fungsi distribusi kumulatif beta (diganti BETA.DIST)"
+  },
+  {
+    "no": 34,
+    "nama_rumus": "BETA.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "BETA.DIST(x, alpha, beta, cumulative, [A], [B])",
+    "penjelasan": "Mengembalikan fungsi distribusi probabilitas beta"
+  },
+  {
+    "no": 35,
+    "nama_rumus": "BETAINV",
+    "versi": "-",
+    "syntax": "BETAINV(probability, alpha, beta, [A], [B])",
+    "penjelasan": "Fungsi lama: Mengembalikan invers dari fungsi distribusi kumulatif beta (diganti BETA.INV)"
+  },
+  {
+    "no": 36,
+    "nama_rumus": "BETA.INV",
+    "versi": "Excel 2010+",
+    "syntax": "BETA.INV(probability, alpha, beta, [A], [B])",
+    "penjelasan": "Mengembalikan invers dari fungsi distribusi kumulatif beta"
+  },
+  {
+    "no": 37,
+    "nama_rumus": "BIN2DEC",
+    "versi": "-",
+    "syntax": "BIN2DEC(number)",
+    "penjelasan": "Mengkonversi bilangan biner menjadi desimal"
+  },
+  {
+    "no": 38,
+    "nama_rumus": "BIN2HEX",
+    "versi": "-",
+    "syntax": "BIN2HEX(number, [places])",
+    "penjelasan": "Mengkonversi bilangan biner menjadi heksadesimal"
+  },
+  {
+    "no": 39,
+    "nama_rumus": "BIN2OCT",
+    "versi": "-",
+    "syntax": "BIN2OCT(number, [places])",
+    "penjelasan": "Mengkonversi bilangan biner menjadi oktal"
+  },
+  {
+    "no": 40,
+    "nama_rumus": "BINOMDIST",
+    "versi": "-",
+    "syntax": "BINOMDIST(number_s, trials, probability_s, cumulative)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi binomial individual (diganti BINOM.DIST)"
+  },
+  {
+    "no": 41,
+    "nama_rumus": "BINOM.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "BINOM.DIST(number_s, trials, probability_s, cumulative)",
+    "penjelasan": "Mengembalikan distribusi probabilitas binomial"
+  },
+  {
+    "no": 42,
+    "nama_rumus": "BINOM.DIST.RANGE",
+    "versi": "Excel 2013+",
+    "syntax": "BINOM.DIST.RANGE(trials, probability_s, number_s, [number_s2])",
+    "penjelasan": "Mengembalikan probabilitas percobaan menggunakan distribusi binomial"
+  },
+  {
+    "no": 43,
+    "nama_rumus": "BINOM.INV",
+    "versi": "Excel 2010+",
+    "syntax": "BINOM.INV(trials, probability_s, alpha)",
+    "penjelasan": "Mengembalikan nilai terkecil yang distribusi binomialnya kurang dari atau sama dengan nilai kriteria"
+  },
+  {
+    "no": 44,
+    "nama_rumus": "BITAND",
+    "versi": "Excel 2013+",
+    "syntax": "BITAND(number1, number2)",
+    "penjelasan": "Mengembalikan hasil AND bitwise dari dua angka"
+  },
+  {
+    "no": 45,
+    "nama_rumus": "BITLSHIFT",
+    "versi": "Excel 2013+",
+    "syntax": "BITLSHIFT(number, shift_amount)",
+    "penjelasan": "Mengembalikan angka yang digeser ke kiri sejumlah bit yang ditentukan"
+  },
+  {
+    "no": 46,
+    "nama_rumus": "BITOR",
+    "versi": "Excel 2013+",
+    "syntax": "BITOR(number1, number2)",
+    "penjelasan": "Mengembalikan hasil OR bitwise dari dua angka"
+  },
+  {
+    "no": 47,
+    "nama_rumus": "BITRSHIFT",
+    "versi": "Excel 2013+",
+    "syntax": "BITRSHIFT(number, shift_amount)",
+    "penjelasan": "Mengembalikan angka yang digeser ke kanan sejumlah bit yang ditentukan"
+  },
+  {
+    "no": 48,
+    "nama_rumus": "BITXOR",
+    "versi": "Excel 2013+",
+    "syntax": "BITXOR(number1, number2)",
+    "penjelasan": "Mengembalikan hasil XOR bitwise dari dua angka"
+  },
+  {
+    "no": 49,
+    "nama_rumus": "BYCOL",
+    "versi": "Excel 2024+",
+    "syntax": "BYCOL(array, lambda)",
+    "penjelasan": "Menerapkan fungsi LAMBDA ke setiap kolom dan mengembalikan array hasil"
+  },
+  {
+    "no": 50,
+    "nama_rumus": "BYROW",
+    "versi": "Excel 2024+",
+    "syntax": "BYROW(array, lambda)",
+    "penjelasan": "Menerapkan fungsi LAMBDA ke setiap baris dan mengembalikan array hasil"
+  },
+  {
+    "no": 51,
+    "nama_rumus": "CALL",
+    "versi": "-",
+    "syntax": "CALL(register_id, [argument1], ...)",
+    "penjelasan": "Memanggil prosedur dalam DLL atau sumber daya kode"
+  },
+  {
+    "no": 52,
+    "nama_rumus": "CEILING",
+    "versi": "-",
+    "syntax": "CEILING(number, significance)",
+    "penjelasan": "Membulatkan angka ke atas ke kelipatan terdekat dari signifikansi"
+  },
+  {
+    "no": 53,
+    "nama_rumus": "CEILING.MATH",
+    "versi": "Excel 2013+",
+    "syntax": "CEILING.MATH(number, [significance], [mode])",
+    "penjelasan": "Membulatkan angka ke atas ke bilangan bulat terdekat atau ke kelipatan signifikansi terdekat"
+  },
+  {
+    "no": 54,
+    "nama_rumus": "CEILING.PRECISE",
+    "versi": "-",
+    "syntax": "CEILING.PRECISE(number, [significance])",
+    "penjelasan": "Membulatkan angka ke atas ke bilangan bulat atau kelipatan signifikansi terdekat"
+  },
+  {
+    "no": 55,
+    "nama_rumus": "CELL",
+    "versi": "-",
+    "syntax": "CELL(info_type, [reference])",
+    "penjelasan": "Mengembalikan informasi tentang format, lokasi, atau konten sel"
+  },
+  {
+    "no": 56,
+    "nama_rumus": "CHAR",
+    "versi": "-",
+    "syntax": "CHAR(number)",
+    "penjelasan": "Mengembalikan karakter yang ditentukan oleh kode angka"
+  },
+  {
+    "no": 57,
+    "nama_rumus": "CHIDIST",
+    "versi": "-",
+    "syntax": "CHIDIST(x, deg_freedom)",
+    "penjelasan": "Fungsi lama: Mengembalikan probabilitas ekor kanan distribusi chi-kuadrat"
+  },
+  {
+    "no": 58,
+    "nama_rumus": "CHIINV",
+    "versi": "-",
+    "syntax": "CHIINV(probability, deg_freedom)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers probabilitas ekor kanan distribusi chi-kuadrat"
+  },
+  {
+    "no": 59,
+    "nama_rumus": "CHITEST",
+    "versi": "-",
+    "syntax": "CHITEST(actual_range, expected_range)",
+    "penjelasan": "Fungsi lama: Mengembalikan uji independensi (diganti CHISQ.TEST)"
+  },
+  {
+    "no": 60,
+    "nama_rumus": "CHISQ.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "CHISQ.DIST(x, deg_freedom, cumulative)",
+    "penjelasan": "Mengembalikan distribusi chi-kuadrat"
+  },
+  {
+    "no": 61,
+    "nama_rumus": "CHISQ.DIST.RT",
+    "versi": "Excel 2010+",
+    "syntax": "CHISQ.DIST.RT(x, deg_freedom)",
+    "penjelasan": "Mengembalikan probabilitas ekor kanan distribusi chi-kuadrat"
+  },
+  {
+    "no": 62,
+    "nama_rumus": "CHISQ.INV",
+    "versi": "Excel 2010+",
+    "syntax": "CHISQ.INV(probability, deg_freedom)",
+    "penjelasan": "Mengembalikan invers distribusi chi-kuadrat ekor kiri"
+  },
+  {
+    "no": 63,
+    "nama_rumus": "CHISQ.INV.RT",
+    "versi": "Excel 2010+",
+    "syntax": "CHISQ.INV.RT(probability, deg_freedom)",
+    "penjelasan": "Mengembalikan invers probabilitas ekor kanan distribusi chi-kuadrat"
+  },
+  {
+    "no": 64,
+    "nama_rumus": "CHISQ.TEST",
+    "versi": "Excel 2010+",
+    "syntax": "CHISQ.TEST(actual_range, expected_range)",
+    "penjelasan": "Mengembalikan uji independensi menggunakan distribusi chi-kuadrat"
+  },
+  {
+    "no": 65,
+    "nama_rumus": "CHOOSE",
+    "versi": "-",
+    "syntax": "CHOOSE(index_num, value1, [value2], ...)",
+    "penjelasan": "Memilih nilai dari daftar nilai berdasarkan nomor indeks"
+  },
+  {
+    "no": 66,
+    "nama_rumus": "CHOOSECOLS",
+    "versi": "Excel 2024+",
+    "syntax": "CHOOSECOLS(array, col_num1, [col_num2], ...)",
+    "penjelasan": "Mengembalikan kolom yang ditentukan dari array"
+  },
+  {
+    "no": 67,
+    "nama_rumus": "CHOOSEROWS",
+    "versi": "Excel 2024+",
+    "syntax": "CHOOSEROWS(array, row_num1, [row_num2], ...)",
+    "penjelasan": "Mengembalikan baris yang ditentukan dari array"
+  },
+  {
+    "no": 68,
+    "nama_rumus": "CLEAN",
+    "versi": "-",
+    "syntax": "CLEAN(text)",
+    "penjelasan": "Menghapus semua karakter non-printable dari teks"
+  },
+  {
+    "no": 69,
+    "nama_rumus": "CODE",
+    "versi": "-",
+    "syntax": "CODE(text)",
+    "penjelasan": "Mengembalikan kode numerik untuk karakter pertama dalam string teks"
+  },
+  {
+    "no": 70,
+    "nama_rumus": "COLUMN",
+    "versi": "-",
+    "syntax": "COLUMN([reference])",
+    "penjelasan": "Mengembalikan nomor kolom dari suatu referensi"
+  },
+  {
+    "no": 71,
+    "nama_rumus": "COLUMNS",
+    "versi": "-",
+    "syntax": "COLUMNS(array)",
+    "penjelasan": "Mengembalikan jumlah kolom dalam suatu array atau referensi"
+  },
+  {
+    "no": 72,
+    "nama_rumus": "COMBIN",
+    "versi": "-",
+    "syntax": "COMBIN(number, number_chosen)",
+    "penjelasan": "Mengembalikan jumlah kombinasi untuk sejumlah item tertentu"
+  },
+  {
+    "no": 73,
+    "nama_rumus": "COMBINA",
+    "versi": "Excel 2013+",
+    "syntax": "COMBINA(number, number_chosen)",
+    "penjelasan": "Mengembalikan jumlah kombinasi dengan pengulangan untuk sejumlah item"
+  },
+  {
+    "no": 74,
+    "nama_rumus": "COMPLEX",
+    "versi": "-",
+    "syntax": "COMPLEX(real_num, i_num, [suffix])",
+    "penjelasan": "Mengkonversi koefisien real dan imajiner menjadi bilangan kompleks"
+  },
+  {
+    "no": 75,
+    "nama_rumus": "CONCAT",
+    "versi": "Excel 2019+",
+    "syntax": "CONCAT(text1, [text2], ...)",
+    "penjelasan": "Menggabungkan teks dari beberapa rentang atau string"
+  },
+  {
+    "no": 76,
+    "nama_rumus": "CONCATENATE",
+    "versi": "-",
+    "syntax": "CONCATENATE(text1, [text2], ...)",
+    "penjelasan": "Menggabungkan beberapa string teks menjadi satu string"
+  },
+  {
+    "no": 77,
+    "nama_rumus": "CONFIDENCE",
+    "versi": "-",
+    "syntax": "CONFIDENCE(alpha, standard_dev, size)",
+    "penjelasan": "Fungsi lama: Mengembalikan interval kepercayaan untuk rata-rata populasi (diganti CONFIDENCE.NORM)"
+  },
+  {
+    "no": 78,
+    "nama_rumus": "CONFIDENCE.NORM",
+    "versi": "Excel 2010+",
+    "syntax": "CONFIDENCE.NORM(alpha, standard_dev, size)",
+    "penjelasan": "Mengembalikan interval kepercayaan untuk rata-rata populasi menggunakan distribusi normal"
+  },
+  {
+    "no": 79,
+    "nama_rumus": "CONFIDENCE.T",
+    "versi": "Excel 2010+",
+    "syntax": "CONFIDENCE.T(alpha, standard_dev, size)",
+    "penjelasan": "Mengembalikan interval kepercayaan untuk rata-rata populasi menggunakan distribusi t-Student"
+  },
+  {
+    "no": 80,
+    "nama_rumus": "CONVERT",
+    "versi": "-",
+    "syntax": "CONVERT(number, from_unit, to_unit)",
+    "penjelasan": "Mengkonversi angka dari satu sistem pengukuran ke yang lain"
+  },
+  {
+    "no": 81,
+    "nama_rumus": "CORREL",
+    "versi": "-",
+    "syntax": "CORREL(array1, array2)",
+    "penjelasan": "Mengembalikan koefisien korelasi antara dua kumpulan data"
+  },
+  {
+    "no": 82,
+    "nama_rumus": "COS",
+    "versi": "-",
+    "syntax": "COS(number)",
+    "penjelasan": "Mengembalikan kosinus dari suatu sudut dalam radian"
+  },
+  {
+    "no": 83,
+    "nama_rumus": "COSH",
+    "versi": "-",
+    "syntax": "COSH(number)",
+    "penjelasan": "Mengembalikan kosinus hiperbolik dari suatu angka"
+  },
+  {
+    "no": 84,
+    "nama_rumus": "COT",
+    "versi": "Excel 2013+",
+    "syntax": "COT(number)",
+    "penjelasan": "Mengembalikan kotangen dari suatu sudut dalam radian"
+  },
+  {
+    "no": 85,
+    "nama_rumus": "COTH",
+    "versi": "Excel 2013+",
+    "syntax": "COTH(number)",
+    "penjelasan": "Mengembalikan kotangen hiperbolik dari suatu angka"
+  },
+  {
+    "no": 86,
+    "nama_rumus": "COUNT",
+    "versi": "-",
+    "syntax": "COUNT(value1, [value2], ...)",
+    "penjelasan": "Menghitung jumlah sel yang berisi angka dalam rentang"
+  },
+  {
+    "no": 87,
+    "nama_rumus": "COUNTA",
+    "versi": "-",
+    "syntax": "COUNTA(value1, [value2], ...)",
+    "penjelasan": "Menghitung jumlah sel yang tidak kosong dalam rentang"
+  },
+  {
+    "no": 88,
+    "nama_rumus": "COUNTBLANK",
+    "versi": "-",
+    "syntax": "COUNTBLANK(range)",
+    "penjelasan": "Menghitung jumlah sel kosong dalam rentang"
+  },
+  {
+    "no": 89,
+    "nama_rumus": "COUNTIF",
+    "versi": "-",
+    "syntax": "COUNTIF(range, criteria)",
+    "penjelasan": "Menghitung jumlah sel dalam rentang yang memenuhi satu kriteria"
+  },
+  {
+    "no": 90,
+    "nama_rumus": "COUNTIFS",
+    "versi": "-",
+    "syntax": "COUNTIFS(criteria_range1, criteria1, [criteria_range2, criteria2], ...)",
+    "penjelasan": "Menghitung jumlah sel yang memenuhi beberapa kriteria"
+  },
+  {
+    "no": 91,
+    "nama_rumus": "COUPDAYBS",
+    "versi": "-",
+    "syntax": "COUPDAYBS(settlement, maturity, frequency, [basis])",
+    "penjelasan": "Mengembalikan jumlah hari dari awal periode kupon hingga tanggal penyelesaian"
+  },
+  {
+    "no": 92,
+    "nama_rumus": "COUPDAYS",
+    "versi": "-",
+    "syntax": "COUPDAYS(settlement, maturity, frequency, [basis])",
+    "penjelasan": "Mengembalikan jumlah hari dalam periode kupon yang berisi tanggal penyelesaian"
+  },
+  {
+    "no": 93,
+    "nama_rumus": "COUPDAYSNC",
+    "versi": "-",
+    "syntax": "COUPDAYSNC(settlement, maturity, frequency, [basis])",
+    "penjelasan": "Mengembalikan jumlah hari dari tanggal penyelesaian hingga tanggal kupon berikutnya"
+  },
+  {
+    "no": 94,
+    "nama_rumus": "COUPNCD",
+    "versi": "-",
+    "syntax": "COUPNCD(settlement, maturity, frequency, [basis])",
+    "penjelasan": "Mengembalikan tanggal kupon berikutnya setelah tanggal penyelesaian"
+  },
+  {
+    "no": 95,
+    "nama_rumus": "COUPNUM",
+    "versi": "-",
+    "syntax": "COUPNUM(settlement, maturity, frequency, [basis])",
+    "penjelasan": "Mengembalikan jumlah kupon yang jatuh tempo antara tanggal penyelesaian dan jatuh tempo"
+  },
+  {
+    "no": 96,
+    "nama_rumus": "COUPPCD",
+    "versi": "-",
+    "syntax": "COUPPCD(settlement, maturity, frequency, [basis])",
+    "penjelasan": "Mengembalikan tanggal kupon sebelumnya sebelum tanggal penyelesaian"
+  },
+  {
+    "no": 97,
+    "nama_rumus": "COVAR",
+    "versi": "-",
+    "syntax": "COVAR(array1, array2)",
+    "penjelasan": "Fungsi lama: Mengembalikan kovarians, rata-rata produk deviasi untuk setiap pasang titik data"
+  },
+  {
+    "no": 98,
+    "nama_rumus": "COVARIANCE.P",
+    "versi": "Excel 2010+",
+    "syntax": "COVARIANCE.P(array1, array2)",
+    "penjelasan": "Mengembalikan kovarians populasi"
+  },
+  {
+    "no": 99,
+    "nama_rumus": "COVARIANCE.S",
+    "versi": "Excel 2010+",
+    "syntax": "COVARIANCE.S(array1, array2)",
+    "penjelasan": "Mengembalikan kovarians sampel"
+  },
+  {
+    "no": 100,
+    "nama_rumus": "CRITBINOM",
+    "versi": "-",
+    "syntax": "CRITBINOM(trials, probability_s, alpha)",
+    "penjelasan": "Fungsi lama: Mengembalikan nilai terkecil untuk distribusi binomial kumulatif (diganti BINOM.INV)"
+  },
+  {
+    "no": 101,
+    "nama_rumus": "CSC",
+    "versi": "Excel 2013+",
+    "syntax": "CSC(number)",
+    "penjelasan": "Mengembalikan kosekan dari suatu sudut dalam radian"
+  },
+  {
+    "no": 102,
+    "nama_rumus": "CSCH",
+    "versi": "Excel 2013+",
+    "syntax": "CSCH(number)",
+    "penjelasan": "Mengembalikan kosekan hiperbolik dari suatu angka"
+  },
+  {
+    "no": 103,
+    "nama_rumus": "CUBEKPIMEMBER",
+    "versi": "-",
+    "syntax": "CUBEKPIMEMBER(connection, kpi_name, kpi_property, [caption])",
+    "penjelasan": "Mengembalikan properti KPI dan menampilkan nama KPI dalam sel"
+  },
+  {
+    "no": 104,
+    "nama_rumus": "CUBEMEMBER",
+    "versi": "-",
+    "syntax": "CUBEMEMBER(connection, member_expression, [caption])",
+    "penjelasan": "Mengembalikan anggota atau tuple dari hierarki cube"
+  },
+  {
+    "no": 105,
+    "nama_rumus": "CUBEMEMBERPROPERTY",
+    "versi": "-",
+    "syntax": "CUBEMEMBERPROPERTY(connection, member_expression, property)",
+    "penjelasan": "Mengembalikan nilai properti anggota dari cube"
+  },
+  {
+    "no": 106,
+    "nama_rumus": "CUBERANKEDMEMBER",
+    "versi": "-",
+    "syntax": "CUBERANKEDMEMBER(connection, set_expression, rank, [caption])",
+    "penjelasan": "Mengembalikan anggota ke-n dalam sebuah set"
+  },
+  {
+    "no": 107,
+    "nama_rumus": "CUBESET",
+    "versi": "-",
+    "syntax": "CUBESET(connection, set_expression, [caption], [sort_order], [sort_by])",
+    "penjelasan": "Mendefinisikan set anggota atau tuple yang dihitung dengan mengirim ekspresi set ke cube di server"
+  },
+  {
+    "no": 108,
+    "nama_rumus": "CUBESETCOUNT",
+    "versi": "-",
+    "syntax": "CUBESETCOUNT(set)",
+    "penjelasan": "Mengembalikan jumlah item dalam sebuah set"
+  },
+  {
+    "no": 109,
+    "nama_rumus": "CUBEVALUE",
+    "versi": "-",
+    "syntax": "CUBEVALUE(connection, [member_expression1], ...)",
+    "penjelasan": "Mengembalikan nilai agregat dari cube"
+  },
+  {
+    "no": 110,
+    "nama_rumus": "CUMIPMT",
+    "versi": "-",
+    "syntax": "CUMIPMT(rate, nper, pv, start_period, end_period, type)",
+    "penjelasan": "Mengembalikan bunga kumulatif yang dibayarkan antara dua periode"
+  },
+  {
+    "no": 111,
+    "nama_rumus": "CUMPRINC",
+    "versi": "-",
+    "syntax": "CUMPRINC(rate, nper, pv, start_period, end_period, type)",
+    "penjelasan": "Mengembalikan pokok kumulatif yang dibayarkan antara dua periode"
+  },
+  {
+    "no": 112,
+    "nama_rumus": "DATE",
+    "versi": "-",
+    "syntax": "DATE(year, month, day)",
+    "penjelasan": "Mengembalikan angka seri yang mewakili tanggal tertentu"
+  },
+  {
+    "no": 113,
+    "nama_rumus": "DATEDIF",
+    "versi": "-",
+    "syntax": "DATEDIF(start_date, end_date, unit)",
+    "penjelasan": "Menghitung selisih antara dua tanggal dalam unit yang ditentukan"
+  },
+  {
+    "no": 114,
+    "nama_rumus": "DATEVALUE",
+    "versi": "-",
+    "syntax": "DATEVALUE(date_text)",
+    "penjelasan": "Mengkonversi tanggal dalam bentuk teks menjadi angka seri"
+  },
+  {
+    "no": 115,
+    "nama_rumus": "DAVERAGE",
+    "versi": "-",
+    "syntax": "DAVERAGE(database, field, criteria)",
+    "penjelasan": "Mengembalikan rata-rata nilai dari kolom dalam daftar yang cocok dengan kondisi tertentu"
+  },
+  {
+    "no": 116,
+    "nama_rumus": "DAY",
+    "versi": "-",
+    "syntax": "DAY(serial_number)",
+    "penjelasan": "Mengembalikan hari dalam sebulan (1-31) dari suatu tanggal"
+  },
+  {
+    "no": 117,
+    "nama_rumus": "DAYS",
+    "versi": "Excel 2013+",
+    "syntax": "DAYS(end_date, start_date)",
+    "penjelasan": "Mengembalikan jumlah hari antara dua tanggal"
+  },
+  {
+    "no": 118,
+    "nama_rumus": "DAYS360",
+    "versi": "-",
+    "syntax": "DAYS360(start_date, end_date, [method])",
+    "penjelasan": "Menghitung jumlah hari antara dua tanggal berdasarkan tahun 360 hari"
+  },
+  {
+    "no": 119,
+    "nama_rumus": "DB",
+    "versi": "-",
+    "syntax": "DB(cost, salvage, life, period, [month])",
+    "penjelasan": "Mengembalikan depresiasi aset menggunakan metode saldo menurun tetap"
+  },
+  {
+    "no": 120,
+    "nama_rumus": "DBCS",
+    "versi": "Excel 2013+",
+    "syntax": "DBCS(text)",
+    "penjelasan": "Mengubah karakter half-width (single-byte) menjadi full-width (double-byte) dalam teks"
+  },
+  {
+    "no": 121,
+    "nama_rumus": "DCOUNT",
+    "versi": "-",
+    "syntax": "DCOUNT(database, field, criteria)",
+    "penjelasan": "Menghitung sel yang berisi angka dalam kolom database yang cocok dengan kondisi"
+  },
+  {
+    "no": 122,
+    "nama_rumus": "DCOUNTA",
+    "versi": "-",
+    "syntax": "DCOUNTA(database, field, criteria)",
+    "penjelasan": "Menghitung sel tidak kosong dalam kolom database yang cocok dengan kondisi"
+  },
+  {
+    "no": 123,
+    "nama_rumus": "DDB",
+    "versi": "-",
+    "syntax": "DDB(cost, salvage, life, period, [factor])",
+    "penjelasan": "Mengembalikan depresiasi aset menggunakan metode saldo menurun ganda"
+  },
+  {
+    "no": 124,
+    "nama_rumus": "DEC2BIN",
+    "versi": "-",
+    "syntax": "DEC2BIN(number, [places])",
+    "penjelasan": "Mengkonversi bilangan desimal menjadi biner"
+  },
+  {
+    "no": 125,
+    "nama_rumus": "DEC2HEX",
+    "versi": "-",
+    "syntax": "DEC2HEX(number, [places])",
+    "penjelasan": "Mengkonversi bilangan desimal menjadi heksadesimal"
+  },
+  {
+    "no": 126,
+    "nama_rumus": "DEC2OCT",
+    "versi": "-",
+    "syntax": "DEC2OCT(number, [places])",
+    "penjelasan": "Mengkonversi bilangan desimal menjadi oktal"
+  },
+  {
+    "no": 127,
+    "nama_rumus": "DECIMAL",
+    "versi": "Excel 2013+",
+    "syntax": "DECIMAL(text, radix)",
+    "penjelasan": "Mengkonversi representasi teks dari angka dalam basis tertentu menjadi desimal"
+  },
+  {
+    "no": 128,
+    "nama_rumus": "DEGREES",
+    "versi": "-",
+    "syntax": "DEGREES(angle)",
+    "penjelasan": "Mengkonversi radian menjadi derajat"
+  },
+  {
+    "no": 129,
+    "nama_rumus": "DELTA",
+    "versi": "-",
+    "syntax": "DELTA(number1, [number2])",
+    "penjelasan": "Menguji apakah dua nilai sama, mengembalikan 1 jika sama, 0 jika tidak"
+  },
+  {
+    "no": 130,
+    "nama_rumus": "DEVSQ",
+    "versi": "-",
+    "syntax": "DEVSQ(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan jumlah kuadrat deviasi dari rata-rata sampel"
+  },
+  {
+    "no": 131,
+    "nama_rumus": "DGET",
+    "versi": "-",
+    "syntax": "DGET(database, field, criteria)",
+    "penjelasan": "Mengekstrak satu nilai dari kolom database yang cocok dengan kondisi tertentu"
+  },
+  {
+    "no": 132,
+    "nama_rumus": "DISC",
+    "versi": "-",
+    "syntax": "DISC(settlement, maturity, pr, redemption, [basis])",
+    "penjelasan": "Mengembalikan tingkat diskonto untuk sekuritas"
+  },
+  {
+    "no": 133,
+    "nama_rumus": "DMAX",
+    "versi": "-",
+    "syntax": "DMAX(database, field, criteria)",
+    "penjelasan": "Mengembalikan nilai maksimum dari kolom database yang cocok dengan kondisi"
+  },
+  {
+    "no": 134,
+    "nama_rumus": "DMIN",
+    "versi": "-",
+    "syntax": "DMIN(database, field, criteria)",
+    "penjelasan": "Mengembalikan nilai minimum dari kolom database yang cocok dengan kondisi"
+  },
+  {
+    "no": 135,
+    "nama_rumus": "DOLLAR",
+    "versi": "-",
+    "syntax": "DOLLAR(number, [decimals])",
+    "penjelasan": "Mengkonversi angka menjadi teks dalam format mata uang dengan simbol dolar"
+  },
+  {
+    "no": 136,
+    "nama_rumus": "DOLLARDE",
+    "versi": "-",
+    "syntax": "DOLLARDE(fractional_dollar, fraction)",
+    "penjelasan": "Mengkonversi harga dolar dalam format pecahan menjadi desimal"
+  },
+  {
+    "no": 137,
+    "nama_rumus": "DOLLARFR",
+    "versi": "-",
+    "syntax": "DOLLARFR(decimal_dollar, fraction)",
+    "penjelasan": "Mengkonversi harga dolar dalam format desimal menjadi pecahan"
+  },
+  {
+    "no": 138,
+    "nama_rumus": "DPRODUCT",
+    "versi": "-",
+    "syntax": "DPRODUCT(database, field, criteria)",
+    "penjelasan": "Mengalikan nilai dalam kolom database yang cocok dengan kondisi"
+  },
+  {
+    "no": 139,
+    "nama_rumus": "DROP",
+    "versi": "Excel 2024+",
+    "syntax": "DROP(array, rows, [cols])",
+    "penjelasan": "Menghapus sejumlah baris atau kolom dari awal atau akhir array"
+  },
+  {
+    "no": 140,
+    "nama_rumus": "DSTDEV",
+    "versi": "-",
+    "syntax": "DSTDEV(database, field, criteria)",
+    "penjelasan": "Menghitung deviasi standar sampel dari entri database yang cocok dengan kondisi"
+  },
+  {
+    "no": 141,
+    "nama_rumus": "DSTDEVP",
+    "versi": "-",
+    "syntax": "DSTDEVP(database, field, criteria)",
+    "penjelasan": "Menghitung deviasi standar populasi dari entri database yang cocok dengan kondisi"
+  },
+  {
+    "no": 142,
+    "nama_rumus": "DSUM",
+    "versi": "-",
+    "syntax": "DSUM(database, field, criteria)",
+    "penjelasan": "Menjumlahkan angka dalam kolom database yang cocok dengan kondisi"
+  },
+  {
+    "no": 143,
+    "nama_rumus": "DURATION",
+    "versi": "-",
+    "syntax": "DURATION(settlement, maturity, coupon, yld, frequency, [basis])",
+    "penjelasan": "Mengembalikan durasi Macauley tahunan untuk sekuritas dengan pembayaran bunga berkala"
+  },
+  {
+    "no": 144,
+    "nama_rumus": "DVAR",
+    "versi": "-",
+    "syntax": "DVAR(database, field, criteria)",
+    "penjelasan": "Menghitung varians berdasarkan sampel dari entri database yang cocok dengan kondisi"
+  },
+  {
+    "no": 145,
+    "nama_rumus": "DVARP",
+    "versi": "-",
+    "syntax": "DVARP(database, field, criteria)",
+    "penjelasan": "Menghitung varians berdasarkan populasi dari entri database yang cocok dengan kondisi"
+  },
+  {
+    "no": 146,
+    "nama_rumus": "EDATE",
+    "versi": "-",
+    "syntax": "EDATE(start_date, months)",
+    "penjelasan": "Mengembalikan angka seri tanggal yang merupakan jumlah bulan sebelum atau sesudah tanggal mulai"
+  },
+  {
+    "no": 147,
+    "nama_rumus": "EFFECT",
+    "versi": "-",
+    "syntax": "EFFECT(nominal_rate, npery)",
+    "penjelasan": "Mengembalikan tingkat bunga tahunan efektif"
+  },
+  {
+    "no": 148,
+    "nama_rumus": "ENCODEURL",
+    "versi": "Excel 2013+",
+    "syntax": "ENCODEURL(text)",
+    "penjelasan": "Mengembalikan string yang dienkode sebagai URL"
+  },
+  {
+    "no": 149,
+    "nama_rumus": "EOMONTH",
+    "versi": "-",
+    "syntax": "EOMONTH(start_date, months)",
+    "penjelasan": "Mengembalikan nomor seri hari terakhir bulan sebelum atau sesudah sejumlah bulan"
+  },
+  {
+    "no": 150,
+    "nama_rumus": "ERF",
+    "versi": "-",
+    "syntax": "ERF(lower_limit, [upper_limit])",
+    "penjelasan": "Mengembalikan fungsi error"
+  },
+  {
+    "no": 151,
+    "nama_rumus": "ERF.PRECISE",
+    "versi": "Excel 2010+",
+    "syntax": "ERF.PRECISE(x)",
+    "penjelasan": "Mengembalikan fungsi error yang diintegrasikan antara 0 dan x"
+  },
+  {
+    "no": 152,
+    "nama_rumus": "ERFC",
+    "versi": "-",
+    "syntax": "ERFC(x)",
+    "penjelasan": "Mengembalikan fungsi error komplementer"
+  },
+  {
+    "no": 153,
+    "nama_rumus": "ERFC.PRECISE",
+    "versi": "Excel 2010+",
+    "syntax": "ERFC.PRECISE(x)",
+    "penjelasan": "Mengembalikan fungsi error komplementer yang diintegrasikan antara x dan tak terhingga"
+  },
+  {
+    "no": 154,
+    "nama_rumus": "ERROR.TYPE",
+    "versi": "-",
+    "syntax": "ERROR.TYPE(error_val)",
+    "penjelasan": "Mengembalikan angka yang sesuai dengan jenis error"
+  },
+  {
+    "no": 155,
+    "nama_rumus": "EUROCONVERT",
+    "versi": "-",
+    "syntax": "EUROCONVERT(number, source, target, [full_precision], [triangulation_precision])",
+    "penjelasan": "Mengkonversi angka ke Euro atau dari Euro ke mata uang Uni Eropa anggota"
+  },
+  {
+    "no": 156,
+    "nama_rumus": "EVEN",
+    "versi": "-",
+    "syntax": "EVEN(number)",
+    "penjelasan": "Membulatkan angka ke atas ke bilangan bulat genap terdekat"
+  },
+  {
+    "no": 157,
+    "nama_rumus": "EXACT",
+    "versi": "-",
+    "syntax": "EXACT(text1, text2)",
+    "penjelasan": "Memeriksa apakah dua string teks identis, peka huruf besar/kecil"
+  },
+  {
+    "no": 158,
+    "nama_rumus": "EXP",
+    "versi": "-",
+    "syntax": "EXP(number)",
+    "penjelasan": "Mengembalikan e dipangkatkan dengan angka yang diberikan"
+  },
+  {
+    "no": 159,
+    "nama_rumus": "EXPAND",
+    "versi": "Excel 2024+",
+    "syntax": "EXPAND(array, rows, [columns], [pad_with])",
+    "penjelasan": "Memperluas atau mengisi array ke dimensi baris dan kolom yang ditentukan"
+  },
+  {
+    "no": 160,
+    "nama_rumus": "EXPON.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "EXPON.DIST(x, lambda, cumulative)",
+    "penjelasan": "Mengembalikan distribusi eksponensial"
+  },
+  {
+    "no": 161,
+    "nama_rumus": "EXPONDIST",
+    "versi": "-",
+    "syntax": "EXPONDIST(x, lambda, cumulative)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi eksponensial (diganti EXPON.DIST)"
+  },
+  {
+    "no": 162,
+    "nama_rumus": "FACT",
+    "versi": "-",
+    "syntax": "FACT(number)",
+    "penjelasan": "Mengembalikan faktorial dari suatu angka"
+  },
+  {
+    "no": 163,
+    "nama_rumus": "FACTDOUBLE",
+    "versi": "-",
+    "syntax": "FACTDOUBLE(number)",
+    "penjelasan": "Mengembalikan faktorial ganda dari suatu angka"
+  },
+  {
+    "no": 164,
+    "nama_rumus": "FALSE",
+    "versi": "-",
+    "syntax": "FALSE()",
+    "penjelasan": "Mengembalikan nilai logika FALSE"
+  },
+  {
+    "no": 165,
+    "nama_rumus": "F.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "F.DIST(x, deg_freedom1, deg_freedom2, cumulative)",
+    "penjelasan": "Mengembalikan distribusi probabilitas F"
+  },
+  {
+    "no": 166,
+    "nama_rumus": "FDIST",
+    "versi": "-",
+    "syntax": "FDIST(x, deg_freedom1, deg_freedom2)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi probabilitas F (diganti F.DIST.RT)"
+  },
+  {
+    "no": 167,
+    "nama_rumus": "F.DIST.RT",
+    "versi": "Excel 2010+",
+    "syntax": "F.DIST.RT(x, deg_freedom1, deg_freedom2)",
+    "penjelasan": "Mengembalikan distribusi probabilitas F ekor kanan"
+  },
+  {
+    "no": 168,
+    "nama_rumus": "FILTER",
+    "versi": "Excel 2021+",
+    "syntax": "FILTER(array, include, [if_empty])",
+    "penjelasan": "Memfilter rentang atau array berdasarkan kriteria yang ditentukan"
+  },
+  {
+    "no": 169,
+    "nama_rumus": "FILTERXML",
+    "versi": "Excel 2013+",
+    "syntax": "FILTERXML(xml, xpath)",
+    "penjelasan": "Mengembalikan data spesifik dari konten XML menggunakan XPath yang ditentukan"
+  },
+  {
+    "no": 170,
+    "nama_rumus": "FIND",
+    "versi": "-",
+    "syntax": "FIND(find_text, within_text, [start_num])",
+    "penjelasan": "Menemukan string teks dalam string lain, peka huruf besar/kecil"
+  },
+  {
+    "no": 171,
+    "nama_rumus": "FINDB",
+    "versi": "-",
+    "syntax": "FINDB(find_text, within_text, [start_num])",
+    "penjelasan": "Menemukan string teks dalam string lain berdasarkan byte, peka huruf besar/kecil"
+  },
+  {
+    "no": 172,
+    "nama_rumus": "F.INV",
+    "versi": "Excel 2010+",
+    "syntax": "F.INV(probability, deg_freedom1, deg_freedom2)",
+    "penjelasan": "Mengembalikan invers distribusi probabilitas F"
+  },
+  {
+    "no": 173,
+    "nama_rumus": "F.INV.RT",
+    "versi": "Excel 2010+",
+    "syntax": "F.INV.RT(probability, deg_freedom1, deg_freedom2)",
+    "penjelasan": "Mengembalikan invers distribusi probabilitas F ekor kanan"
+  },
+  {
+    "no": 174,
+    "nama_rumus": "FINV",
+    "versi": "-",
+    "syntax": "FINV(probability, deg_freedom1, deg_freedom2)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers distribusi F (diganti F.INV.RT)"
+  },
+  {
+    "no": 175,
+    "nama_rumus": "FISHER",
+    "versi": "-",
+    "syntax": "FISHER(x)",
+    "penjelasan": "Mengembalikan transformasi Fisher"
+  },
+  {
+    "no": 176,
+    "nama_rumus": "FISHERINV",
+    "versi": "-",
+    "syntax": "FISHERINV(y)",
+    "penjelasan": "Mengembalikan invers dari transformasi Fisher"
+  },
+  {
+    "no": 177,
+    "nama_rumus": "FIXED",
+    "versi": "-",
+    "syntax": "FIXED(number, [decimals], [no_commas])",
+    "penjelasan": "Memformat angka sebagai teks dengan jumlah desimal tetap"
+  },
+  {
+    "no": 178,
+    "nama_rumus": "FLOOR",
+    "versi": "-",
+    "syntax": "FLOOR(number, significance)",
+    "penjelasan": "Membulatkan angka ke bawah ke kelipatan signifikansi terdekat"
+  },
+  {
+    "no": 179,
+    "nama_rumus": "FLOOR.MATH",
+    "versi": "Excel 2013+",
+    "syntax": "FLOOR.MATH(number, [significance], [mode])",
+    "penjelasan": "Membulatkan angka ke bawah ke bilangan bulat terdekat atau kelipatan signifikansi"
+  },
+  {
+    "no": 180,
+    "nama_rumus": "FLOOR.PRECISE",
+    "versi": "-",
+    "syntax": "FLOOR.PRECISE(number, [significance])",
+    "penjelasan": "Membulatkan angka ke bawah ke bilangan bulat atau kelipatan signifikansi terdekat"
+  },
+  {
+    "no": 181,
+    "nama_rumus": "FORECAST",
+    "versi": "-",
+    "syntax": "FORECAST(x, known_ys, known_xs)",
+    "penjelasan": "Fungsi lama: Menghitung nilai berdasarkan tren linear (diganti FORECAST.LINEAR)"
+  },
+  {
+    "no": 182,
+    "nama_rumus": "FORECAST.ETS",
+    "versi": "Excel 2016+",
+    "syntax": "FORECAST.ETS(target_date, values, timeline, [seasonality], [data_completion], [aggregation])",
+    "penjelasan": "Mengembalikan nilai prediksi berdasarkan algoritma exponential smoothing (ETS)"
+  },
+  {
+    "no": 183,
+    "nama_rumus": "FORECAST.ETS.CONFINT",
+    "versi": "Excel 2016+",
+    "syntax": "FORECAST.ETS.CONFINT(target_date, values, timeline, [confidence_level], [seasonality], [data_completion], [aggregation])",
+    "penjelasan": "Mengembalikan interval kepercayaan untuk nilai perkiraan pada tanggal target tertentu"
+  },
+  {
+    "no": 184,
+    "nama_rumus": "FORECAST.ETS.SEASONALITY",
+    "versi": "Excel 2016+",
+    "syntax": "FORECAST.ETS.SEASONALITY(values, timeline, [data_completion], [aggregation])",
+    "penjelasan": "Mengembalikan panjang pola berulang yang terdeteksi oleh Excel untuk deret waktu tertentu"
+  },
+  {
+    "no": 185,
+    "nama_rumus": "FORECAST.ETS.STAT",
+    "versi": "Excel 2016+",
+    "syntax": "FORECAST.ETS.STAT(values, timeline, statistic_type, [seasonality], [data_completion], [aggregation])",
+    "penjelasan": "Mengembalikan nilai statistik sebagai hasil perkiraan deret waktu"
+  },
+  {
+    "no": 186,
+    "nama_rumus": "FORECAST.LINEAR",
+    "versi": "Excel 2016+",
+    "syntax": "FORECAST.LINEAR(x, known_ys, known_xs)",
+    "penjelasan": "Menghitung nilai berdasarkan tren linear"
+  },
+  {
+    "no": 187,
+    "nama_rumus": "FORMULATEXT",
+    "versi": "Excel 2013+",
+    "syntax": "FORMULATEXT(reference)",
+    "penjelasan": "Mengembalikan rumus di referensi yang diberikan sebagai teks"
+  },
+  {
+    "no": 188,
+    "nama_rumus": "FREQUENCY",
+    "versi": "-",
+    "syntax": "FREQUENCY(data_array, bins_array)",
+    "penjelasan": "Menghitung seberapa sering nilai muncul dalam rentang nilai, mengembalikan array vertikal"
+  },
+  {
+    "no": 189,
+    "nama_rumus": "F.TEST",
+    "versi": "Excel 2010+",
+    "syntax": "F.TEST(array1, array2)",
+    "penjelasan": "Mengembalikan hasil uji F, probabilitas bahwa varians array1 dan array2 tidak berbeda signifikan"
+  },
+  {
+    "no": 190,
+    "nama_rumus": "FTEST",
+    "versi": "-",
+    "syntax": "FTEST(array1, array2)",
+    "penjelasan": "Fungsi lama: Mengembalikan hasil uji F (diganti F.TEST)"
+  },
+  {
+    "no": 191,
+    "nama_rumus": "FV",
+    "versi": "-",
+    "syntax": "FV(rate, nper, pmt, [pv], [type])",
+    "penjelasan": "Mengembalikan nilai masa depan dari investasi"
+  },
+  {
+    "no": 192,
+    "nama_rumus": "FVSCHEDULE",
+    "versi": "-",
+    "syntax": "FVSCHEDULE(principal, schedule)",
+    "penjelasan": "Mengembalikan nilai masa depan dari pokok awal setelah menerapkan serangkaian tingkat bunga majemuk"
+  },
+  {
+    "no": 193,
+    "nama_rumus": "GAMMA",
+    "versi": "Excel 2013+",
+    "syntax": "GAMMA(number)",
+    "penjelasan": "Mengembalikan nilai fungsi Gamma"
+  },
+  {
+    "no": 194,
+    "nama_rumus": "GAMMA.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "GAMMA.DIST(x, alpha, beta, cumulative)",
+    "penjelasan": "Mengembalikan distribusi gamma"
+  },
+  {
+    "no": 195,
+    "nama_rumus": "GAMMADIST",
+    "versi": "-",
+    "syntax": "GAMMADIST(x, alpha, beta, cumulative)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi gamma (diganti GAMMA.DIST)"
+  },
+  {
+    "no": 196,
+    "nama_rumus": "GAMMA.INV",
+    "versi": "Excel 2010+",
+    "syntax": "GAMMA.INV(probability, alpha, beta)",
+    "penjelasan": "Mengembalikan invers distribusi kumulatif gamma"
+  },
+  {
+    "no": 197,
+    "nama_rumus": "GAMMAINV",
+    "versi": "-",
+    "syntax": "GAMMAINV(probability, alpha, beta)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers distribusi kumulatif gamma (diganti GAMMA.INV)"
+  },
+  {
+    "no": 198,
+    "nama_rumus": "GAMMALN",
+    "versi": "-",
+    "syntax": "GAMMALN(x)",
+    "penjelasan": "Mengembalikan logaritma natural dari fungsi gamma, Γ(x)"
+  },
+  {
+    "no": 199,
+    "nama_rumus": "GAMMALN.PRECISE",
+    "versi": "Excel 2010+",
+    "syntax": "GAMMALN.PRECISE(x)",
+    "penjelasan": "Mengembalikan logaritma natural dari fungsi gamma, Γ(x) dengan presisi lebih tinggi"
+  },
+  {
+    "no": 200,
+    "nama_rumus": "GAUSS",
+    "versi": "Excel 2013+",
+    "syntax": "GAUSS(z)",
+    "penjelasan": "Mengembalikan 0.5 lebih sedikit dari distribusi kumulatif normal standar"
+  },
+  {
+    "no": 201,
+    "nama_rumus": "GCD",
+    "versi": "-",
+    "syntax": "GCD(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan pembagi persekutuan terbesar dari dua atau lebih bilangan bulat"
+  },
+  {
+    "no": 202,
+    "nama_rumus": "GEOMEAN",
+    "versi": "-",
+    "syntax": "GEOMEAN(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan rata-rata geometrik dari array atau rentang data positif"
+  },
+  {
+    "no": 203,
+    "nama_rumus": "GESTEP",
+    "versi": "-",
+    "syntax": "GESTEP(number, [step])",
+    "penjelasan": "Menguji apakah angka lebih besar dari nilai ambang, mengembalikan 1 atau 0"
+  },
+  {
+    "no": 204,
+    "nama_rumus": "GETPIVOTDATA",
+    "versi": "-",
+    "syntax": "GETPIVOTDATA(data_field, pivot_table, [field1, item1], ...)",
+    "penjelasan": "Mengembalikan data yang tersimpan dalam laporan PivotTable"
+  },
+  {
+    "no": 205,
+    "nama_rumus": "GROWTH",
+    "versi": "-",
+    "syntax": "GROWTH(known_ys, [known_xs], [new_xs], [const])",
+    "penjelasan": "Mengembalikan nilai sesuai dengan tren eksponensial"
+  },
+  {
+    "no": 206,
+    "nama_rumus": "HARMEAN",
+    "versi": "-",
+    "syntax": "HARMEAN(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan rata-rata harmonik dari kumpulan data"
+  },
+  {
+    "no": 207,
+    "nama_rumus": "HEX2BIN",
+    "versi": "-",
+    "syntax": "HEX2BIN(number, [places])",
+    "penjelasan": "Mengkonversi bilangan heksadesimal menjadi biner"
+  },
+  {
+    "no": 208,
+    "nama_rumus": "HEX2DEC",
+    "versi": "-",
+    "syntax": "HEX2DEC(number)",
+    "penjelasan": "Mengkonversi bilangan heksadesimal menjadi desimal"
+  },
+  {
+    "no": 209,
+    "nama_rumus": "HEX2OCT",
+    "versi": "-",
+    "syntax": "HEX2OCT(number, [places])",
+    "penjelasan": "Mengkonversi bilangan heksadesimal menjadi oktal"
+  },
+  {
+    "no": 210,
+    "nama_rumus": "HLOOKUP",
+    "versi": "-",
+    "syntax": "HLOOKUP(lookup_value, table_array, row_index_num, [range_lookup])",
+    "penjelasan": "Mencari nilai di baris pertama tabel dan mengembalikan nilai dari baris yang ditentukan"
+  },
+  {
+    "no": 211,
+    "nama_rumus": "HOUR",
+    "versi": "-",
+    "syntax": "HOUR(serial_number)",
+    "penjelasan": "Mengembalikan jam (0-23) dari nilai waktu"
+  },
+  {
+    "no": 212,
+    "nama_rumus": "HSTACK",
+    "versi": "Excel 2024+",
+    "syntax": "HSTACK(array1, [array2], ...)",
+    "penjelasan": "Menggabungkan array secara horizontal dan berurutan untuk mengembalikan array yang lebih besar"
+  },
+  {
+    "no": 213,
+    "nama_rumus": "HYPERLINK",
+    "versi": "-",
+    "syntax": "HYPERLINK(link_location, [friendly_name])",
+    "penjelasan": "Membuat pintasan atau lompatan yang membuka dokumen pada lokasi tertentu"
+  },
+  {
+    "no": 214,
+    "nama_rumus": "HYPGEOM.DIST",
+    "versi": "-",
+    "syntax": "HYPGEOM.DIST(sample_s, number_sample, population_s, number_pop, cumulative)",
+    "penjelasan": "Mengembalikan distribusi hipergeometrik"
+  },
+  {
+    "no": 215,
+    "nama_rumus": "HYPGEOMDIST",
+    "versi": "-",
+    "syntax": "HYPGEOMDIST(sample_s, number_sample, population_s, number_pop)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi hipergeometrik"
+  },
+  {
+    "no": 216,
+    "nama_rumus": "IF",
+    "versi": "-",
+    "syntax": "IF(logical_test, [value_if_true], [value_if_false])",
+    "penjelasan": "Melakukan tes logika dan mengembalikan satu nilai jika TRUE, nilai lain jika FALSE"
+  },
+  {
+    "no": 217,
+    "nama_rumus": "IFERROR",
+    "versi": "-",
+    "syntax": "IFERROR(value, value_if_error)",
+    "penjelasan": "Mengembalikan nilai yang ditentukan jika rumus menghasilkan error, sebaliknya mengembalikan hasil rumus"
+  },
+  {
+    "no": 218,
+    "nama_rumus": "IFNA",
+    "versi": "Excel 2013+",
+    "syntax": "IFNA(value, value_if_na)",
+    "penjelasan": "Mengembalikan nilai yang ditentukan jika ekspresi menghasilkan #N/A, sebaliknya mengembalikan hasil ekspresi"
+  },
+  {
+    "no": 219,
+    "nama_rumus": "IFS",
+    "versi": "Excel 2019+",
+    "syntax": "IFS(logical_test1, value_if_true1, [logical_test2, value_if_true2], ...)",
+    "penjelasan": "Memeriksa apakah satu atau lebih kondisi terpenuhi dan mengembalikan nilai yang sesuai"
+  },
+  {
+    "no": 220,
+    "nama_rumus": "IMAGE",
+    "versi": "Excel 2024+",
+    "syntax": "IMAGE(source, [alt_text], [sizing], [height], [width])",
+    "penjelasan": "Menyisipkan gambar dari URL ke dalam sel"
+  },
+  {
+    "no": 221,
+    "nama_rumus": "INDEX",
+    "versi": "-",
+    "syntax": "INDEX(array, row_num, [col_num])",
+    "penjelasan": "Mengembalikan nilai atau referensi sel di persimpangan baris dan kolom tertentu"
+  },
+  {
+    "no": 222,
+    "nama_rumus": "INDIRECT",
+    "versi": "-",
+    "syntax": "INDIRECT(ref_text, [a1])",
+    "penjelasan": "Mengembalikan referensi yang ditentukan oleh string teks"
+  },
+  {
+    "no": 223,
+    "nama_rumus": "INFO",
+    "versi": "-",
+    "syntax": "INFO(type_text)",
+    "penjelasan": "Mengembalikan informasi tentang lingkungan operasi saat ini"
+  },
+  {
+    "no": 224,
+    "nama_rumus": "INT",
+    "versi": "-",
+    "syntax": "INT(number)",
+    "penjelasan": "Membulatkan angka ke bawah ke bilangan bulat terdekat"
+  },
+  {
+    "no": 225,
+    "nama_rumus": "INTERCEPT",
+    "versi": "-",
+    "syntax": "INTERCEPT(known_ys, known_xs)",
+    "penjelasan": "Menghitung titik perpotongan sumbu y dari garis regresi linear"
+  },
+  {
+    "no": 226,
+    "nama_rumus": "INTRATE",
+    "versi": "-",
+    "syntax": "INTRATE(settlement, maturity, investment, redemption, [basis])",
+    "penjelasan": "Mengembalikan tingkat bunga untuk sekuritas yang diinvestasikan penuh"
+  },
+  {
+    "no": 227,
+    "nama_rumus": "IPMT",
+    "versi": "-",
+    "syntax": "IPMT(rate, per, nper, pv, [fv], [type])",
+    "penjelasan": "Mengembalikan pembayaran bunga untuk investasi dalam periode tertentu"
+  },
+  {
+    "no": 228,
+    "nama_rumus": "IRR",
+    "versi": "-",
+    "syntax": "IRR(values, [guess])",
+    "penjelasan": "Mengembalikan tingkat pengembalian internal untuk serangkaian arus kas"
+  },
+  {
+    "no": 229,
+    "nama_rumus": "ISBLANK",
+    "versi": "-",
+    "syntax": "ISBLANK(value)",
+    "penjelasan": "Mengembalikan TRUE jika sel kosong"
+  },
+  {
+    "no": 230,
+    "nama_rumus": "ISERR",
+    "versi": "-",
+    "syntax": "ISERR(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah error selain #N/A"
+  },
+  {
+    "no": 231,
+    "nama_rumus": "ISERROR",
+    "versi": "-",
+    "syntax": "ISERROR(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah error apapun"
+  },
+  {
+    "no": 232,
+    "nama_rumus": "ISEVEN",
+    "versi": "-",
+    "syntax": "ISEVEN(number)",
+    "penjelasan": "Mengembalikan TRUE jika angka adalah genap"
+  },
+  {
+    "no": 233,
+    "nama_rumus": "ISFORMULA",
+    "versi": "Excel 2013+",
+    "syntax": "ISFORMULA(reference)",
+    "penjelasan": "Mengembalikan TRUE jika ada referensi ke sel yang berisi rumus"
+  },
+  {
+    "no": 234,
+    "nama_rumus": "ISLOGICAL",
+    "versi": "-",
+    "syntax": "ISLOGICAL(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah nilai logika"
+  },
+  {
+    "no": 235,
+    "nama_rumus": "ISNA",
+    "versi": "-",
+    "syntax": "ISNA(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah #N/A error"
+  },
+  {
+    "no": 236,
+    "nama_rumus": "ISNONTEXT",
+    "versi": "-",
+    "syntax": "ISNONTEXT(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai bukan teks"
+  },
+  {
+    "no": 237,
+    "nama_rumus": "ISNUMBER",
+    "versi": "-",
+    "syntax": "ISNUMBER(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah angka"
+  },
+  {
+    "no": 238,
+    "nama_rumus": "ISODD",
+    "versi": "-",
+    "syntax": "ISODD(number)",
+    "penjelasan": "Mengembalikan TRUE jika angka adalah ganjil"
+  },
+  {
+    "no": 239,
+    "nama_rumus": "ISOMITTED",
+    "versi": "Excel 2024+",
+    "syntax": "ISOMITTED(argument)",
+    "penjelasan": "Memeriksa apakah nilai dalam fungsi LAMBDA hilang dan mengembalikan TRUE atau FALSE"
+  },
+  {
+    "no": 240,
+    "nama_rumus": "ISREF",
+    "versi": "-",
+    "syntax": "ISREF(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah referensi"
+  },
+  {
+    "no": 241,
+    "nama_rumus": "ISTEXT",
+    "versi": "-",
+    "syntax": "ISTEXT(value)",
+    "penjelasan": "Mengembalikan TRUE jika nilai adalah teks"
+  },
+  {
+    "no": 242,
+    "nama_rumus": "ISO.CEILING",
+    "versi": "Excel 2013+",
+    "syntax": "ISO.CEILING(number, [significance])",
+    "penjelasan": "Mengembalikan angka yang dibulatkan ke atas ke bilangan bulat atau kelipatan signifikansi terdekat"
+  },
+  {
+    "no": 243,
+    "nama_rumus": "ISOWEEKNUM",
+    "versi": "Excel 2013+",
+    "syntax": "ISOWEEKNUM(date)",
+    "penjelasan": "Mengembalikan nomor minggu ISO dari tahun untuk tanggal tertentu"
+  },
+  {
+    "no": 244,
+    "nama_rumus": "ISPMT",
+    "versi": "-",
+    "syntax": "ISPMT(rate, per, nper, pv)",
+    "penjelasan": "Menghitung bunga yang dibayarkan selama periode tertentu dari investasi"
+  },
+  {
+    "no": 245,
+    "nama_rumus": "KURT",
+    "versi": "-",
+    "syntax": "KURT(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan kurtosis dari kumpulan data"
+  },
+  {
+    "no": 246,
+    "nama_rumus": "LAMBDA",
+    "versi": "Excel 2024+",
+    "syntax": "LAMBDA([parameter1, ...], calculation)",
+    "penjelasan": "Membuat fungsi lambda kustom yang dapat digunakan kembali"
+  },
+  {
+    "no": 247,
+    "nama_rumus": "LARGE",
+    "versi": "-",
+    "syntax": "LARGE(array, k)",
+    "penjelasan": "Mengembalikan nilai terbesar ke-k dalam kumpulan data"
+  },
+  {
+    "no": 248,
+    "nama_rumus": "LCM",
+    "versi": "-",
+    "syntax": "LCM(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan kelipatan persekutuan terkecil dari bilangan bulat"
+  },
+  {
+    "no": 249,
+    "nama_rumus": "LEFT",
+    "versi": "-",
+    "syntax": "LEFT(text, [num_chars])",
+    "penjelasan": "Mengembalikan karakter pertama atau beberapa karakter pertama dari string teks"
+  },
+  {
+    "no": 250,
+    "nama_rumus": "LEFTB",
+    "versi": "-",
+    "syntax": "LEFTB(text, [num_bytes])",
+    "penjelasan": "Mengembalikan karakter pertama dari string teks berdasarkan jumlah byte"
+  },
+  {
+    "no": 251,
+    "nama_rumus": "LEN",
+    "versi": "-",
+    "syntax": "LEN(text)",
+    "penjelasan": "Mengembalikan jumlah karakter dalam string teks"
+  },
+  {
+    "no": 252,
+    "nama_rumus": "LENB",
+    "versi": "-",
+    "syntax": "LENB(text)",
+    "penjelasan": "Mengembalikan jumlah byte dalam string teks"
+  },
+  {
+    "no": 253,
+    "nama_rumus": "LET",
+    "versi": "Excel 2021+",
+    "syntax": "LET(name1, name_value1, [name2/name_value2], ..., calculation)",
+    "penjelasan": "Menetapkan nama pada hasil perhitungan dan menyimpannya sebagai variabel sementara"
+  },
+  {
+    "no": 254,
+    "nama_rumus": "LINEST",
+    "versi": "-",
+    "syntax": "LINEST(known_ys, [known_xs], [const], [stats])",
+    "penjelasan": "Menghitung statistik untuk garis menggunakan metode least squares"
+  },
+  {
+    "no": 255,
+    "nama_rumus": "LN",
+    "versi": "-",
+    "syntax": "LN(number)",
+    "penjelasan": "Mengembalikan logaritma natural dari suatu angka"
+  },
+  {
+    "no": 256,
+    "nama_rumus": "LOG",
+    "versi": "-",
+    "syntax": "LOG(number, [base])",
+    "penjelasan": "Mengembalikan logaritma dari suatu angka dengan basis yang ditentukan"
+  },
+  {
+    "no": 257,
+    "nama_rumus": "LOG10",
+    "versi": "-",
+    "syntax": "LOG10(number)",
+    "penjelasan": "Mengembalikan logaritma basis 10 dari suatu angka"
+  },
+  {
+    "no": 258,
+    "nama_rumus": "LOGEST",
+    "versi": "-",
+    "syntax": "LOGEST(known_ys, [known_xs], [const], [stats])",
+    "penjelasan": "Menghitung kurva eksponensial yang paling cocok untuk data"
+  },
+  {
+    "no": 259,
+    "nama_rumus": "LOGINV",
+    "versi": "-",
+    "syntax": "LOGINV(probability, mean, standard_dev)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers distribusi lognormal kumulatif (diganti LOGNORM.INV)"
+  },
+  {
+    "no": 260,
+    "nama_rumus": "LOGNORM.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "LOGNORM.DIST(x, mean, standard_dev, cumulative)",
+    "penjelasan": "Mengembalikan distribusi lognormal kumulatif"
+  },
+  {
+    "no": 261,
+    "nama_rumus": "LOGNORMDIST",
+    "versi": "-",
+    "syntax": "LOGNORMDIST(x, mean, standard_dev)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi lognormal kumulatif"
+  },
+  {
+    "no": 262,
+    "nama_rumus": "LOGNORM.INV",
+    "versi": "Excel 2010+",
+    "syntax": "LOGNORM.INV(probability, mean, standard_dev)",
+    "penjelasan": "Mengembalikan invers dari distribusi lognormal kumulatif"
+  },
+  {
+    "no": 263,
+    "nama_rumus": "LOOKUP",
+    "versi": "-",
+    "syntax": "LOOKUP(lookup_value, lookup_vector, [result_vector])",
+    "penjelasan": "Mencari nilai dalam vektor atau array (mode vektor atau array)"
+  },
+  {
+    "no": 264,
+    "nama_rumus": "LOWER",
+    "versi": "-",
+    "syntax": "LOWER(text)",
+    "penjelasan": "Mengkonversi semua huruf dalam string teks menjadi huruf kecil"
+  },
+  {
+    "no": 265,
+    "nama_rumus": "MAKEARRAY",
+    "versi": "Excel 2024+",
+    "syntax": "MAKEARRAY(rows, cols, lambda)",
+    "penjelasan": "Mengembalikan array dengan ukuran yang ditentukan dengan menerapkan LAMBDA"
+  },
+  {
+    "no": 266,
+    "nama_rumus": "MAP",
+    "versi": "Excel 2024+",
+    "syntax": "MAP(array1, [array2], ..., lambda)",
+    "penjelasan": "Mengembalikan array yang terbentuk dengan memetakan setiap nilai ke nilai baru menggunakan LAMBDA"
+  },
+  {
+    "no": 267,
+    "nama_rumus": "MATCH",
+    "versi": "-",
+    "syntax": "MATCH(lookup_value, lookup_array, [match_type])",
+    "penjelasan": "Mencari nilai tertentu dalam rentang sel, dan mengembalikan posisi relatif nilai tersebut"
+  },
+  {
+    "no": 268,
+    "nama_rumus": "MAX",
+    "versi": "-",
+    "syntax": "MAX(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan nilai terbesar dalam kumpulan nilai"
+  },
+  {
+    "no": 269,
+    "nama_rumus": "MAXA",
+    "versi": "-",
+    "syntax": "MAXA(value1, [value2], ...)",
+    "penjelasan": "Mengembalikan nilai terbesar dalam kumpulan nilai, termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 270,
+    "nama_rumus": "MAXIFS",
+    "versi": "Excel 2019+",
+    "syntax": "MAXIFS(max_range, criteria_range1, criteria1, ...)",
+    "penjelasan": "Mengembalikan nilai maksimum di antara sel yang memenuhi beberapa kriteria"
+  },
+  {
+    "no": 271,
+    "nama_rumus": "MDETERM",
+    "versi": "-",
+    "syntax": "MDETERM(array)",
+    "penjelasan": "Mengembalikan determinan matriks dari array"
+  },
+  {
+    "no": 272,
+    "nama_rumus": "MDURATION",
+    "versi": "-",
+    "syntax": "MDURATION(settlement, maturity, coupon, yld, frequency, [basis])",
+    "penjelasan": "Mengembalikan durasi Macauley yang dimodifikasi untuk sekuritas"
+  },
+  {
+    "no": 273,
+    "nama_rumus": "MEDIAN",
+    "versi": "-",
+    "syntax": "MEDIAN(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan nilai tengah dari kumpulan angka"
+  },
+  {
+    "no": 274,
+    "nama_rumus": "MID",
+    "versi": "-",
+    "syntax": "MID(text, start_num, num_chars)",
+    "penjelasan": "Mengembalikan sejumlah karakter tertentu dari string teks, mulai dari posisi yang ditentukan"
+  },
+  {
+    "no": 275,
+    "nama_rumus": "MIDB",
+    "versi": "-",
+    "syntax": "MIDB(text, start_num, num_bytes)",
+    "penjelasan": "Mengembalikan karakter tertentu dari string teks berdasarkan byte"
+  },
+  {
+    "no": 276,
+    "nama_rumus": "MIN",
+    "versi": "-",
+    "syntax": "MIN(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan nilai terkecil dalam kumpulan nilai"
+  },
+  {
+    "no": 277,
+    "nama_rumus": "MINIFS",
+    "versi": "Excel 2019+",
+    "syntax": "MINIFS(min_range, criteria_range1, criteria1, ...)",
+    "penjelasan": "Mengembalikan nilai minimum di antara sel yang memenuhi beberapa kriteria"
+  },
+  {
+    "no": 278,
+    "nama_rumus": "MINA",
+    "versi": "-",
+    "syntax": "MINA(value1, [value2], ...)",
+    "penjelasan": "Mengembalikan nilai terkecil dalam kumpulan nilai, termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 279,
+    "nama_rumus": "MINUTE",
+    "versi": "-",
+    "syntax": "MINUTE(serial_number)",
+    "penjelasan": "Mengembalikan menit (0-59) dari nilai waktu"
+  },
+  {
+    "no": 280,
+    "nama_rumus": "MINVERSE",
+    "versi": "-",
+    "syntax": "MINVERSE(array)",
+    "penjelasan": "Mengembalikan matriks invers dari array"
+  },
+  {
+    "no": 281,
+    "nama_rumus": "MIRR",
+    "versi": "-",
+    "syntax": "MIRR(values, finance_rate, reinvest_rate)",
+    "penjelasan": "Mengembalikan tingkat pengembalian internal yang dimodifikasi untuk serangkaian arus kas"
+  },
+  {
+    "no": 282,
+    "nama_rumus": "MMULT",
+    "versi": "-",
+    "syntax": "MMULT(array1, array2)",
+    "penjelasan": "Mengembalikan perkalian matriks dari dua array"
+  },
+  {
+    "no": 283,
+    "nama_rumus": "MOD",
+    "versi": "-",
+    "syntax": "MOD(number, divisor)",
+    "penjelasan": "Mengembalikan sisa pembagian dari suatu angka"
+  },
+  {
+    "no": 284,
+    "nama_rumus": "MODE",
+    "versi": "-",
+    "syntax": "MODE(number1, [number2], ...)",
+    "penjelasan": "Fungsi lama: Mengembalikan nilai yang paling sering muncul (diganti MODE.SNGL)"
+  },
+  {
+    "no": 285,
+    "nama_rumus": "MODE.MULT",
+    "versi": "Excel 2010+",
+    "syntax": "MODE.MULT(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan array vertikal dari nilai yang paling sering muncul dalam array atau rentang data"
+  },
+  {
+    "no": 286,
+    "nama_rumus": "MODE.SNGL",
+    "versi": "Excel 2010+",
+    "syntax": "MODE.SNGL(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan nilai yang paling sering muncul dalam array atau rentang data"
+  },
+  {
+    "no": 287,
+    "nama_rumus": "MONTH",
+    "versi": "-",
+    "syntax": "MONTH(serial_number)",
+    "penjelasan": "Mengembalikan bulan (1-12) dari suatu tanggal"
+  },
+  {
+    "no": 288,
+    "nama_rumus": "MROUND",
+    "versi": "-",
+    "syntax": "MROUND(number, multiple)",
+    "penjelasan": "Mengembalikan angka yang dibulatkan ke kelipatan yang diinginkan"
+  },
+  {
+    "no": 289,
+    "nama_rumus": "MULTINOMIAL",
+    "versi": "-",
+    "syntax": "MULTINOMIAL(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan rasio faktorial dari jumlah nilai terhadap produk faktorial"
+  },
+  {
+    "no": 290,
+    "nama_rumus": "MUNIT",
+    "versi": "Excel 2013+",
+    "syntax": "MUNIT(dimension)",
+    "penjelasan": "Mengembalikan matriks satuan atau dimensi yang ditentukan"
+  },
+  {
+    "no": 291,
+    "nama_rumus": "N",
+    "versi": "-",
+    "syntax": "N(value)",
+    "penjelasan": "Mengembalikan nilai yang dikonversi ke angka"
+  },
+  {
+    "no": 292,
+    "nama_rumus": "NA",
+    "versi": "-",
+    "syntax": "NA()",
+    "penjelasan": "Mengembalikan nilai error #N/A"
+  },
+  {
+    "no": 293,
+    "nama_rumus": "NEGBINOM.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "NEGBINOM.DIST(number_f, number_s, probability_s, cumulative)",
+    "penjelasan": "Mengembalikan distribusi binomial negatif"
+  },
+  {
+    "no": 294,
+    "nama_rumus": "NEGBINOMDIST",
+    "versi": "-",
+    "syntax": "NEGBINOMDIST(number_f, number_s, probability_s)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi binomial negatif"
+  },
+  {
+    "no": 295,
+    "nama_rumus": "NETWORKDAYS",
+    "versi": "-",
+    "syntax": "NETWORKDAYS(start_date, end_date, [holidays])",
+    "penjelasan": "Mengembalikan jumlah hari kerja antara dua tanggal"
+  },
+  {
+    "no": 296,
+    "nama_rumus": "NETWORKDAYS.INTL",
+    "versi": "Excel 2010+",
+    "syntax": "NETWORKDAYS.INTL(start_date, end_date, [weekend], [holidays])",
+    "penjelasan": "Mengembalikan jumlah hari kerja antara dua tanggal dengan parameter akhir pekan kustom"
+  },
+  {
+    "no": 297,
+    "nama_rumus": "NOMINAL",
+    "versi": "-",
+    "syntax": "NOMINAL(effect_rate, npery)",
+    "penjelasan": "Mengembalikan tingkat bunga nominal tahunan"
+  },
+  {
+    "no": 298,
+    "nama_rumus": "NORM.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "NORM.DIST(x, mean, standard_dev, cumulative)",
+    "penjelasan": "Mengembalikan distribusi normal"
+  },
+  {
+    "no": 299,
+    "nama_rumus": "NORMDIST",
+    "versi": "-",
+    "syntax": "NORMDIST(x, mean, standard_dev, cumulative)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi normal kumulatif (diganti NORM.DIST)"
+  },
+  {
+    "no": 300,
+    "nama_rumus": "NORMINV",
+    "versi": "-",
+    "syntax": "NORMINV(probability, mean, standard_dev)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers distribusi normal kumulatif (diganti NORM.INV)"
+  },
+  {
+    "no": 301,
+    "nama_rumus": "NORM.INV",
+    "versi": "Excel 2010+",
+    "syntax": "NORM.INV(probability, mean, standard_dev)",
+    "penjelasan": "Mengembalikan invers dari distribusi kumulatif normal"
+  },
+  {
+    "no": 302,
+    "nama_rumus": "NORM.S.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "NORM.S.DIST(z, cumulative)",
+    "penjelasan": "Mengembalikan distribusi normal standar"
+  },
+  {
+    "no": 303,
+    "nama_rumus": "NORMSDIST",
+    "versi": "-",
+    "syntax": "NORMSDIST(z)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi normal standar kumulatif (diganti NORM.S.DIST)"
+  },
+  {
+    "no": 304,
+    "nama_rumus": "NORM.S.INV",
+    "versi": "Excel 2010+",
+    "syntax": "NORM.S.INV(probability)",
+    "penjelasan": "Mengembalikan invers dari distribusi kumulatif normal standar"
+  },
+  {
+    "no": 305,
+    "nama_rumus": "NORMSINV",
+    "versi": "-",
+    "syntax": "NORMSINV(probability)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers dari distribusi kumulatif normal standar (diganti NORM.S.INV)"
+  },
+  {
+    "no": 306,
+    "nama_rumus": "NOT",
+    "versi": "-",
+    "syntax": "NOT(logical)",
+    "penjelasan": "Membalikkan logika argumennya"
+  },
+  {
+    "no": 307,
+    "nama_rumus": "NOW",
+    "versi": "-",
+    "syntax": "NOW()",
+    "penjelasan": "Mengembalikan tanggal dan waktu saat ini"
+  },
+  {
+    "no": 308,
+    "nama_rumus": "NPER",
+    "versi": "-",
+    "syntax": "NPER(rate, pmt, pv, [fv], [type])",
+    "penjelasan": "Mengembalikan jumlah periode untuk investasi"
+  },
+  {
+    "no": 309,
+    "nama_rumus": "NPV",
+    "versi": "-",
+    "syntax": "NPV(rate, value1, [value2], ...)",
+    "penjelasan": "Menghitung nilai sekarang bersih dari investasi berdasarkan tingkat diskonto dan serangkaian arus kas masa depan"
+  },
+  {
+    "no": 310,
+    "nama_rumus": "NUMBERVALUE",
+    "versi": "Excel 2013+",
+    "syntax": "NUMBERVALUE(text, [decimal_separator], [group_separator])",
+    "penjelasan": "Mengkonversi teks menjadi angka secara independen dari locale"
+  },
+  {
+    "no": 311,
+    "nama_rumus": "OCT2BIN",
+    "versi": "-",
+    "syntax": "OCT2BIN(number, [places])",
+    "penjelasan": "Mengkonversi bilangan oktal menjadi biner"
+  },
+  {
+    "no": 312,
+    "nama_rumus": "OCT2DEC",
+    "versi": "-",
+    "syntax": "OCT2DEC(number)",
+    "penjelasan": "Mengkonversi bilangan oktal menjadi desimal"
+  },
+  {
+    "no": 313,
+    "nama_rumus": "OCT2HEX",
+    "versi": "-",
+    "syntax": "OCT2HEX(number, [places])",
+    "penjelasan": "Mengkonversi bilangan oktal menjadi heksadesimal"
+  },
+  {
+    "no": 314,
+    "nama_rumus": "ODD",
+    "versi": "-",
+    "syntax": "ODD(number)",
+    "penjelasan": "Membulatkan angka ke atas ke bilangan bulat ganjil terdekat"
+  },
+  {
+    "no": 315,
+    "nama_rumus": "ODDFPRICE",
+    "versi": "-",
+    "syntax": "ODDFPRICE(settlement, maturity, issue, first_coupon, rate, yld, redemption, frequency, [basis])",
+    "penjelasan": "Mengembalikan harga per nilai nominal $100 sekuritas dengan periode pertama yang tidak beraturan"
+  },
+  {
+    "no": 316,
+    "nama_rumus": "ODDFYIELD",
+    "versi": "-",
+    "syntax": "ODDFYIELD(settlement, maturity, issue, first_coupon, rate, pr, redemption, frequency, [basis])",
+    "penjelasan": "Mengembalikan imbal hasil sekuritas dengan periode pertama yang tidak beraturan"
+  },
+  {
+    "no": 317,
+    "nama_rumus": "ODDLPRICE",
+    "versi": "-",
+    "syntax": "ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemption, frequency, [basis])",
+    "penjelasan": "Mengembalikan harga per nilai nominal $100 sekuritas dengan periode terakhir yang tidak beraturan"
+  },
+  {
+    "no": 318,
+    "nama_rumus": "ODDLYIELD",
+    "versi": "-",
+    "syntax": "ODDLYIELD(settlement, maturity, last_interest, rate, pr, redemption, frequency, [basis])",
+    "penjelasan": "Mengembalikan imbal hasil sekuritas dengan periode terakhir yang tidak beraturan"
+  },
+  {
+    "no": 319,
+    "nama_rumus": "OFFSET",
+    "versi": "-",
+    "syntax": "OFFSET(reference, rows, cols, [height], [width])",
+    "penjelasan": "Mengembalikan referensi yang diimbangi dari referensi yang diberikan"
+  },
+  {
+    "no": 320,
+    "nama_rumus": "OR",
+    "versi": "-",
+    "syntax": "OR(logical1, [logical2], ...)",
+    "penjelasan": "Mengembalikan TRUE jika salah satu argumen bernilai TRUE"
+  },
+  {
+    "no": 321,
+    "nama_rumus": "PDURATION",
+    "versi": "Excel 2013+",
+    "syntax": "PDURATION(rate, pv, fv)",
+    "penjelasan": "Mengembalikan jumlah periode yang diperlukan investasi untuk mencapai nilai tertentu"
+  },
+  {
+    "no": 322,
+    "nama_rumus": "PEARSON",
+    "versi": "-",
+    "syntax": "PEARSON(array1, array2)",
+    "penjelasan": "Mengembalikan koefisien korelasi momen produk Pearson"
+  },
+  {
+    "no": 323,
+    "nama_rumus": "PERCENTILE.EXC",
+    "versi": "Excel 2010+",
+    "syntax": "PERCENTILE.EXC(array, k)",
+    "penjelasan": "Mengembalikan persentil ke-k dari nilai dalam rentang, dimana k dalam rentang 0..1 eksklusif"
+  },
+  {
+    "no": 324,
+    "nama_rumus": "PERCENTILE.INC",
+    "versi": "Excel 2010+",
+    "syntax": "PERCENTILE.INC(array, k)",
+    "penjelasan": "Mengembalikan persentil ke-k dari nilai dalam rentang"
+  },
+  {
+    "no": 325,
+    "nama_rumus": "PERCENTILE",
+    "versi": "-",
+    "syntax": "PERCENTILE(array, k)",
+    "penjelasan": "Fungsi lama: Mengembalikan persentil ke-k dari nilai dalam rentang (diganti PERCENTILE.INC)"
+  },
+  {
+    "no": 326,
+    "nama_rumus": "PERCENTRANK.EXC",
+    "versi": "Excel 2010+",
+    "syntax": "PERCENTRANK.EXC(array, x, [significance])",
+    "penjelasan": "Mengembalikan peringkat suatu nilai dalam kumpulan data sebagai persentase (0..1 eksklusif)"
+  },
+  {
+    "no": 327,
+    "nama_rumus": "PERCENTRANK.INC",
+    "versi": "Excel 2010+",
+    "syntax": "PERCENTRANK.INC(array, x, [significance])",
+    "penjelasan": "Mengembalikan peringkat suatu nilai dalam kumpulan data sebagai persentase"
+  },
+  {
+    "no": 328,
+    "nama_rumus": "PERCENTRANK",
+    "versi": "-",
+    "syntax": "PERCENTRANK(array, x, [significance])",
+    "penjelasan": "Fungsi lama: Mengembalikan peringkat persentase nilai dalam kumpulan data (diganti PERCENTRANK.INC)"
+  },
+  {
+    "no": 329,
+    "nama_rumus": "PERMUT",
+    "versi": "-",
+    "syntax": "PERMUT(number, number_chosen)",
+    "penjelasan": "Mengembalikan jumlah permutasi untuk sejumlah objek tertentu"
+  },
+  {
+    "no": 330,
+    "nama_rumus": "PERMUTATIONA",
+    "versi": "Excel 2013+",
+    "syntax": "PERMUTATIONA(number, number_chosen)",
+    "penjelasan": "Mengembalikan jumlah permutasi untuk sejumlah objek (dengan pengulangan)"
+  },
+  {
+    "no": 331,
+    "nama_rumus": "PHI",
+    "versi": "Excel 2013+",
+    "syntax": "PHI(x)",
+    "penjelasan": "Mengembalikan nilai fungsi kerapatan untuk distribusi normal standar"
+  },
+  {
+    "no": 332,
+    "nama_rumus": "PI",
+    "versi": "-",
+    "syntax": "PI()",
+    "penjelasan": "Mengembalikan nilai Pi (3,14159265358979...)"
+  },
+  {
+    "no": 333,
+    "nama_rumus": "PMT",
+    "versi": "-",
+    "syntax": "PMT(rate, nper, pv, [fv], [type])",
+    "penjelasan": "Menghitung pembayaran periodik untuk pinjaman atau investasi"
+  },
+  {
+    "no": 334,
+    "nama_rumus": "POISSON.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "POISSON.DIST(x, mean, cumulative)",
+    "penjelasan": "Mengembalikan distribusi Poisson"
+  },
+  {
+    "no": 335,
+    "nama_rumus": "POISSON",
+    "versi": "-",
+    "syntax": "POISSON(x, mean, cumulative)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi Poisson (diganti POISSON.DIST)"
+  },
+  {
+    "no": 336,
+    "nama_rumus": "POWER",
+    "versi": "-",
+    "syntax": "POWER(number, power)",
+    "penjelasan": "Mengembalikan hasil angka yang dipangkatkan"
+  },
+  {
+    "no": 337,
+    "nama_rumus": "PPMT",
+    "versi": "-",
+    "syntax": "PPMT(rate, per, nper, pv, [fv], [type])",
+    "penjelasan": "Mengembalikan pembayaran pokok untuk periode tertentu"
+  },
+  {
+    "no": 338,
+    "nama_rumus": "PRICE",
+    "versi": "-",
+    "syntax": "PRICE(settlement, maturity, rate, yld, redemption, frequency, [basis])",
+    "penjelasan": "Mengembalikan harga per nilai nominal $100 dari sekuritas yang membayar bunga berkala"
+  },
+  {
+    "no": 339,
+    "nama_rumus": "PRICEDISC",
+    "versi": "-",
+    "syntax": "PRICEDISC(settlement, maturity, discount, redemption, [basis])",
+    "penjelasan": "Mengembalikan harga per nilai nominal $100 sekuritas berdiskon"
+  },
+  {
+    "no": 340,
+    "nama_rumus": "PRICEMAT",
+    "versi": "-",
+    "syntax": "PRICEMAT(settlement, maturity, issue, rate, yld, [basis])",
+    "penjelasan": "Mengembalikan harga per nilai nominal $100 sekuritas yang membayar bunga pada saat jatuh tempo"
+  },
+  {
+    "no": 341,
+    "nama_rumus": "PROB",
+    "versi": "-",
+    "syntax": "PROB(x_range, prob_range, [lower_limit], [upper_limit])",
+    "penjelasan": "Mengembalikan probabilitas bahwa nilai dalam suatu rentang berada di antara dua batas"
+  },
+  {
+    "no": 342,
+    "nama_rumus": "PRODUCT",
+    "versi": "-",
+    "syntax": "PRODUCT(number1, [number2], ...)",
+    "penjelasan": "Mengalikan semua angka yang diberikan sebagai argumen dan mengembalikan produknya"
+  },
+  {
+    "no": 343,
+    "nama_rumus": "PROPER",
+    "versi": "-",
+    "syntax": "PROPER(text)",
+    "penjelasan": "Mengkonversi huruf pertama setiap kata menjadi huruf kapital"
+  },
+  {
+    "no": 344,
+    "nama_rumus": "PV",
+    "versi": "-",
+    "syntax": "PV(rate, nper, pmt, [fv], [type])",
+    "penjelasan": "Mengembalikan nilai sekarang dari investasi"
+  },
+  {
+    "no": 345,
+    "nama_rumus": "QUARTILE",
+    "versi": "-",
+    "syntax": "QUARTILE(array, quart)",
+    "penjelasan": "Fungsi lama: Mengembalikan kuartil dari kumpulan data (diganti QUARTILE.INC)"
+  },
+  {
+    "no": 346,
+    "nama_rumus": "QUARTILE.EXC",
+    "versi": "Excel 2010+",
+    "syntax": "QUARTILE.EXC(array, quart)",
+    "penjelasan": "Mengembalikan kuartil dari kumpulan data berdasarkan nilai persentil dari 0..1 eksklusif"
+  },
+  {
+    "no": 347,
+    "nama_rumus": "QUARTILE.INC",
+    "versi": "Excel 2010+",
+    "syntax": "QUARTILE.INC(array, quart)",
+    "penjelasan": "Mengembalikan kuartil dari kumpulan data"
+  },
+  {
+    "no": 348,
+    "nama_rumus": "QUOTIENT",
+    "versi": "-",
+    "syntax": "QUOTIENT(numerator, denominator)",
+    "penjelasan": "Mengembalikan bagian bilangan bulat dari pembagian"
+  },
+  {
+    "no": 349,
+    "nama_rumus": "RADIANS",
+    "versi": "-",
+    "syntax": "RADIANS(angle)",
+    "penjelasan": "Mengkonversi derajat menjadi radian"
+  },
+  {
+    "no": 350,
+    "nama_rumus": "RAND",
+    "versi": "-",
+    "syntax": "RAND()",
+    "penjelasan": "Mengembalikan angka acak antara 0 dan 1 (akan berubah setiap kalkulasi ulang)"
+  },
+  {
+    "no": 351,
+    "nama_rumus": "RANDARRAY",
+    "versi": "Excel 2021+",
+    "syntax": "RANDARRAY([rows], [cols], [min], [max], [whole_number])",
+    "penjelasan": "Mengembalikan array angka acak antara 0 dan 1"
+  },
+  {
+    "no": 352,
+    "nama_rumus": "RANDBETWEEN",
+    "versi": "-",
+    "syntax": "RANDBETWEEN(bottom, top)",
+    "penjelasan": "Mengembalikan angka acak antara angka yang ditentukan"
+  },
+  {
+    "no": 353,
+    "nama_rumus": "RANK.AVG",
+    "versi": "Excel 2010+",
+    "syntax": "RANK.AVG(number, ref, [order])",
+    "penjelasan": "Mengembalikan peringkat angka dalam daftar angka, jika ada nilai yang sama akan dirata-rata"
+  },
+  {
+    "no": 354,
+    "nama_rumus": "RANK.EQ",
+    "versi": "Excel 2010+",
+    "syntax": "RANK.EQ(number, ref, [order])",
+    "penjelasan": "Mengembalikan peringkat angka dalam daftar angka"
+  },
+  {
+    "no": 355,
+    "nama_rumus": "RANK",
+    "versi": "-",
+    "syntax": "RANK(number, ref, [order])",
+    "penjelasan": "Fungsi lama: Mengembalikan peringkat angka dalam daftar (diganti RANK.EQ)"
+  },
+  {
+    "no": 356,
+    "nama_rumus": "RATE",
+    "versi": "-",
+    "syntax": "RATE(nper, pmt, pv, [fv], [type], [guess])",
+    "penjelasan": "Mengembalikan tingkat bunga per periode dari anuitas"
+  },
+  {
+    "no": 357,
+    "nama_rumus": "RECEIVED",
+    "versi": "-",
+    "syntax": "RECEIVED(settlement, maturity, investment, discount, [basis])",
+    "penjelasan": "Mengembalikan jumlah yang diterima pada saat jatuh tempo untuk sekuritas yang diinvestasikan penuh"
+  },
+  {
+    "no": 358,
+    "nama_rumus": "REDUCE",
+    "versi": "Excel 2024+",
+    "syntax": "REDUCE([initial_value], array, lambda)",
+    "penjelasan": "Mereduksi array menjadi nilai akumulasi dengan menerapkan LAMBDA ke setiap nilai"
+  },
+  {
+    "no": 359,
+    "nama_rumus": "REPLACE",
+    "versi": "-",
+    "syntax": "REPLACE(old_text, start_num, num_chars, new_text)",
+    "penjelasan": "Mengganti bagian string teks dengan string teks yang berbeda"
+  },
+  {
+    "no": 360,
+    "nama_rumus": "REPLACEB",
+    "versi": "-",
+    "syntax": "REPLACEB(old_text, start_num, num_bytes, new_text)",
+    "penjelasan": "Mengganti bagian string teks berdasarkan byte"
+  },
+  {
+    "no": 361,
+    "nama_rumus": "REPT",
+    "versi": "-",
+    "syntax": "REPT(text, number_times)",
+    "penjelasan": "Mengulang teks sejumlah kali tertentu"
+  },
+  {
+    "no": 362,
+    "nama_rumus": "RIGHT",
+    "versi": "-",
+    "syntax": "RIGHT(text, [num_chars])",
+    "penjelasan": "Mengembalikan karakter terakhir dari string teks"
+  },
+  {
+    "no": 363,
+    "nama_rumus": "RIGHTB",
+    "versi": "-",
+    "syntax": "RIGHTB(text, [num_bytes])",
+    "penjelasan": "Mengembalikan karakter terakhir dari string teks berdasarkan byte"
+  },
+  {
+    "no": 364,
+    "nama_rumus": "ROMAN",
+    "versi": "-",
+    "syntax": "ROMAN(number, [form])",
+    "penjelasan": "Mengkonversi angka Arab menjadi angka Romawi dalam format teks"
+  },
+  {
+    "no": 365,
+    "nama_rumus": "ROUND",
+    "versi": "-",
+    "syntax": "ROUND(number, num_digits)",
+    "penjelasan": "Membulatkan angka ke sejumlah digit yang ditentukan"
+  },
+  {
+    "no": 366,
+    "nama_rumus": "ROUNDDOWN",
+    "versi": "-",
+    "syntax": "ROUNDDOWN(number, num_digits)",
+    "penjelasan": "Membulatkan angka ke bawah menuju nol"
+  },
+  {
+    "no": 367,
+    "nama_rumus": "ROUNDUP",
+    "versi": "-",
+    "syntax": "ROUNDUP(number, num_digits)",
+    "penjelasan": "Membulatkan angka ke atas menjauh dari nol"
+  },
+  {
+    "no": 368,
+    "nama_rumus": "ROW",
+    "versi": "-",
+    "syntax": "ROW([reference])",
+    "penjelasan": "Mengembalikan nomor baris dari suatu referensi"
+  },
+  {
+    "no": 369,
+    "nama_rumus": "ROWS",
+    "versi": "-",
+    "syntax": "ROWS(array)",
+    "penjelasan": "Mengembalikan jumlah baris dalam suatu array atau referensi"
+  },
+  {
+    "no": 370,
+    "nama_rumus": "RRI",
+    "versi": "Excel 2013+",
+    "syntax": "RRI(nper, pv, fv)",
+    "penjelasan": "Mengembalikan suku bunga ekuivalen untuk pertumbuhan investasi"
+  },
+  {
+    "no": 371,
+    "nama_rumus": "RSQ",
+    "versi": "-",
+    "syntax": "RSQ(known_ys, known_xs)",
+    "penjelasan": "Mengembalikan kuadrat koefisien korelasi momen produk Pearson"
+  },
+  {
+    "no": 372,
+    "nama_rumus": "SCAN",
+    "versi": "Excel 2024+",
+    "syntax": "SCAN([initial_value], array, lambda)",
+    "penjelasan": "Memindai array dengan menerapkan LAMBDA ke setiap nilai dan mengembalikan array yang memiliki setiap nilai sementara"
+  },
+  {
+    "no": 373,
+    "nama_rumus": "SEARCH",
+    "versi": "-",
+    "syntax": "SEARCH(find_text, within_text, [start_num])",
+    "penjelasan": "Menemukan teks dalam teks lain, tidak peka huruf besar/kecil"
+  },
+  {
+    "no": 374,
+    "nama_rumus": "SEARCHB",
+    "versi": "-",
+    "syntax": "SEARCHB(find_text, within_text, [start_num])",
+    "penjelasan": "Menemukan teks dalam teks lain berdasarkan byte, tidak peka huruf besar/kecil"
+  },
+  {
+    "no": 375,
+    "nama_rumus": "SEC",
+    "versi": "Excel 2013+",
+    "syntax": "SEC(number)",
+    "penjelasan": "Mengembalikan sekan dari suatu sudut dalam radian"
+  },
+  {
+    "no": 376,
+    "nama_rumus": "SECH",
+    "versi": "Excel 2013+",
+    "syntax": "SECH(number)",
+    "penjelasan": "Mengembalikan sekan hiperbolik dari suatu sudut"
+  },
+  {
+    "no": 377,
+    "nama_rumus": "SECOND",
+    "versi": "-",
+    "syntax": "SECOND(serial_number)",
+    "penjelasan": "Mengembalikan detik (0-59) dari nilai waktu"
+  },
+  {
+    "no": 378,
+    "nama_rumus": "SEQUENCE",
+    "versi": "Excel 2021+",
+    "syntax": "SEQUENCE(rows, [cols], [start], [step])",
+    "penjelasan": "Menghasilkan daftar angka berurutan dalam array"
+  },
+  {
+    "no": 379,
+    "nama_rumus": "SERIESSUM",
+    "versi": "-",
+    "syntax": "SERIESSUM(x, n, m, coefficients)",
+    "penjelasan": "Mengembalikan jumlah deret pangkat berdasarkan rumus"
+  },
+  {
+    "no": 380,
+    "nama_rumus": "SHEET",
+    "versi": "Excel 2013+",
+    "syntax": "SHEET(value)",
+    "penjelasan": "Mengembalikan nomor lembar dari lembar yang direferensikan"
+  },
+  {
+    "no": 381,
+    "nama_rumus": "SHEETS",
+    "versi": "Excel 2013+",
+    "syntax": "SHEETS([reference])",
+    "penjelasan": "Mengembalikan jumlah lembar dalam referensi"
+  },
+  {
+    "no": 382,
+    "nama_rumus": "SIGN",
+    "versi": "-",
+    "syntax": "SIGN(number)",
+    "penjelasan": "Mengembalikan tanda suatu angka: 1 jika positif, 0 jika nol, -1 jika negatif"
+  },
+  {
+    "no": 383,
+    "nama_rumus": "SIN",
+    "versi": "-",
+    "syntax": "SIN(number)",
+    "penjelasan": "Mengembalikan sinus dari suatu sudut dalam radian"
+  },
+  {
+    "no": 384,
+    "nama_rumus": "SINH",
+    "versi": "-",
+    "syntax": "SINH(number)",
+    "penjelasan": "Mengembalikan sinus hiperbolik dari suatu angka"
+  },
+  {
+    "no": 385,
+    "nama_rumus": "SKEW",
+    "versi": "-",
+    "syntax": "SKEW(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan kemencengan distribusi"
+  },
+  {
+    "no": 386,
+    "nama_rumus": "SKEW.P",
+    "versi": "Excel 2013+",
+    "syntax": "SKEW.P(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan kemencengan distribusi berdasarkan populasi"
+  },
+  {
+    "no": 387,
+    "nama_rumus": "SLN",
+    "versi": "-",
+    "syntax": "SLN(cost, salvage, life)",
+    "penjelasan": "Mengembalikan penyusutan garis lurus aset untuk satu periode"
+  },
+  {
+    "no": 388,
+    "nama_rumus": "SLOPE",
+    "versi": "-",
+    "syntax": "SLOPE(known_ys, known_xs)",
+    "penjelasan": "Mengembalikan kemiringan garis regresi linear"
+  },
+  {
+    "no": 389,
+    "nama_rumus": "SMALL",
+    "versi": "-",
+    "syntax": "SMALL(array, k)",
+    "penjelasan": "Mengembalikan nilai terkecil ke-k dalam kumpulan data"
+  },
+  {
+    "no": 390,
+    "nama_rumus": "SORT",
+    "versi": "Excel 2021+",
+    "syntax": "SORT(array, [sort_index], [sort_order], [by_col])",
+    "penjelasan": "Mengurutkan isi rentang atau array"
+  },
+  {
+    "no": 391,
+    "nama_rumus": "SORTBY",
+    "versi": "Excel 2021+",
+    "syntax": "SORTBY(array, by_array1, [sort_order1], ...)",
+    "penjelasan": "Mengurutkan isi rentang atau array berdasarkan nilai dalam rentang atau array yang sesuai"
+  },
+  {
+    "no": 392,
+    "nama_rumus": "SQRT",
+    "versi": "-",
+    "syntax": "SQRT(number)",
+    "penjelasan": "Mengembalikan akar kuadrat positif"
+  },
+  {
+    "no": 393,
+    "nama_rumus": "SQRTPI",
+    "versi": "-",
+    "syntax": "SQRTPI(number)",
+    "penjelasan": "Mengembalikan akar kuadrat dari (angka * pi)"
+  },
+  {
+    "no": 394,
+    "nama_rumus": "STANDARDIZE",
+    "versi": "-",
+    "syntax": "STANDARDIZE(x, mean, standard_dev)",
+    "penjelasan": "Mengembalikan nilai yang ternormalisasi dari distribusi yang ditandai dengan mean dan standar deviasi"
+  },
+  {
+    "no": 395,
+    "nama_rumus": "STDEV",
+    "versi": "-",
+    "syntax": "STDEV(number1, [number2], ...)",
+    "penjelasan": "Fungsi lama: Menghitung deviasi standar berdasarkan sampel (diganti STDEV.S)"
+  },
+  {
+    "no": 396,
+    "nama_rumus": "STDEV.P",
+    "versi": "Excel 2010+",
+    "syntax": "STDEV.P(number1, [number2], ...)",
+    "penjelasan": "Menghitung deviasi standar berdasarkan seluruh populasi"
+  },
+  {
+    "no": 397,
+    "nama_rumus": "STDEV.S",
+    "versi": "Excel 2010+",
+    "syntax": "STDEV.S(number1, [number2], ...)",
+    "penjelasan": "Menghitung deviasi standar berdasarkan sampel"
+  },
+  {
+    "no": 398,
+    "nama_rumus": "STDEVA",
+    "versi": "-",
+    "syntax": "STDEVA(value1, [value2], ...)",
+    "penjelasan": "Menghitung deviasi standar berdasarkan sampel, termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 399,
+    "nama_rumus": "STDEVP",
+    "versi": "-",
+    "syntax": "STDEVP(number1, [number2], ...)",
+    "penjelasan": "Fungsi lama: Menghitung deviasi standar berdasarkan populasi (diganti STDEV.P)"
+  },
+  {
+    "no": 400,
+    "nama_rumus": "STDEVPA",
+    "versi": "-",
+    "syntax": "STDEVPA(value1, [value2], ...)",
+    "penjelasan": "Menghitung deviasi standar berdasarkan populasi, termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 401,
+    "nama_rumus": "STEYX",
+    "versi": "-",
+    "syntax": "STEYX(known_ys, known_xs)",
+    "penjelasan": "Mengembalikan galat standar nilai y yang diprediksi untuk setiap x dalam regresi"
+  },
+  {
+    "no": 402,
+    "nama_rumus": "SUBSTITUTE",
+    "versi": "-",
+    "syntax": "SUBSTITUTE(text, old_text, new_text, [instance_num])",
+    "penjelasan": "Mengganti teks lama dengan teks baru dalam string teks"
+  },
+  {
+    "no": 403,
+    "nama_rumus": "SUBTOTAL",
+    "versi": "-",
+    "syntax": "SUBTOTAL(function_num, ref1, [ref2], ...)",
+    "penjelasan": "Mengembalikan subtotal dalam daftar atau database"
+  },
+  {
+    "no": 404,
+    "nama_rumus": "SUM",
+    "versi": "-",
+    "syntax": "SUM(number1, [number2], ...)",
+    "penjelasan": "Menjumlahkan semua angka dalam rentang sel"
+  },
+  {
+    "no": 405,
+    "nama_rumus": "SUMIF",
+    "versi": "-",
+    "syntax": "SUMIF(range, criteria, [sum_range])",
+    "penjelasan": "Menjumlahkan sel yang memenuhi satu kriteria tertentu"
+  },
+  {
+    "no": 406,
+    "nama_rumus": "SUMIFS",
+    "versi": "-",
+    "syntax": "SUMIFS(sum_range, criteria_range1, criteria1, ...)",
+    "penjelasan": "Menjumlahkan sel yang memenuhi beberapa kriteria"
+  },
+  {
+    "no": 407,
+    "nama_rumus": "SUMPRODUCT",
+    "versi": "-",
+    "syntax": "SUMPRODUCT(array1, [array2], ...)",
+    "penjelasan": "Mengalikan komponen yang sesuai dalam array dan mengembalikan jumlah produk"
+  },
+  {
+    "no": 408,
+    "nama_rumus": "SUMSQ",
+    "versi": "-",
+    "syntax": "SUMSQ(number1, [number2], ...)",
+    "penjelasan": "Mengembalikan jumlah kuadrat dari argumen"
+  },
+  {
+    "no": 409,
+    "nama_rumus": "SUMX2MY2",
+    "versi": "-",
+    "syntax": "SUMX2MY2(array_x, array_y)",
+    "penjelasan": "Mengembalikan jumlah selisih kuadrat dari nilai yang bersesuaian dalam dua array"
+  },
+  {
+    "no": 410,
+    "nama_rumus": "SUMX2PY2",
+    "versi": "-",
+    "syntax": "SUMX2PY2(array_x, array_y)",
+    "penjelasan": "Mengembalikan jumlah kuadrat dari nilai yang bersesuaian dalam dua array"
+  },
+  {
+    "no": 411,
+    "nama_rumus": "SUMXMY2",
+    "versi": "-",
+    "syntax": "SUMXMY2(array_x, array_y)",
+    "penjelasan": "Mengembalikan jumlah kuadrat selisih dari nilai yang bersesuaian dalam dua array"
+  },
+  {
+    "no": 412,
+    "nama_rumus": "SWITCH",
+    "versi": "Excel 2019+",
+    "syntax": "SWITCH(expression, value1, result1, [value2, result2], ..., [default])",
+    "penjelasan": "Mengevaluasi ekspresi terhadap daftar nilai dan mengembalikan hasil yang sesuai dengan nilai pertama yang cocok"
+  },
+  {
+    "no": 413,
+    "nama_rumus": "SYD",
+    "versi": "-",
+    "syntax": "SYD(cost, salvage, life, per)",
+    "penjelasan": "Mengembalikan penyusutan jumlah-digit tahun dari aset untuk periode tertentu"
+  },
+  {
+    "no": 414,
+    "nama_rumus": "T",
+    "versi": "-",
+    "syntax": "T(value)",
+    "penjelasan": "Mengembalikan teks yang dirujuk oleh nilai atau string kosong jika bukan teks"
+  },
+  {
+    "no": 415,
+    "nama_rumus": "TAN",
+    "versi": "-",
+    "syntax": "TAN(number)",
+    "penjelasan": "Mengembalikan tangen dari suatu sudut dalam radian"
+  },
+  {
+    "no": 416,
+    "nama_rumus": "TANH",
+    "versi": "-",
+    "syntax": "TANH(number)",
+    "penjelasan": "Mengembalikan tangen hiperbolik dari suatu angka"
+  },
+  {
+    "no": 417,
+    "nama_rumus": "TAKE",
+    "versi": "Excel 2024+",
+    "syntax": "TAKE(array, rows, [cols])",
+    "penjelasan": "Mengembalikan sejumlah baris atau kolom yang berurutan dari awal atau akhir array"
+  },
+  {
+    "no": 418,
+    "nama_rumus": "TBILLEQ",
+    "versi": "-",
+    "syntax": "TBILLEQ(settlement, maturity, discount)",
+    "penjelasan": "Mengembalikan imbal hasil setara obligasi untuk Surat Perbendaharaan Negara"
+  },
+  {
+    "no": 419,
+    "nama_rumus": "TBILLPRICE",
+    "versi": "-",
+    "syntax": "TBILLPRICE(settlement, maturity, discount)",
+    "penjelasan": "Mengembalikan harga per nilai nominal $100 untuk Surat Perbendaharaan Negara"
+  },
+  {
+    "no": 420,
+    "nama_rumus": "TBILLYIELD",
+    "versi": "-",
+    "syntax": "TBILLYIELD(settlement, maturity, pr)",
+    "penjelasan": "Mengembalikan imbal hasil untuk Surat Perbendaharaan Negara"
+  },
+  {
+    "no": 421,
+    "nama_rumus": "T.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "T.DIST(x, deg_freedom, cumulative)",
+    "penjelasan": "Mengembalikan distribusi t-Student"
+  },
+  {
+    "no": 422,
+    "nama_rumus": "T.DIST.2T",
+    "versi": "Excel 2010+",
+    "syntax": "T.DIST.2T(x, deg_freedom)",
+    "penjelasan": "Mengembalikan distribusi t-Student dua ekor"
+  },
+  {
+    "no": 423,
+    "nama_rumus": "T.DIST.RT",
+    "versi": "Excel 2010+",
+    "syntax": "T.DIST.RT(x, deg_freedom)",
+    "penjelasan": "Mengembalikan distribusi t-Student ekor kanan"
+  },
+  {
+    "no": 424,
+    "nama_rumus": "TDIST",
+    "versi": "-",
+    "syntax": "TDIST(x, deg_freedom, tails)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi t-Student (diganti T.DIST)"
+  },
+  {
+    "no": 425,
+    "nama_rumus": "TEXT",
+    "versi": "-",
+    "syntax": "TEXT(value, format_text)",
+    "penjelasan": "Mengkonversi angka menjadi teks dalam format angka tertentu"
+  },
+  {
+    "no": 426,
+    "nama_rumus": "TEXTAFTER",
+    "versi": "Excel 2024+",
+    "syntax": "TEXTAFTER(text, delimiter, [instance_num], [match_mode], [match_end], [if_not_found])",
+    "penjelasan": "Mengembalikan teks yang muncul setelah karakter atau string yang diberikan"
+  },
+  {
+    "no": 427,
+    "nama_rumus": "TEXTBEFORE",
+    "versi": "Excel 2024+",
+    "syntax": "TEXTBEFORE(text, delimiter, [instance_num], [match_mode], [match_end], [if_not_found])",
+    "penjelasan": "Mengembalikan teks yang muncul sebelum karakter atau string yang diberikan"
+  },
+  {
+    "no": 428,
+    "nama_rumus": "TEXTJOIN",
+    "versi": "Excel 2019+",
+    "syntax": "TEXTJOIN(delimiter, ignore_empty, text1, [text2], ...)",
+    "penjelasan": "Menggabungkan teks dari beberapa rentang dan/atau string, memisahkan setiap item teks dengan pembatas"
+  },
+  {
+    "no": 429,
+    "nama_rumus": "TEXTSPLIT",
+    "versi": "Excel 2024+",
+    "syntax": "TEXTSPLIT(input_text, [col_delimiter], [row_delimiter], [ignore_empty], [match_mode], [pad_with])",
+    "penjelasan": "Memisahkan string teks menggunakan kolom dan baris pembatas"
+  },
+  {
+    "no": 430,
+    "nama_rumus": "TIME",
+    "versi": "-",
+    "syntax": "TIME(hour, minute, second)",
+    "penjelasan": "Mengembalikan angka seri yang mewakili waktu tertentu"
+  },
+  {
+    "no": 431,
+    "nama_rumus": "TIMEVALUE",
+    "versi": "-",
+    "syntax": "TIMEVALUE(time_text)",
+    "penjelasan": "Mengkonversi waktu dalam bentuk teks menjadi angka seri"
+  },
+  {
+    "no": 432,
+    "nama_rumus": "T.INV",
+    "versi": "Excel 2010+",
+    "syntax": "T.INV(probability, deg_freedom)",
+    "penjelasan": "Mengembalikan invers distribusi t-Student ekor kiri"
+  },
+  {
+    "no": 433,
+    "nama_rumus": "T.INV.2T",
+    "versi": "Excel 2010+",
+    "syntax": "T.INV.2T(probability, deg_freedom)",
+    "penjelasan": "Mengembalikan invers distribusi t-Student dua ekor"
+  },
+  {
+    "no": 434,
+    "nama_rumus": "TINV",
+    "versi": "-",
+    "syntax": "TINV(probability, deg_freedom)",
+    "penjelasan": "Fungsi lama: Mengembalikan invers distribusi t-Student (diganti T.INV.2T)"
+  },
+  {
+    "no": 435,
+    "nama_rumus": "TOCOL",
+    "versi": "Excel 2024+",
+    "syntax": "TOCOL(array, [ignore], [scan_by_column])",
+    "penjelasan": "Mengembalikan array dalam satu kolom"
+  },
+  {
+    "no": 436,
+    "nama_rumus": "TOROW",
+    "versi": "Excel 2024+",
+    "syntax": "TOROW(array, [ignore], [scan_by_column])",
+    "penjelasan": "Mengembalikan array dalam satu baris"
+  },
+  {
+    "no": 437,
+    "nama_rumus": "TODAY",
+    "versi": "-",
+    "syntax": "TODAY()",
+    "penjelasan": "Mengembalikan tanggal saat ini"
+  },
+  {
+    "no": 438,
+    "nama_rumus": "TRANSPOSE",
+    "versi": "-",
+    "syntax": "TRANSPOSE(array)",
+    "penjelasan": "Mengembalikan transpos array atau rentang sel vertikal sebagai rentang horizontal"
+  },
+  {
+    "no": 439,
+    "nama_rumus": "TREND",
+    "versi": "-",
+    "syntax": "TREND(known_ys, [known_xs], [new_xs], [const])",
+    "penjelasan": "Mengembalikan nilai sepanjang tren linear"
+  },
+  {
+    "no": 440,
+    "nama_rumus": "TRIM",
+    "versi": "-",
+    "syntax": "TRIM(text)",
+    "penjelasan": "Menghapus semua spasi dari teks kecuali spasi tunggal antar kata"
+  },
+  {
+    "no": 441,
+    "nama_rumus": "TRIMMEAN",
+    "versi": "-",
+    "syntax": "TRIMMEAN(array, percent)",
+    "penjelasan": "Mengembalikan rata-rata dari bagian dalam kumpulan data, mengecualikan persentase titik data dari atas dan bawah"
+  },
+  {
+    "no": 442,
+    "nama_rumus": "TRUE",
+    "versi": "-",
+    "syntax": "TRUE()",
+    "penjelasan": "Mengembalikan nilai logika TRUE"
+  },
+  {
+    "no": 443,
+    "nama_rumus": "TRUNC",
+    "versi": "-",
+    "syntax": "TRUNC(number, [num_digits])",
+    "penjelasan": "Memotong angka menjadi bilangan bulat dengan menghapus bagian desimal"
+  },
+  {
+    "no": 444,
+    "nama_rumus": "T.TEST",
+    "versi": "Excel 2010+",
+    "syntax": "T.TEST(array1, array2, tails, type)",
+    "penjelasan": "Mengembalikan probabilitas yang terkait dengan uji t-Student"
+  },
+  {
+    "no": 445,
+    "nama_rumus": "TTEST",
+    "versi": "-",
+    "syntax": "TTEST(array1, array2, tails, type)",
+    "penjelasan": "Fungsi lama: Mengembalikan probabilitas yang terkait dengan uji t-Student (diganti T.TEST)"
+  },
+  {
+    "no": 446,
+    "nama_rumus": "TYPE",
+    "versi": "-",
+    "syntax": "TYPE(value)",
+    "penjelasan": "Mengembalikan angka yang menunjukkan jenis data suatu nilai"
+  },
+  {
+    "no": 447,
+    "nama_rumus": "UNICHAR",
+    "versi": "Excel 2013+",
+    "syntax": "UNICHAR(number)",
+    "penjelasan": "Mengembalikan karakter Unicode yang dirujuk oleh nilai numerik"
+  },
+  {
+    "no": 448,
+    "nama_rumus": "UNICODE",
+    "versi": "Excel 2013+",
+    "syntax": "UNICODE(text)",
+    "penjelasan": "Mengembalikan angka (titik kode) yang sesuai dengan karakter pertama teks"
+  },
+  {
+    "no": 449,
+    "nama_rumus": "UNIQUE",
+    "versi": "Excel 2021+",
+    "syntax": "UNIQUE(array, [by_col], [exactly_once])",
+    "penjelasan": "Mengembalikan daftar nilai unik dalam daftar atau rentang"
+  },
+  {
+    "no": 450,
+    "nama_rumus": "UPPER",
+    "versi": "-",
+    "syntax": "UPPER(text)",
+    "penjelasan": "Mengkonversi teks menjadi huruf kapital semua"
+  },
+  {
+    "no": 451,
+    "nama_rumus": "VALUE",
+    "versi": "-",
+    "syntax": "VALUE(text)",
+    "penjelasan": "Mengkonversi string teks yang mewakili angka menjadi angka"
+  },
+  {
+    "no": 452,
+    "nama_rumus": "VALUETOTEXT",
+    "versi": "Excel 2021+",
+    "syntax": "VALUETOTEXT(value, [format])",
+    "penjelasan": "Mengembalikan teks dari nilai apapun"
+  },
+  {
+    "no": 453,
+    "nama_rumus": "VAR",
+    "versi": "-",
+    "syntax": "VAR(number1, [number2], ...)",
+    "penjelasan": "Fungsi lama: Menghitung varians berdasarkan sampel (diganti VAR.S)"
+  },
+  {
+    "no": 454,
+    "nama_rumus": "VAR.P",
+    "versi": "Excel 2010+",
+    "syntax": "VAR.P(number1, [number2], ...)",
+    "penjelasan": "Menghitung varians berdasarkan seluruh populasi"
+  },
+  {
+    "no": 455,
+    "nama_rumus": "VAR.S",
+    "versi": "Excel 2010+",
+    "syntax": "VAR.S(number1, [number2], ...)",
+    "penjelasan": "Menghitung varians berdasarkan sampel"
+  },
+  {
+    "no": 456,
+    "nama_rumus": "VARA",
+    "versi": "-",
+    "syntax": "VARA(value1, [value2], ...)",
+    "penjelasan": "Menghitung varians berdasarkan sampel, termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 457,
+    "nama_rumus": "VARP",
+    "versi": "-",
+    "syntax": "VARP(number1, [number2], ...)",
+    "penjelasan": "Fungsi lama: Menghitung varians berdasarkan populasi (diganti VAR.P)"
+  },
+  {
+    "no": 458,
+    "nama_rumus": "VARPA",
+    "versi": "-",
+    "syntax": "VARPA(value1, [value2], ...)",
+    "penjelasan": "Menghitung varians berdasarkan populasi, termasuk angka, teks, dan nilai logika"
+  },
+  {
+    "no": 459,
+    "nama_rumus": "VDB",
+    "versi": "-",
+    "syntax": "VDB(cost, salvage, life, start_period, end_period, [factor], [no_switch])",
+    "penjelasan": "Mengembalikan penyusutan aset untuk periode yang ditentukan menggunakan metode saldo menurun ganda"
+  },
+  {
+    "no": 460,
+    "nama_rumus": "VLOOKUP",
+    "versi": "-",
+    "syntax": "VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])",
+    "penjelasan": "Mencari nilai di kolom pertama tabel dan mengembalikan nilai dari kolom yang ditentukan"
+  },
+  {
+    "no": 461,
+    "nama_rumus": "VSTACK",
+    "versi": "Excel 2024+",
+    "syntax": "VSTACK(array1, [array2], ...)",
+    "penjelasan": "Menggabungkan array secara vertikal dan berurutan untuk mengembalikan array yang lebih besar"
+  },
+  {
+    "no": 462,
+    "nama_rumus": "WEBSERVICE",
+    "versi": "Excel 2013+",
+    "syntax": "WEBSERVICE(url)",
+    "penjelasan": "Mengembalikan data dari layanan web"
+  },
+  {
+    "no": 463,
+    "nama_rumus": "WEEKDAY",
+    "versi": "-",
+    "syntax": "WEEKDAY(serial_number, [return_type])",
+    "penjelasan": "Mengembalikan hari dalam seminggu sesuai dengan tanggal (1=Minggu, 2=Senin, dll)"
+  },
+  {
+    "no": 464,
+    "nama_rumus": "WEEKNUM",
+    "versi": "-",
+    "syntax": "WEEKNUM(serial_number, [return_type])",
+    "penjelasan": "Mengembalikan nomor minggu dari tanggal tertentu dalam tahun"
+  },
+  {
+    "no": 465,
+    "nama_rumus": "WEIBULL",
+    "versi": "-",
+    "syntax": "WEIBULL(x, alpha, beta, cumulative)",
+    "penjelasan": "Fungsi lama: Mengembalikan distribusi Weibull (diganti WEIBULL.DIST)"
+  },
+  {
+    "no": 466,
+    "nama_rumus": "WEIBULL.DIST",
+    "versi": "Excel 2010+",
+    "syntax": "WEIBULL.DIST(x, alpha, beta, cumulative)",
+    "penjelasan": "Mengembalikan distribusi Weibull"
+  },
+  {
+    "no": 467,
+    "nama_rumus": "WORKDAY",
+    "versi": "-",
+    "syntax": "WORKDAY(start_date, days, [holidays])",
+    "penjelasan": "Mengembalikan tanggal sebelum atau sesudah sejumlah hari kerja"
+  },
+  {
+    "no": 468,
+    "nama_rumus": "WORKDAY.INTL",
+    "versi": "Excel 2010+",
+    "syntax": "WORKDAY.INTL(start_date, days, [weekend], [holidays])",
+    "penjelasan": "Mengembalikan tanggal sebelum atau sesudah sejumlah hari kerja dengan parameter akhir pekan kustom"
+  },
+  {
+    "no": 469,
+    "nama_rumus": "WRAPCOLS",
+    "versi": "Excel 2024+",
+    "syntax": "WRAPCOLS(vector, wrap_count, [pad_with])",
+    "penjelasan": "Membungkus baris atau kolom vektor yang disediakan menjadi array 2D berdasarkan jumlah nilai yang ditentukan"
+  },
+  {
+    "no": 470,
+    "nama_rumus": "WRAPROWS",
+    "versi": "Excel 2024+",
+    "syntax": "WRAPROWS(vector, wrap_count, [pad_with])",
+    "penjelasan": "Membungkus baris atau kolom vektor yang disediakan menjadi array 2D berdasarkan jumlah nilai per baris"
+  },
+  {
+    "no": 471,
+    "nama_rumus": "XIRR",
+    "versi": "-",
+    "syntax": "XIRR(values, dates, [guess])",
+    "penjelasan": "Mengembalikan tingkat pengembalian internal untuk jadwal arus kas yang tidak periodik"
+  },
+  {
+    "no": 472,
+    "nama_rumus": "XLOOKUP",
+    "versi": "Excel 2021+",
+    "syntax": "XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])",
+    "penjelasan": "Mencari suatu rentang atau array dan mengembalikan item yang sesuai dengan kecocokan pertama yang ditemukan"
+  },
+  {
+    "no": 473,
+    "nama_rumus": "XMATCH",
+    "versi": "Excel 2021+",
+    "syntax": "XMATCH(lookup_value, lookup_array, [match_mode], [search_mode])",
+    "penjelasan": "Mengembalikan posisi relatif suatu item dalam array atau rentang sel"
+  },
+  {
+    "no": 474,
+    "nama_rumus": "XNPV",
+    "versi": "-",
+    "syntax": "XNPV(rate, values, dates)",
+    "penjelasan": "Mengembalikan nilai sekarang bersih untuk jadwal arus kas yang tidak periodik"
+  },
+  {
+    "no": 475,
+    "nama_rumus": "XOR",
+    "versi": "Excel 2013+",
+    "syntax": "XOR(logical1, [logical2], ...)",
+    "penjelasan": "Mengembalikan XOR logika dari semua argumen (TRUE jika jumlah argumen TRUE adalah ganjil)"
+  },
+  {
+    "no": 476,
+    "nama_rumus": "YEAR",
+    "versi": "-",
+    "syntax": "YEAR(serial_number)",
+    "penjelasan": "Mengembalikan tahun dari suatu tanggal sebagai bilangan bulat"
+  },
+  {
+    "no": 477,
+    "nama_rumus": "YEARFRAC",
+    "versi": "-",
+    "syntax": "YEARFRAC(start_date, end_date, [basis])",
+    "penjelasan": "Mengembalikan fraksi tahun yang mewakili jumlah hari antara start_date dan end_date"
+  },
+  {
+    "no": 478,
+    "nama_rumus": "YIELD",
+    "versi": "-",
+    "syntax": "YIELD(settlement, maturity, rate, pr, redemption, frequency, [basis])",
+    "penjelasan": "Mengembalikan imbal hasil sekuritas yang membayar bunga berkala"
+  },
+  {
+    "no": 479,
+    "nama_rumus": "YIELDDISC",
+    "versi": "-",
+    "syntax": "YIELDDISC(settlement, maturity, pr, redemption, [basis])",
+    "penjelasan": "Mengembalikan imbal hasil tahunan untuk sekuritas berdiskon"
+  },
+  {
+    "no": 480,
+    "nama_rumus": "YIELDMAT",
+    "versi": "-",
+    "syntax": "YIELDMAT(settlement, maturity, issue, rate, pr, [basis])",
+    "penjelasan": "Mengembalikan imbal hasil tahunan sekuritas yang membayar bunga pada saat jatuh tempo"
+  },
+  {
+    "no": 481,
+    "nama_rumus": "Z.TEST",
+    "versi": "Excel 2010+",
+    "syntax": "Z.TEST(array, x, [sigma])",
+    "penjelasan": "Mengembalikan nilai probabilitas satu sisi dari uji z"
+  },
+  {
+    "no": 482,
+    "nama_rumus": "ZTEST",
+    "versi": "-",
+    "syntax": "ZTEST(array, x, [sigma])",
+    "penjelasan": "Fungsi lama: Mengembalikan nilai probabilitas satu sisi dari uji z (diganti Z.TEST)"
+  }
+]

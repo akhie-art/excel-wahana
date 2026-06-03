@@ -99,7 +99,7 @@ export function AuthModal({ open, onOpenChange, defaultSignUp = false }: AuthMod
     if (clean.includes("@")) {
       return clean.toLowerCase();
     }
-    return clean.toLowerCase().replace(/[^a-z0-9]/g, "") + "@excelmaster.com";
+    return clean.toLowerCase().replace(/[^a-z0-9]/g, "") + "@excelwahana.com";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -166,7 +166,7 @@ export function AuthModal({ open, onOpenChange, defaultSignUp = false }: AuthMod
             <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-md dark:shadow-teal-900/20">
               <span className="text-white font-extrabold text-sm font-mono">X</span>
             </div>
-            <span className="font-extrabold tracking-tight text-foreground text-sm">ExcelMaster</span>
+            <span className="font-extrabold tracking-tight text-foreground text-sm">Excel Wahana</span>
           </div>
 
           {/* Headline & Mini Simulator Mockup */}

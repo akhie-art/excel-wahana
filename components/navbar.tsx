@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, CheckCircle2, LogOut } from "lucide-react";
+import { Moon, Sun, CheckCircle2, LogOut, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -35,7 +36,7 @@ export function Navbar() {
               <span className="text-white font-extrabold text-base font-mono">X</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-bold tracking-tight text-foreground text-sm md:text-base">ExcelMaster</span>
+              <span className="font-bold tracking-tight text-foreground text-sm md:text-base">Excel Wahana</span>
               <span className="text-[10px] text-muted-foreground font-mono leading-none">Interactive LMS</span>
             </div>
           </div>
@@ -64,7 +65,7 @@ export function Navbar() {
             <span className="text-white font-extrabold text-base font-mono">X</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold tracking-tight text-foreground text-sm md:text-base">ExcelMaster</span>
+            <span className="font-bold tracking-tight text-foreground text-sm md:text-base">Excel Wahana</span>
             <span className="text-[10px] text-muted-foreground font-mono leading-none">Interactive LMS</span>
           </div>
         </div>
@@ -92,6 +93,17 @@ export function Navbar() {
 
         {/* Action Controls */}
         <div className="flex items-center space-x-3">
+
+          {/* Perpustakaan Button */}
+          <Link href="/belajar/perpustakaan">
+            <Button
+              variant="ghost"
+              className="h-9 gap-1.5 text-muted-foreground hover:text-foreground rounded-lg border border-border/40 hover:bg-accent/40 px-3 text-xs font-semibold cursor-pointer"
+            >
+              <BookOpen className="h-4 w-4 text-emerald-500" />
+              <span className="hidden sm:inline">Perpustakaan</span>
+            </Button>
+          </Link>
 
           {/* Theme Toggle */}
           <Button
