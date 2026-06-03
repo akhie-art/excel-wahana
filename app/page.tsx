@@ -1,33 +1,529 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { AuthModal } from "@/components/auth-modal";
 import { useTheme } from "next-themes";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { 
-  Sparkles, 
-  Layers, 
-  CheckCircle2, 
-  Lock, 
-  ArrowRight, 
-  Table, 
-  Terminal, 
-  Award, 
-  Eye, 
-  HelpCircle, 
-  Zap, 
-  GraduationCap, 
-  BookOpen, 
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+  AnimatePresence,
+} from "framer-motion";
+import {
+  Sparkles,
+  Layers,
+  CheckCircle2,
+  Lock,
+  ArrowRight,
+  Table,
+  Terminal,
+  Award,
+  HelpCircle,
+  Zap,
+  GraduationCap,
+  BookOpen,
   UserCheck,
   Sun,
   Moon,
   Menu,
-  X
+  X,
+  ChevronDown,
+  Play,
+  RotateCcw,
+  TrendingUp,
+  Lightbulb,
+  BarChart2,
 } from "lucide-react";
 
+// ─── Typing Animation Hook ─────────────────────────────────────────────────
+function useTypingEffect(
+  texts: string[],
+  typingSpeed = 60,
+  deletingSpeed = 30,
+  pauseMs = 2000
+) {
+  const [displayText, setDisplayText] = useState("");
+  const [textIndex, setTextIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const current = texts[textIndex];
+
+    if (isPaused) {
+      const t = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, pauseMs);
+      return () => clearTimeout(t);
+    }
+
+    if (!isDeleting && displayText === current) {
+      setIsPaused(true);
+      return;
+    }
+
+    if (isDeleting && displayText === "") {
+      setIsDeleting(false);
+      setTextIndex((i) => (i + 1) % texts.length);
+      return;
+    }
+
+    const speed = isDeleting ? deletingSpeed : typingSpeed;
+    const t = setTimeout(() => {
+      setDisplayText(
+        isDeleting
+          ? current.slice(0, displayText.length - 1)
+          : current.slice(0, displayText.length + 1)
+      );
+    }, speed);
+    return () => clearTimeout(t);
+  }, [displayText, isDeleting, isPaused, textIndex, texts, typingSpeed, deletingSpeed, pauseMs]);
+
+  return displayText;
+}
+
+// ─── Mini Playground ────────────────────────────────────────────────────────
+const PLAYGROUND_DATA = {
+  rows: [
+    { dept: "ADM", pokok: 5000, tunj: 600 },
+    { dept: "DEV", pokok: 7000, tunj: 1000 },
+    { dept: "FIN", pokok: 5000, tunj: 800 },
+  ],
+};
+
+type CellResult = { value: string | number; status: "correct" | "error" | "empty" };
+
+function MiniPlayground() {
+  const [formula, setFormula] = useState("");
+  const [activeRow, setActiveRow] = useState<number | null>(null);
+  const [results, setResults] = useState<(CellResult)[]>([
+    { value: "", status: "empty" },
+    { value: "", status: "empty" },
+    { value: "", status: "empty" },
+  ]);
+  const [shakeRow, setShakeRow] = useState<number | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [allDone, setAllDone] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const validateFormula = useCallback((f: string, row: number): CellResult => {
+    const normalized = f.trim().toUpperCase().replace(/\s+/g, "");
+    const d = PLAYGROUND_DATA.rows[row];
+    const expectedTotal = d.pokok + d.tunj;
+
+    // Accept =SUM(Fx,Gx) or =Fx+Gx style
+    const sumPatterns = [
+      /^=SUM\(F\d,G\d\)$/,
+      /^=SUM\(G\d,F\d\)$/,
+      /^=F\d\+G\d$/,
+      /^=G\d\+F\d$/,
+      /^=SUM\(F\d:G\d\)$/,
+    ];
+    if (sumPatterns.some((p) => p.test(normalized))) {
+      return { value: expectedTotal.toLocaleString("id-ID"), status: "correct" };
+    }
+    // Accept hardcoded correct value
+    if (normalized === `=${expectedTotal}`) {
+      return { value: expectedTotal.toLocaleString("id-ID"), status: "correct" };
+    }
+    return { value: "Salah", status: "error" };
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    if (activeRow === null || !formula.trim()) return;
+
+    const result = validateFormula(formula, activeRow);
+    const newResults = [...results];
+    newResults[activeRow] = result;
+    setResults(newResults);
+
+    if (result.status === "error") {
+      setShakeRow(activeRow);
+      setTimeout(() => setShakeRow(null), 600);
+    } else {
+      // check all done
+      const allCorrect = newResults.every(r => r.status === "correct");
+      if (allCorrect) {
+        setAllDone(true);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
+    }
+
+    setFormula("");
+    setActiveRow(null);
+  }, [activeRow, formula, results, validateFormula]);
+
+  const handleReset = () => {
+    setResults([
+      { value: "", status: "empty" },
+      { value: "", status: "empty" },
+      { value: "", status: "empty" },
+    ]);
+    setFormula("");
+    setActiveRow(null);
+    setAllDone(false);
+    setShowConfetti(false);
+  };
+
+  const handleCellClick = (rowIndex: number) => {
+    if (results[rowIndex].status === "correct") return;
+    setActiveRow(rowIndex);
+    setFormula("");
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  return (
+    <div className="relative w-full max-w-[480px] mx-auto">
+      {/* Glow ring */}
+      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-emerald-500/30 via-transparent to-blue-500/30 blur-xl opacity-60 pointer-events-none" />
+
+      <div className="relative bg-card/80 border border-border/70 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl">
+        {/* Window Chrome */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/60 bg-muted/20">
+          <div className="flex space-x-1.5">
+            <div className="w-3 h-3 rounded-full bg-red-500/70" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+            <div className="w-3 h-3 rounded-full bg-emerald-500/70" />
+          </div>
+          <div className="text-[10px] font-mono text-muted-foreground bg-muted/40 px-2.5 py-1 rounded-md">
+            playground.xlsx · Coba Sekarang
+          </div>
+          <button
+            onClick={handleReset}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            title="Reset"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Formula Bar */}
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40 bg-background/40">
+          <span className="font-bold text-emerald-500 text-sm font-mono">fx</span>
+          <div className="w-px h-4 bg-border" />
+          {activeRow !== null ? (
+            <div className="flex-1 flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground font-mono bg-muted/40 px-1.5 rounded">
+                H{activeRow + 2}
+              </span>
+              <input
+                ref={inputRef}
+                value={formula}
+                onChange={(e) => setFormula(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                placeholder={`=SUM(F${activeRow + 2},G${activeRow + 2})`}
+                className="flex-1 bg-transparent text-xs font-mono text-foreground placeholder:text-muted-foreground/40 outline-none border-none"
+                autoFocus
+              />
+              <button
+                onClick={handleSubmit}
+                className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+              >
+                Enter ↵
+              </button>
+            </div>
+          ) : (
+            <span className="text-[11px] text-muted-foreground/50 italic flex items-center gap-1">
+              {allDone ? (
+                <>
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span className="text-emerald-400 font-medium not-italic">Semua sel selesai!</span>
+                </>
+              ) : (
+                "Klik sel Total (H) untuk mulai..."
+              )}
+            </span>
+          )}
+        </div>
+
+        {/* Spreadsheet Grid */}
+        <div className="font-mono text-[11px] overflow-hidden">
+          {/* Header Row */}
+          <div className="grid grid-cols-6 border-b border-border/40 bg-muted/30">
+            <div className="p-2 text-center text-muted-foreground font-semibold text-[10px] border-r border-border/30" />
+            {["Dept (E)", "Pokok (F)", "Tunj (G)", "Total (H)", "Status (I)"].map(h => (
+              <div key={h} className={`p-2 text-center text-[9px] font-bold border-r border-border/30 last:border-r-0 ${h.includes("H") ? "text-emerald-500" : "text-muted-foreground"}`}>
+                {h}
+              </div>
+            ))}
+          </div>
+
+          {/* Data Rows */}
+          {PLAYGROUND_DATA.rows.map((row, i) => {
+            const result = results[i];
+            const isActive = activeRow === i;
+            const isShaking = shakeRow === i;
+            const isCorrect = result.status === "correct";
+            const status = isCorrect
+              ? row.pokok + row.tunj >= 7500 ? "Tinggi" : row.pokok + row.tunj >= 5500 ? "Sedang" : "Rendah"
+              : null;
+
+            return (
+              <motion.div
+                key={i}
+                className={`grid grid-cols-6 border-b border-border/30 last:border-b-0 transition-colors ${isActive ? "bg-emerald-500/5" : "hover:bg-muted/10"}`}
+                animate={isShaking ? { x: [-4, 4, -4, 4, -2, 2, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="p-2 text-center text-muted-foreground font-bold border-r border-border/30 bg-muted/20 text-[10px]">
+                  {i + 2}
+                </div>
+                <div className="p-2 border-r border-border/30 text-foreground/80">{row.dept}</div>
+                <div className="p-2 border-r border-border/30 text-foreground/80">{row.pokok.toLocaleString("id-ID")}</div>
+                <div className="p-2 border-r border-border/30 text-foreground/80">{row.tunj.toLocaleString("id-ID")}</div>
+
+                {/* Clickable Total Cell */}
+                <div
+                  onClick={() => handleCellClick(i)}
+                  className={`p-2 border-r border-border/30 font-semibold cursor-pointer transition-all relative ${
+                    isCorrect
+                      ? "bg-emerald-500/15 text-emerald-500"
+                      : isActive
+                      ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-inset ring-emerald-500/50"
+                      : "text-muted-foreground/40 hover:bg-muted/20"
+                  }`}
+                >
+                  {isCorrect ? (
+                    <motion.span initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+                      {result.value}
+                    </motion.span>
+                  ) : isActive ? (
+                    <span className="animate-pulse text-emerald-400">|</span>
+                  ) : (
+                    <span className="text-[10px]">· klik</span>
+                  )}
+                </div>
+
+                {/* Status Cell */}
+                <div className={`p-2 font-semibold text-[10px] ${
+                  isCorrect
+                    ? status === "Tinggi"
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : status === "Sedang"
+                      ? "bg-yellow-500/10 text-yellow-400"
+                      : "bg-red-500/10 text-red-400"
+                    : "text-muted-foreground/20"
+                }`}>
+                  {isCorrect ? (
+                    <motion.span initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>
+                      {status}
+                    </motion.span>
+                  ) : "—"}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Bottom hint */}
+        <div className="px-4 py-2.5 bg-muted/20 border-t border-border/40 flex items-center justify-between">
+          <p className="text-[9px] text-muted-foreground flex items-center gap-1">
+            <Lightbulb className="w-3 h-3 text-yellow-500 shrink-0" />
+            <span>Ketik <code className="font-mono text-emerald-400">=SUM(F2,G2)</code> lalu tekan Enter</span>
+          </p>
+          {allDone && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="text-[10px] font-bold text-emerald-400 flex items-center gap-1"
+            >
+              <CheckCircle2 className="w-3 h-3" /> Selesai!
+            </motion.span>
+          )}
+        </div>
+      </div>
+
+      {/* Floating success badge */}
+      <AnimatePresence>
+        {showConfetti && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.8 }}
+            animate={{ opacity: 1, y: -10, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.8 }}
+            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-xl shadow-emerald-500/30 flex items-center gap-2"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-white" /> Semua Rumus Benar! +50 XP
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── FAQ Accordion ──────────────────────────────────────────────────────────
+const FAQ_ITEMS = [
+  {
+    q: "Apakah platform belajar ini gratis?",
+    a: "Ya! Platform ExcelMaster sepenuhnya gratis. Anda tidak perlu membayar langganan apa pun untuk mengakses seluruh materi dan studi kasus penggajian.",
+  },
+  {
+    q: "Bagaimana platform memvalidasi jawaban saya?",
+    a: "Platform kami memiliki mesin validator bawaan di sisi klien yang menganalisis sintaks dan struktur rumus secara real-time. Mesin ini mendukung variasi penulisan spasi, kapitalisasi huruf, serta separator regional (koma `,` atau titik koma `;`).",
+  },
+  {
+    q: "Bagaimana progres belajar saya disimpan?",
+    a: "Progres Anda disimpan secara otomatis di localStorage browser. Dengan mendaftar akun gratis, progres Anda akan tersimpan secara permanen di cloud melalui Supabase sehingga bisa diakses dari perangkat mana pun.",
+  },
+  {
+    q: "Apakah saya perlu menginstall software tambahan?",
+    a: "Tidak sama sekali! ExcelMaster berjalan sepenuhnya di browser Anda. Tidak perlu menginstall Microsoft Excel, Google Sheets, atau software apa pun. Cukup buka browser dan mulai belajar.",
+  },
+  {
+    q: "Apa perbedaan akun Peserta dan Instruktur?",
+    a: "Akun Peserta digunakan untuk mengerjakan soal dan memantau progres belajar pribadi. Akun Instruktur mendapat akses ke dashboard manajemen kelas, pembuatan soal kustom, dan pemantauan progres seluruh peserta.",
+  },
+];
+
+function FaqAccordion() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  return (
+    <div className="space-y-3">
+      {FAQ_ITEMS.map((item, i) => {
+        const isOpen = openIndex === i;
+        return (
+          <motion.div
+            key={i}
+            className={`border rounded-xl overflow-hidden transition-colors duration-300 ${
+              isOpen
+                ? "border-emerald-500/40 bg-emerald-500/[0.03]"
+                : "border-border/60 bg-card hover:border-border"
+            }`}
+            layout
+          >
+            <button
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+              className="w-full flex items-center justify-between px-5 py-4 text-left gap-4 cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${isOpen ? "bg-emerald-500/20 text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </div>
+                <span className={`text-sm font-semibold transition-colors ${isOpen ? "text-foreground" : "text-foreground/80"}`}>
+                  {item.q}
+                </span>
+              </div>
+              <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="shrink-0 text-muted-foreground"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </motion.div>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  key="content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <p className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed pl-14">
+                    {item.a}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Curriculum Step ─────────────────────────────────────────────────────────
+const CURRICULUM_STEPS = [
+  {
+    num: 1,
+    badge: "Matematika Dasar & Statistik",
+    icon: BookOpen,
+    title: "Kalkulasi Angka & Ringkasan Data",
+    description: "Pelajari cara menjumlahkan data, menghitung rata-rata, mencari nilai tertinggi dan terendah menggunakan rumus wajib.",
+    formulas: ["SUM", "AVERAGE", "MAX", "MIN", "COUNT"],
+    color: "emerald",
+  },
+  {
+    num: 2,
+    badge: "Manipulasi Teks (Text Cleanup)",
+    icon: Terminal,
+    title: "Penggabungan & Pembersihan Teks",
+    description: "Pelajari cara merapikan nama, menghapus spasi ganda, mengambil karakter dari kiri/tengah/kanan.",
+    formulas: ["TRIM", "PROPER", "LEFT", "MID", "RIGHT", "LEN", "CONCATENATE"],
+    color: "blue",
+  },
+  {
+    num: 3,
+    badge: "Logika Dasar & Nested IF",
+    icon: Lock,
+    title: "Evaluasi Kondisi & Logika Bercabang",
+    description: "Belajar mengambil keputusan otomatis berdasarkan nilai tertentu. Kuasai IF tunggal dan kombinasi Nested IF.",
+    formulas: ["IF", "AND", "OR", "NESTED IF"],
+    color: "yellow",
+  },
+  {
+    num: 4,
+    badge: "Lookup & Referensi Data",
+    icon: Table,
+    title: "VLOOKUP, HLOOKUP, dan XLOOKUP",
+    description: "Hubungkan tabel utama Anda dengan tabel referensi secara dinamis menggunakan fungsi pencarian terpopuler.",
+    formulas: ["VLOOKUP", "HLOOKUP", "XLOOKUP", "INDEX", "MATCH"],
+    color: "purple",
+  },
+  {
+    num: 5,
+    badge: "Studi Kasus Integrasi Akhir",
+    icon: Award,
+    title: "Studi Kasus Laporan Gaji & Evaluasi",
+    description: "Ujian akhir sesungguhnya: Gabungkan semua rumus dalam satu simulasi payroll karyawan yang komprehensif.",
+    formulas: ["LAPORAN GAJI", "NESTED LOGIC", "DATA INTEGRATION", "PAYROLL PROJECT"],
+    color: "rose",
+  },
+];
+
+const colorMap: Record<string, { dot: string; badge: string; formula: string; hover: string }> = {
+  emerald: {
+    dot: "from-emerald-400 to-teal-500 shadow-emerald-500/20 group-hover:shadow-emerald-500/40",
+    badge: "text-emerald-400",
+    formula: "hover:border-emerald-500/30 hover:text-emerald-400",
+    hover: "hover:border-emerald-500/30 group-hover:text-emerald-400",
+  },
+  blue: {
+    dot: "from-blue-400 to-indigo-500 shadow-blue-500/20 group-hover:shadow-blue-500/40",
+    badge: "text-blue-400",
+    formula: "hover:border-blue-500/30 hover:text-blue-400",
+    hover: "hover:border-blue-500/30 group-hover:text-blue-400",
+  },
+  yellow: {
+    dot: "from-yellow-400 to-amber-500 shadow-yellow-500/20 group-hover:shadow-yellow-500/40",
+    badge: "text-yellow-400",
+    formula: "hover:border-yellow-500/30 hover:text-yellow-400",
+    hover: "hover:border-yellow-500/30 group-hover:text-yellow-400",
+  },
+  purple: {
+    dot: "from-purple-400 to-violet-500 shadow-purple-500/20 group-hover:shadow-purple-500/40",
+    badge: "text-purple-400",
+    formula: "hover:border-purple-500/30 hover:text-purple-400",
+    hover: "hover:border-purple-500/30 group-hover:text-purple-400",
+  },
+  rose: {
+    dot: "from-rose-400 to-pink-500 shadow-rose-500/20 group-hover:shadow-rose-500/40",
+    badge: "text-rose-400",
+    formula: "hover:border-rose-500/30 hover:text-rose-400",
+    hover: "hover:border-rose-500/30 group-hover:text-rose-400",
+  },
+};
+
+// ─── Main Page ───────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const { user, loadUserAndProgress } = useAppStore();
   const { resolvedTheme, setTheme } = useTheme();
@@ -56,66 +552,44 @@ export default function LandingPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("showLogin") === "true") {
-        openAuthModal(false); // Open in Login mode
+        openAuthModal(false);
         router.replace("/");
       }
     }
   }, [router]);
 
-  // ─── Scroll-Driven Parallax ────────────────────────────────────────────────
+  // ─── Typing animation for formula bar ─────────────────────────────────────
+  const formulas = [
+    "=SUM(F2:G2)",
+    "=IF(H2>=7500,\"Tinggi\",IF(H2>=5500,\"Sedang\",\"Rendah\"))",
+    "=VLOOKUP(E2,A7:B8,2,FALSE)",
+    "=TRIM(PROPER(B2))",
+    "=AVERAGE(H2:H10)",
+  ];
+  const typedFormula = useTypingEffect(formulas, 55, 25, 2200);
+
+  // ─── Scroll Parallax ───────────────────────────────────────────────────────
   const { scrollY } = useScroll();
-  
-  // Background glowing blobs shift at different ratios
   const yBlob1 = useTransform(scrollY, [0, 800], [0, -120]);
   const yBlob2 = useTransform(scrollY, [0, 800], [0, 100]);
   const yBlob3 = useTransform(scrollY, [0, 800], [0, -60]);
-  
-  // Background grid pattern shifts slightly slower
   const yGrid = useTransform(scrollY, [0, 800], [0, -50]);
 
-  // Main visual mockup card shifts on scroll
-  const yCardScroll = useTransform(scrollY, [0, 800], [0, -40]);
-
-  // ─── Mouse-Interactive Parallax ───────────────────────────────────────────
-  // Motion values for normalized cursor coordinates (-0.5 to 0.5)
+  // ─── Mouse Parallax ────────────────────────────────────────────────────────
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
-  // Smooth springs for cursor movement
   const springX = useSpring(mouseX, { stiffness: 120, damping: 18 });
   const springY = useSpring(mouseY, { stiffness: 120, damping: 18 });
-
-  // 3D Card Rotation based on mouse
-  const rotateX = useTransform(springY, [-0.5, 0.5], [12, -12]);
-  const rotateY = useTransform(springX, [-0.5, 0.5], [-12, 12]);
-
-  // Glare radial background
-  const glareBg = useTransform(
-    [springX, springY],
-    ([xVal, yVal]) => {
-      const pctX = (Number(xVal) + 0.5) * 100;
-      const pctY = (Number(yVal) + 0.5) * 100;
-      return `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(16, 185, 129, 0.12) 0%, transparent 60%)`;
-    }
-  );
-
-  // Multi-layered offset values for floating icons/elements
-  const floatX1 = useTransform(springX, [-0.5, 0.5], [-20, 20]);
-  const floatY1 = useTransform(springY, [-0.5, 0.5], [-20, 20]);
-  
-  const floatX2 = useTransform(springX, [-0.5, 0.5], [30, -30]);
-  const floatY2 = useTransform(springY, [-0.5, 0.5], [30, -30]);
+  const floatX1 = useTransform(springX, [-0.5, 0.5], [-16, 16]);
+  const floatY1 = useTransform(springY, [-0.5, 0.5], [-16, 16]);
+  const floatX2 = useTransform(springX, [-0.5, 0.5], [24, -24]);
+  const floatY2 = useTransform(springY, [-0.5, 0.5], [24, -24]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const x = e.clientX - rect.left - width / 2;
-    const y = e.clientY - rect.top - height / 2;
-    mouseX.set(x / width);
-    mouseY.set(y / height);
+    mouseX.set((e.clientX - rect.left - rect.width / 2) / rect.width);
+    mouseY.set((e.clientY - rect.top - rect.height / 2) / rect.height);
   };
-
   const handleMouseLeave = () => {
     mouseX.set(0);
     mouseY.set(0);
@@ -123,59 +597,49 @@ export default function LandingPage() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.1 }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
   };
-
   const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" as const }
-    }
+    hidden: { y: 28, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.55, ease: "easeOut" as const } },
   };
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden selection:bg-emerald-500/30 selection:text-emerald-300">
-      
-      {/* Background Decorative Gradients & Grid Wrapper */}
+      {/* Background Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <motion.div style={{ y: yBlob1 }} className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/10 blur-[120px]" />
-        <motion.div style={{ y: yBlob2 }} className="absolute bottom-[-10%] right-[-10%] w-[55%] h-[55%] rounded-full bg-blue-500/10 blur-[150px]" />
-        <motion.div style={{ y: yBlob3 }} className="absolute top-[40%] right-[10%] w-[30%] h-[30%] rounded-full bg-indigo-500/5 blur-[100px]" />
-        <motion.div style={{ y: yGrid }} className="absolute inset-0 bg-[linear-gradient(to_right,#8080800b_1px,transparent_1px),linear-gradient(to_bottom,#8080800b_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <motion.div style={{ y: yBlob1 }} className="absolute top-[-10%] left-[-10%] w-[55%] h-[55%] rounded-full bg-emerald-500/8 blur-[140px]" />
+        <motion.div style={{ y: yBlob2 }} className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/8 blur-[160px]" />
+        <motion.div style={{ y: yBlob3 }} className="absolute top-[35%] right-[15%] w-[35%] h-[35%] rounded-full bg-indigo-500/5 blur-[100px]" />
+        <motion.div style={{ y: yGrid }} className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]" />
       </div>
 
-      {/* 1. Header/Navbar */}
-      <header className="sticky top-0 w-full border-b border-border/40 bg-background/80 backdrop-blur-md z-50 transition-all">
+      {/* ═══ NAVBAR ══════════════════════════════════════════════════════════ */}
+      <header className="sticky top-0 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl z-50">
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-md shadow-emerald-500/20">
+          {/* Logo */}
+          <div className="flex items-center space-x-2.5">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-md shadow-emerald-500/30">
               <span className="font-mono text-sm font-bold text-white">XL</span>
             </div>
-            <span className="font-bold tracking-tight text-foreground text-base md:text-lg">ExcelMaster</span>
+            <span className="font-bold tracking-tight text-foreground text-base">ExcelMaster</span>
           </div>
 
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-muted-foreground">
-            <a href="#fitur" className="hover:text-emerald-500 transition-colors">Fitur Utama</a>
+            <a href="#fitur" className="hover:text-emerald-500 transition-colors">Fitur</a>
             <a href="#kurikulum" className="hover:text-emerald-500 transition-colors">Kurikulum</a>
+            <a href="#playground" className="hover:text-emerald-500 transition-colors">Playground</a>
             <a href="#faq" className="hover:text-emerald-500 transition-colors">FAQ</a>
           </nav>
 
-          {/* Desktop Right Actions */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Desktop Right */}
+          <div className="hidden md:flex items-center gap-3">
             {/* Theme Toggle */}
-            <div className="flex items-center p-0.5 bg-muted/40 border border-border/30 rounded-full mr-2">
+            <div className="flex items-center p-0.5 bg-muted/40 border border-border/30 rounded-full">
               <button
                 onClick={() => setTheme("light")}
-                className={`h-8 px-2.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  activeTheme === "light"
-                    ? "bg-white text-amber-500 shadow-xs border border-border/10"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`h-7 px-2.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${activeTheme === "light" ? "bg-white text-amber-500 shadow-sm border border-border/10" : "text-muted-foreground hover:text-foreground"}`}
                 title="Light Mode"
               >
                 <Sun className="h-3.5 w-3.5" />
@@ -183,11 +647,7 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => setTheme("dark")}
-                className={`h-8 px-2.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  activeTheme === "dark"
-                    ? "bg-slate-800 text-sky-400 shadow-xs border border-border/10"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`h-7 px-2.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${activeTheme === "dark" ? "bg-slate-800 text-sky-400 shadow-sm border border-border/10" : "text-muted-foreground hover:text-foreground"}`}
                 title="Dark Mode"
               >
                 <Moon className="h-3.5 w-3.5" />
@@ -196,29 +656,16 @@ export default function LandingPage() {
             </div>
 
             {mounted && user ? (
-              <Link 
-                href="/belajar" 
-                className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-xs font-semibold text-foreground rounded-lg group bg-gradient-to-br from-emerald-500 to-blue-600 group-hover:from-emerald-500 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-emerald-800 transition-all mt-2 cursor-pointer"
-              >
-                <span className="relative px-4 py-2 transition-all ease-in duration-75 bg-background rounded-md group-hover:bg-opacity-0 font-medium tracking-tight">
-                  Dashboard Belajar
-                </span>
+              <Link href="/belajar" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-md shadow-emerald-500/25 transition-all hover:-translate-y-px cursor-pointer">
+                Dashboard Belajar <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             ) : (
               <>
-                <button
-                  onClick={() => openAuthModal(false)}
-                  className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer px-2 py-1.5"
-                >
+                <button onClick={() => openAuthModal(false)} className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer px-2 py-1.5">
                   Masuk
                 </button>
-                <button
-                  onClick={() => openAuthModal(true)}
-                  className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-xs font-semibold text-foreground rounded-lg group bg-gradient-to-br from-emerald-500 to-blue-600 group-hover:from-emerald-500 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-emerald-800 transition-all mt-2 cursor-pointer"
-                >
-                  <span className="relative px-4 py-2 transition-all ease-in duration-75 bg-background rounded-md group-hover:bg-opacity-0 font-medium tracking-tight">
-                    Mulai Belajar
-                  </span>
+                <button onClick={() => openAuthModal(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-md shadow-emerald-500/25 transition-all hover:-translate-y-px cursor-pointer">
+                  Mulai Gratis <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </>
             )}
@@ -234,638 +681,528 @@ export default function LandingPage() {
           </button>
         </div>
 
-        {/* Mobile Menu Overlay */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-x-0 top-16 bg-background/95 backdrop-blur-md border-b border-border/40 z-40 p-6 flex flex-col space-y-6 shadow-xl animate-in slide-in-from-top-5 duration-200">
-            <nav className="flex flex-col space-y-4 font-semibold text-foreground text-sm">
-              <a 
-                href="#fitur" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-emerald-500 transition-colors py-2 border-b border-border/20"
-              >
-                Fitur Utama
-              </a>
-              <a 
-                href="#kurikulum" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-emerald-500 transition-colors py-2 border-b border-border/20"
-              >
-                Kurikulum
-              </a>
-              <a 
-                href="#faq" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-emerald-500 transition-colors py-2"
-              >
-                FAQ
-              </a>
-            </nav>
-
-            <div className="flex flex-col space-y-4 pt-4 border-t border-border/40">
-              {/* Theme Toggle (Mobile) */}
-              <div className="flex flex-col space-y-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pilih Tema</span>
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden absolute inset-x-0 top-16 bg-background/98 backdrop-blur-xl border-b border-border/40 z-40 p-6 flex flex-col space-y-6 shadow-xl"
+            >
+              <nav className="flex flex-col space-y-1">
+                {["#fitur|Fitur Utama", "#kurikulum|Kurikulum", "#playground|Playground", "#faq|FAQ"].map(item => {
+                  const [href, label] = item.split("|");
+                  return (
+                    <a
+                      key={href}
+                      href={href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-sm font-medium text-foreground hover:text-emerald-500 transition-colors py-2.5 px-2 rounded-lg hover:bg-muted/10 border-b border-border/10 last:border-0"
+                    >
+                      {label}
+                    </a>
+                  );
+                })}
+              </nav>
+              <div className="flex flex-col gap-3 pt-2 border-t border-border/40">
                 <div className="flex items-center p-0.5 bg-muted/40 border border-border/30 rounded-full w-fit">
-                  <button
-                    onClick={() => setTheme("light")}
-                    className={`h-8 px-4 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                      activeTheme === "light"
-                        ? "bg-white text-amber-500 shadow-xs border border-border/10"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Sun className="h-3.5 w-3.5" />
-                    <span>Light</span>
+                  <button onClick={() => setTheme("light")} className={`h-8 px-4 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer ${activeTheme === "light" ? "bg-white text-amber-500 shadow-sm" : "text-muted-foreground"}`}>
+                    <Sun className="h-3.5 w-3.5" /> Light
                   </button>
-                  <button
-                    onClick={() => setTheme("dark")}
-                    className={`h-8 px-4 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                      activeTheme === "dark"
-                        ? "bg-slate-800 text-sky-400 shadow-xs border border-border/10"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Moon className="h-3.5 w-3.5" />
-                    <span>Dark</span>
+                  <button onClick={() => setTheme("dark")} className={`h-8 px-4 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer ${activeTheme === "dark" ? "bg-slate-800 text-sky-400 shadow-sm" : "text-muted-foreground"}`}>
+                    <Moon className="h-3.5 w-3.5" /> Dark
                   </button>
                 </div>
-              </div>
-
-              {/* Auth/Dashboard Actions (Mobile) */}
-              <div className="flex flex-col space-y-2 pt-2">
                 {mounted && user ? (
-                  <Link 
-                    href="/belajar" 
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full inline-flex items-center justify-center p-0.5 overflow-hidden text-xs font-semibold text-foreground rounded-lg group bg-gradient-to-br from-emerald-500 to-blue-600 group-hover:from-emerald-500 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-emerald-800 transition-all cursor-pointer"
-                  >
-                    <span className="w-full text-center relative px-4 py-2.5 transition-all ease-in duration-75 bg-background rounded-md group-hover:bg-opacity-0 font-medium tracking-tight">
-                      Dashboard Belajar
-                    </span>
+                  <Link href="/belajar" onClick={() => setIsMobileMenuOpen(false)} className="w-full text-center py-2.5 text-sm font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors cursor-pointer">
+                    Dashboard Belajar
                   </Link>
                 ) : (
-                  <div className="flex flex-col space-y-2.5">
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        openAuthModal(false);
-                      }}
-                      className="w-full text-center py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground border border-border/60 hover:bg-muted/10 rounded-lg transition-colors cursor-pointer"
-                    >
+                  <>
+                    <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal(false); }} className="w-full text-center py-2.5 text-sm font-semibold text-muted-foreground border border-border/60 rounded-lg hover:bg-muted/10 transition-colors cursor-pointer">
                       Masuk
                     </button>
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        openAuthModal(true);
-                      }}
-                      className="w-full inline-flex items-center justify-center p-0.5 overflow-hidden text-xs font-semibold text-foreground rounded-lg group bg-gradient-to-br from-emerald-500 to-blue-600 group-hover:from-emerald-500 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-emerald-800 transition-all cursor-pointer"
-                    >
-                      <span className="w-full text-center relative px-4 py-2.5 transition-all ease-in duration-75 bg-background rounded-md group-hover:bg-opacity-0 font-medium tracking-tight">
-                        Mulai Belajar
-                      </span>
+                    <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal(true); }} className="w-full text-center py-2.5 text-sm font-semibold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors cursor-pointer">
+                      Mulai Gratis
                     </button>
-                  </div>
+                  </>
                 )}
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      {/* 2. Hero Section */}
-      <section 
+      {/* ═══ HERO ════════════════════════════════════════════════════════════ */}
+      <section
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 max-w-[1400px] mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28 overflow-visible"
+        className="relative z-10 max-w-[1400px] mx-auto px-6 pt-16 pb-24 md:pt-24 md:pb-32 overflow-visible"
       >
-        {/* Floating Parallax Elements (Formulas/Icons) */}
-        <motion.div
-          style={{ x: floatX1, y: floatY2, opacity: 0.15 }}
-          className="absolute top-[10%] left-[5%] text-xs font-mono font-bold text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 select-none pointer-events-none hidden lg:block"
-        >
+        {/* Floating Formula Pills */}
+        <motion.div style={{ x: floatX1, y: floatY2, opacity: 0.18 }} className="absolute top-[12%] left-[3%] text-xs font-mono font-bold text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 select-none pointer-events-none hidden lg:block">
           =SUM(F2:G2)
         </motion.div>
-        <motion.div
-          style={{ x: floatX2, y: floatY1, opacity: 0.12 }}
-          className="absolute bottom-[25%] left-[42%] text-xs font-mono font-bold text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 select-none pointer-events-none hidden lg:block"
-        >
+        <motion.div style={{ x: floatX2, y: floatY1, opacity: 0.14 }} className="absolute bottom-[22%] left-[40%] text-xs font-mono font-bold text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 select-none pointer-events-none hidden lg:block">
           =VLOOKUP(C2, A7:B8, 2, FALSE)
         </motion.div>
-        <motion.div
-          style={{ x: floatX1, y: floatY1, opacity: 0.15 }}
-          className="absolute top-[15%] right-[25%] text-xs font-mono font-bold text-purple-500 bg-purple-500/10 px-3 py-1.5 rounded-lg border border-purple-500/20 select-none pointer-events-none hidden lg:block"
-        >
-          =IF(H2&gt;=7500, "Tinggi", "Rendah")
+        <motion.div style={{ x: floatX1, y: floatY1, opacity: 0.16 }} className="absolute top-[18%] right-[22%] text-xs font-mono font-bold text-purple-500 bg-purple-500/10 px-3 py-1.5 rounded-lg border border-purple-500/20 select-none pointer-events-none hidden lg:block">
+          {`=IF(H2>=7500,"Tinggi","Rendah")`}
         </motion.div>
 
-        <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {/* Left Column: Copywriting */}
-          <div className="lg:col-span-7 flex flex-col space-y-8 text-center lg:text-left">
+          {/* Left: Copy */}
+          <div className="lg:col-span-6 flex flex-col space-y-7 text-center lg:text-left">
             <motion.div variants={itemVariants} className="inline-flex items-center self-center lg:self-start space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold tracking-wide">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Platform Pembelajaran Excel Interaktif Gratis</span>
+              <span>Platform Pembelajaran Excel Interaktif · Gratis</span>
             </motion.div>
 
-            <motion.h1 
-              variants={itemVariants} 
-              className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] text-foreground"
-            >
-              Kuasai Rumus Excel Secara <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400">Interaktif</span> Tanpa Ribet
+            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.08] text-foreground">
+              Kuasai Rumus Excel{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500">
+                Secara Interaktif
+              </span>{" "}
+              Tanpa Ribet
             </motion.h1>
 
-            <motion.p 
-              variants={itemVariants} 
-              className="text-base sm:text-lg md:text-xl text-muted-foreground font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0"
-            >
-              Uji formula Anda secara langsung di dalam simulator spreadsheet browser. Dapatkan visual feedback instan, fitur penguncian sel dinamis, dan tantangan studi kasus nyata.
+            <motion.p variants={itemVariants} className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Uji formula Anda di simulator spreadsheet browser. Dapatkan visual feedback instan, prerequisite cell locking dinamis, dan tantangan studi kasus nyata.
             </motion.p>
 
-            <motion.div 
-              variants={itemVariants}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
-            >
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
               {mounted && user ? (
-                <Link 
-                  href="/belajar" 
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 transition-all group gap-2 cursor-pointer"
-                >
-                  <span>Mulai Belajar Sekarang (Gratis)</span>
+                <Link href="/belajar" className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transform hover:-translate-y-0.5 transition-all group gap-2 cursor-pointer">
+                  <span>Mulai Belajar Sekarang</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               ) : (
-                <button 
-                  onClick={() => openAuthModal(true)}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 transition-all group gap-2 cursor-pointer"
-                >
+                <button onClick={() => openAuthModal(true)} className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transform hover:-translate-y-0.5 transition-all group gap-2 cursor-pointer">
                   <span>Mulai Belajar Sekarang (Gratis)</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               )}
-              <a 
-                href="#fitur" 
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold rounded-xl border border-border bg-card/40 hover:bg-card/80 text-foreground transition-all gap-2"
-              >
-                <span>Pelajari Fitur</span>
+              <a href="#playground" className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold rounded-xl border border-border bg-card/40 hover:bg-card/80 text-foreground transition-all gap-2">
+                <Play className="w-4 h-4 text-emerald-500" />
+                <span>Coba Playground</span>
               </a>
             </motion.div>
 
-            {/* Quick Metrics */}
-            <motion.div 
-              variants={itemVariants}
-              className="grid grid-cols-3 gap-6 pt-6 border-t border-border/40 max-w-lg mx-auto lg:mx-0"
-            >
-              <div>
-                <h4 className="text-2xl font-bold text-foreground">7+</h4>
-                <p className="text-xs text-muted-foreground">Kategori Modul</p>
-              </div>
-              <div>
-                <h4 className="text-2xl font-bold text-foreground">30+</h4>
-                <p className="text-xs text-muted-foreground">Soal & Tantangan</p>
-              </div>
-              <div>
-                <h4 className="text-2xl font-bold text-emerald-400">100%</h4>
-                <p className="text-xs text-muted-foreground">Gratis & Tanpa Instal</p>
-              </div>
+            {/* Stats */}
+            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-6 pt-6 border-t border-border/40 max-w-md mx-auto lg:mx-0">
+              {[
+                { val: "7+", label: "Kategori Modul" },
+                { val: "30+", label: "Soal & Tantangan" },
+                { val: "100%", label: "Gratis & Tanpa Instal", accent: true },
+              ].map(s => (
+                <div key={s.label}>
+                  <h4 className={`text-2xl font-extrabold ${s.accent ? "text-emerald-400" : "text-foreground"}`}>{s.val}</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+                </div>
+              ))}
             </motion.div>
           </div>
 
-          {/* Right Column: Visual Mockup Container */}
-          <div 
-            className="lg:col-span-5 relative z-10 w-full flex justify-center overflow-visible"
-            style={{ perspective: 1000 }}
-          >
-            <motion.div 
-              variants={itemVariants}
-              style={{ 
-                rotateX, 
-                rotateY, 
-                y: yCardScroll,
-                transformStyle: "preserve-3d" 
-              }}
-              className="relative w-full max-w-[450px] aspect-[9/10] bg-gradient-to-b from-card/90 to-card/50 border border-border/80 rounded-2xl shadow-2xl p-4 md:p-5 flex flex-col space-y-4 overflow-visible backdrop-blur-sm group hover:border-emerald-500/40 transition-all duration-500"
-            >
-              {/* Dynamic Glare Overlay */}
-              <motion.div 
-                className="absolute inset-0 rounded-2xl pointer-events-none z-20"
-                style={{ background: glareBg }}
-              />
-
-              {/* Glass Header details */}
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <div className="flex space-x-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+          {/* Right: Animated Formula Bar Preview */}
+          <motion.div variants={itemVariants} className="lg:col-span-6 flex flex-col gap-4">
+            {/* Formula Bar Card */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-blue-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="relative bg-card/70 border border-border/70 rounded-2xl p-4 backdrop-blur-sm shadow-xl">
+                {/* Chrome */}
+                <div className="flex items-center justify-between mb-3 pb-3 border-b border-border/40">
+                  <div className="flex space-x-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
+                  </div>
+                  <div className="text-[10px] font-mono text-muted-foreground bg-muted/40 px-2 py-0.5 rounded">studi-kasus-payroll.xlsx</div>
+                  <div className="w-14" />
                 </div>
-                <div className="text-[10px] font-mono text-muted-foreground bg-muted/40 px-2 py-0.5 rounded">
-                  studi-kasus-payroll.xlsx
+                {/* Typing Formula Bar */}
+                <div className="flex items-center gap-2 mb-3 px-1">
+                  <span className="font-bold text-emerald-500 text-sm font-mono">fx</span>
+                  <div className="w-px h-4 bg-border" />
+                  <span className="text-xs font-mono text-foreground flex-1 min-h-[1.2em]">
+                    {typedFormula}
+                    <span className="inline-block w-0.5 h-3.5 bg-emerald-500 ml-0.5 animate-pulse align-middle" />
+                  </span>
+                </div>
+                {/* Mini Grid Preview */}
+                <div className="font-mono text-[10px] border border-border/30 rounded-lg overflow-hidden">
+                  <div className="grid grid-cols-5 bg-muted/30 border-b border-border/30">
+                    {["", "Dept", "Pokok", "Total", "Status"].map((h, i) => (
+                      <div key={i} className={`p-1.5 text-center font-bold border-r border-border/20 last:border-0 ${i === 3 ? "text-emerald-500" : "text-muted-foreground"}`}>{h}</div>
+                    ))}
+                  </div>
+                  {[
+                    { dept: "ADM", pokok: "5.000", total: "5.600", status: "Sedang", sc: "yellow" },
+                    { dept: "DEV", pokok: "7.000", total: "8.000", status: "Tinggi", sc: "emerald" },
+                    { dept: "FIN", pokok: "5.000", total: "5.800", status: "Sedang", sc: "yellow" },
+                  ].map((r, i) => (
+                    <div key={i} className="grid grid-cols-5 border-b border-border/20 last:border-0 hover:bg-muted/10">
+                      <div className="p-1.5 text-center text-muted-foreground font-bold border-r border-border/20 bg-muted/10">{i + 2}</div>
+                      <div className="p-1.5 border-r border-border/20 text-foreground/80">{r.dept}</div>
+                      <div className="p-1.5 border-r border-border/20 text-foreground/80">{r.pokok}</div>
+                      <div className="p-1.5 border-r border-border/20 font-semibold text-emerald-500 bg-emerald-500/8">{r.total}</div>
+                      <div className={`p-1.5 font-semibold ${r.sc === "emerald" ? "text-emerald-400 bg-emerald-500/8" : "text-yellow-400 bg-yellow-500/8"}`}>
+                        {r.status}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
 
-              {/* Interactive cell simulator visual mockup */}
-              <div className="flex-1 flex flex-col bg-background/50 border border-border/40 rounded-lg overflow-hidden font-mono text-[10px] sm:text-xs">
-                {/* Fake Formula Bar */}
-                <div className="h-7 border-b border-border/40 bg-muted/10 px-2 flex items-center space-x-2 text-muted-foreground">
-                  <span className="font-bold text-emerald-500 text-xs">fx</span>
-                  <div className="h-4 w-[1px] bg-border" />
-                  <span className="text-[10px] text-foreground truncate select-none">{"=IF(H2>=7500,\"Tinggi\",IF(H2>=5500,\"Sedang\",\"Rendah\"))"}</span>
-                </div>
-
-                {/* Visual Grid Mock */}
-                <div className="flex-1 grid grid-cols-6 grid-rows-7 border-collapse">
-                  {/* Row 0 Header */}
-                  <div className="bg-muted/30 border-b border-r border-border/40 p-1 font-semibold text-center select-none text-muted-foreground"></div>
-                  <div className="bg-muted/30 border-b border-r border-border/40 p-1 font-semibold text-center select-none text-muted-foreground">E</div>
-                  <div className="bg-muted/30 border-b border-r border-border/40 p-1 font-semibold text-center select-none text-muted-foreground">F</div>
-                  <div className="bg-muted/30 border-b border-r border-border/40 p-1 font-semibold text-center select-none text-muted-foreground">G</div>
-                  <div className="bg-muted/30 border-b border-r border-border/40 p-1 font-semibold text-center select-none text-muted-foreground">H</div>
-                  <div className="bg-muted/30 border-b border-border/40 p-1 font-semibold text-center select-none text-muted-foreground">I</div>
-
-                  {/* Row 1 Karyawan header */}
-                  <div className="bg-muted/10 border-b border-r border-border/40 p-1 text-center font-bold">1</div>
-                  <div className="bg-blue-500/5 border-b border-r border-border/40 p-1 text-[8px] sm:text-[9px] font-bold text-slate-600 dark:text-slate-400">Dept</div>
-                  <div className="bg-blue-500/5 border-b border-r border-border/40 p-1 text-[8px] sm:text-[9px] font-bold text-slate-600 dark:text-slate-400">Pokok</div>
-                  <div className="bg-blue-500/5 border-b border-r border-border/40 p-1 text-[8px] sm:text-[9px] font-bold text-slate-600 dark:text-slate-400">Tunj.</div>
-                  <div className="bg-blue-500/5 border-b border-r border-border/40 p-1 text-[8px] sm:text-[9px] font-bold text-slate-600 dark:text-slate-400">Total</div>
-                  <div className="bg-blue-500/5 border-b border-border/40 p-1 text-[8px] sm:text-[9px] font-bold text-emerald-600 dark:text-emerald-400">Status</div>
-
-                  {/* Row 2 Rudi */}
-                  <div className="bg-muted/10 border-b border-r border-border/40 p-1 text-center font-bold">2</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">ADM</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">5.000</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">600</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300 bg-emerald-500/10 font-semibold text-emerald-600 dark:text-emerald-400">5.600</div>
-                  <div className="border-b border-border/40 p-1 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 font-semibold animate-pulse">Sedang</div>
-
-                  {/* Row 3 Dewi */}
-                  <div className="bg-muted/10 border-b border-r border-border/40 p-1 text-center font-bold">3</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">DEV</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">7.000</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">1.000</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300 bg-emerald-500/10 font-semibold text-emerald-600 dark:text-emerald-400">8.000</div>
-                  <div className="border-b border-border/40 p-1 text-slate-600 dark:text-slate-400 relative">
-                    <span className="opacity-50">?</span>
-                    <span className="absolute right-1 top-1 text-[7px] text-yellow-600 dark:text-yellow-500"><Lock className="w-2.5 h-2.5 inline" /></span>
-                  </div>
-
-                  {/* Row 4 Andi */}
-                  <div className="bg-muted/10 border-b border-r border-border/40 p-1 text-center font-bold">4</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">FIN</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">5.000</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">800</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-700 dark:text-slate-300 bg-emerald-500/10 font-semibold text-emerald-600 dark:text-emerald-400">5.800</div>
-                  <div className="border-b border-border/40 p-1 text-slate-600 dark:text-slate-400 relative">
-                    <span className="opacity-50">?</span>
-                    <span className="absolute right-1 top-1 text-[7px] text-yellow-600 dark:text-yellow-500"><Lock className="w-2.5 h-2.5 inline" /></span>
-                  </div>
-
-                  {/* Row 5 Spacer */}
-                  <div className="bg-muted/10 border-b border-r border-border/40 p-1 text-center font-bold">5</div>
-                  <div className="border-b border-r border-border/40 p-1 text-slate-600 dark:text-slate-500 text-[8px] col-span-5 whitespace-nowrap overflow-hidden">REFERENSI GOLONGAN</div>
-
-                  {/* Row 6 Ref Golongan */}
-                  <div className="bg-muted/10 border-r border-border/40 p-1 text-center font-bold">6</div>
-                  <div className="border-r border-border/40 p-1 text-slate-600 dark:text-slate-400">I</div>
-                  <div className="border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">5.000</div>
-                  <div className="border-r border-border/40 p-1 text-slate-600 dark:text-slate-400">II</div>
-                  <div className="border-r border-border/40 p-1 text-slate-700 dark:text-slate-300">7.000</div>
-                  <div className="p-1"></div>
-                </div>
-              </div>
-
-              {/* Float Cards (Confetti & Unlock badge Simulation) */}
-              <motion.div 
-                style={{ 
-                  x: floatX1, 
-                  y: floatY1, 
-                  transformStyle: "preserve-3d",
-                  transform: "translateZ(60px)"
-                }}
-                className="absolute bottom-6 -left-6 bg-white/95 dark:bg-slate-900/95 border border-emerald-500/20 dark:border-emerald-500/30 px-3 py-2 rounded-xl shadow-lg flex items-center space-x-2 select-none transform hover:scale-105 transition-all z-40 backdrop-blur-md"
-              >
-                <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold text-foreground">Formula Benar!</div>
-                  <div className="text-[8px] text-muted-foreground">Confetti dilepaskan</div>
-                </div>
+            {/* Floating badges */}
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              <motion.div style={{ x: floatX1 }} className="flex items-center gap-2 bg-card/90 border border-emerald-500/20 px-3 py-2 rounded-xl shadow-lg backdrop-blur-md text-[11px]">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-emerald-500" /></div>
+                <div><div className="font-bold text-foreground">Formula Benar!</div><div className="text-muted-foreground text-[9px]">Confetti dilepaskan</div></div>
               </motion.div>
-
-              <motion.div 
-                style={{ 
-                  x: floatX2, 
-                  y: floatY2, 
-                  transformStyle: "preserve-3d",
-                  transform: "translateZ(40px)"
-                }}
-                className="absolute top-1/2 -right-8 bg-white/95 dark:bg-slate-900/95 border border-yellow-500/20 dark:border-yellow-500/30 px-3 py-2 rounded-xl shadow-lg flex items-center space-x-2 select-none transform hover:scale-105 transition-all z-40 backdrop-blur-md"
-              >
-                <Lock className="w-4 h-4 text-yellow-600 dark:text-yellow-500" />
-                <div>
-                  <div className="text-[10px] font-bold text-foreground">Prerequisite Locked</div>
-                  <div className="text-[8px] text-muted-foreground">Selesaikan Gaji Pokok dahulu</div>
-                </div>
+              <motion.div style={{ x: floatX2 }} className="flex items-center gap-2 bg-card/90 border border-yellow-500/20 px-3 py-2 rounded-xl shadow-lg backdrop-blur-md text-[11px]">
+                <Lock className="w-4 h-4 text-yellow-500" />
+                <div><div className="font-bold text-foreground">Prerequisite Locked</div><div className="text-muted-foreground text-[9px]">Selesaikan sel sebelumnya</div></div>
               </motion.div>
-            </motion.div>
-          </div>
+              <motion.div style={{ x: floatX1 }} className="flex items-center gap-2 bg-card/90 border border-blue-500/20 px-3 py-2 rounded-xl shadow-lg backdrop-blur-md text-[11px]">
+                <TrendingUp className="w-4 h-4 text-blue-500" />
+                <div><div className="font-bold text-foreground">Progress Tersimpan</div><div className="text-muted-foreground text-[9px]">Streak 7 hari berturut</div></div>
+              </motion.div>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
-      {/* 3. Features Section */}
-      <section id="fitur" className="relative z-10 py-24 bg-card/20 border-y border-border/40">
+      {/* ═══ BENTO FEATURES ══════════════════════════════════════════════════ */}
+      <section id="fitur" className="relative z-10 py-28 border-y border-border/40 bg-muted/5">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-20">
+          <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
+              <Zap className="w-3.5 h-3.5" /> Kenapa ExcelMaster?
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Kenapa Belajar di ExcelMaster?
+              Sistem Pembelajaran Paling Modern
             </h2>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Kami merancang sistem pembelajaran hands-on termodern yang langsung menguji keterampilan pemecahan masalah Anda.
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Dirancang hands-on dari awal untuk langsung menguji keterampilan pemecahan masalah nyata Anda.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            {/* Feature 1 */}
-            <div className="bg-card border border-border/60 p-6 rounded-2xl flex flex-col space-y-4 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                <Table className="w-5 h-5" />
+          {/* Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-auto">
+            {/* Big Card 1: Interactive Simulator */}
+            <div className="lg:col-span-2 group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-5 hover:border-emerald-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="flex items-start justify-between">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300">
+                  <Table className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-mono text-emerald-400/70 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">No. 1 Feature</span>
               </div>
-              <h3 className="text-lg font-bold text-foreground">Interactive Sheet Simulator</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Tidak memerlukan instalasi Microsoft Excel atau Google Sheets. Ketik rumus Anda secara langsung dalam grid yang responsif.
-              </p>
+              <div>
+                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-emerald-400 transition-colors">Interactive Sheet Simulator</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Tidak perlu instalasi Microsoft Excel atau Google Sheets. Ketik rumus Anda secara langsung dalam grid responsif persis seperti spreadsheet sungguhan, lengkap dengan formula bar, resize kolom, dan cell navigation.</p>
+              </div>
+              {/* Mini visual demo */}
+              <div className="mt-auto font-mono text-[10px] border border-border/30 rounded-lg overflow-hidden opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="grid grid-cols-4 bg-muted/30 border-b border-border/20">
+                  {["", "A", "B", "C"].map(h => <div key={h} className="p-1.5 text-center text-muted-foreground font-bold border-r border-border/20 last:border-0">{h}</div>)}
+                </div>
+                <div className="grid grid-cols-4 border-b border-border/20">
+                  <div className="p-1.5 text-center text-muted-foreground bg-muted/10 border-r border-border/20 font-bold">1</div>
+                  <div className="p-1.5 border-r border-border/20 text-foreground/70">Nama</div>
+                  <div className="p-1.5 border-r border-border/20 text-foreground/70">Nilai</div>
+                  <div className="p-1.5 text-emerald-400 font-semibold">Grade</div>
+                </div>
+                <div className="grid grid-cols-4">
+                  <div className="p-1.5 text-center text-muted-foreground bg-muted/10 border-r border-border/20 font-bold">2</div>
+                  <div className="p-1.5 border-r border-border/20 text-foreground/70">Andi</div>
+                  <div className="p-1.5 border-r border-border/20 text-foreground/70">85</div>
+                  <div className="p-1.5 ring-1 ring-emerald-500/50 text-emerald-400 bg-emerald-500/8 animate-pulse text-[9px]">=IF(B2&gt;=80…</div>
+                </div>
+              </div>
             </div>
 
-            {/* Feature 2 */}
-            <div className="bg-card border border-border/60 p-6 rounded-2xl flex flex-col space-y-4 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                <Zap className="w-5 h-5" />
+            {/* Card: Instant Feedback */}
+            <div className="group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-4 hover:border-blue-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-300">
+                <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Instant Visual Feedback</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Tahu secara langsung jika rumus Anda salah melalui efek getar pada sel, atau rayakan jawaban yang benar dengan letupan confetti.
-              </p>
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-blue-400 transition-colors">Instant Visual Feedback</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Tahu secara langsung apakah rumus Anda salah melalui efek getar, atau rayakan jawaban yang benar dengan letupan confetti spektakuler.</p>
+              </div>
+              <div className="mt-auto flex gap-2">
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <CheckCircle2 className="w-3 h-3" /> Benar → Confetti
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
+                  <X className="w-3 h-3" /> Salah → Shake
+                </div>
+              </div>
             </div>
 
-            {/* Feature 3 */}
-            <div className="bg-card border border-border/60 p-6 rounded-2xl flex flex-col space-y-4 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400 group-hover:scale-110 transition-transform">
-                <Lock className="w-5 h-5" />
+            {/* Card: Cell Locking */}
+            <div className="group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-4 hover:border-yellow-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-yellow-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-400 group-hover:scale-110 group-hover:bg-yellow-500/20 transition-all duration-300">
+                <Lock className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Prerequisite Cell Locking</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Sel yang bergantung pada perhitungan lain akan terkunci secara cerdas dan terbuka otomatis setelah sel prasyaratnya berhasil diselesaikan.
-              </p>
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-yellow-400 transition-colors">Prerequisite Cell Locking</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Sel yang bergantung pada perhitungan lain akan terkunci secara cerdas dan terbuka otomatis setelah prasyaratnya selesai.</p>
+              </div>
+              <div className="mt-auto flex items-center gap-2 text-[10px] text-muted-foreground">
+                <Lock className="w-3.5 h-3.5 text-yellow-400" />
+                <span>Gaji Total harus diisi sebelum Status terbuka</span>
+              </div>
             </div>
 
-            {/* Feature 4 */}
-            <div className="bg-card border border-border/60 p-6 rounded-2xl flex flex-col space-y-4 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                <Layers className="w-5 h-5" />
+            {/* Card: Column Resize */}
+            <div className="group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-4 hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all duration-300">
+                <Layers className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Interactive Column Resizing</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Sama seperti Excel sungguhan, Anda dapat menyeret garis tepi kolom di bagian header untuk memperlebar kolom yang terpotong.
-              </p>
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-purple-400 transition-colors">Interactive Column Resizing</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Sama seperti Excel sungguhan — seret garis tepi header kolom untuk memperlebar kolom yang terpotong dengan mulus.</p>
+              </div>
             </div>
 
-            {/* Feature 5 */}
-            <div className="bg-card border border-border/60 p-6 rounded-2xl flex flex-col space-y-4 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
-                <Award className="w-5 h-5" />
+            {/* Big Card 2: Dual POV */}
+            <div className="lg:col-span-2 group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-5 hover:border-teal-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="flex items-start justify-between">
+                <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 group-hover:scale-110 group-hover:bg-teal-500/20 transition-all duration-300">
+                  <UserCheck className="w-6 h-6" />
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-foreground">Integrated Case Studies</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Uji kemampuan akhir Anda lewat studi kasus berskala besar seperti Laporan Gaji & Evaluasi Penggajian Karyawan terpadu.
-              </p>
+              <div>
+                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-teal-400 transition-colors">Instructor & Peserta POV</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Dua sudut pandang interaktif: belajar sebagai peserta dengan progres yang tersimpan, atau kelola seluruh kelas, buat soal kustom, dan pantau perkembangan semua peserta sebagai instruktur.</p>
+              </div>
+              <div className="mt-auto flex flex-wrap gap-3">
+                {[
+                  { icon: GraduationCap, label: "Mode Peserta", desc: "Belajar & Selesaikan Soal", color: "text-teal-400 bg-teal-500/10 border-teal-500/20" },
+                  { icon: UserCheck, label: "Mode Instruktur", desc: "Kelola & Evaluasi Kelas", color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
+                ].map(item => (
+                  <div key={item.label} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${item.color} transition-all`}>
+                    <item.icon className="w-4 h-4" />
+                    <div>
+                      <div className="text-xs font-bold">{item.label}</div>
+                      <div className="text-[10px] text-muted-foreground">{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Feature 6 */}
-            <div className="bg-card border border-border/60 p-6 rounded-2xl flex flex-col space-y-4 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 group-hover:scale-110 transition-transform">
-                <UserCheck className="w-5 h-5" />
+            {/* Card: Case Studies */}
+            <div className="group relative overflow-hidden bg-card border border-border/60 rounded-2xl p-7 flex flex-col gap-4 hover:border-rose-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="w-12 h-12 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 group-hover:scale-110 group-hover:bg-rose-500/20 transition-all duration-300">
+                <Award className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Instructor & Peserta POV</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Dua sudut pandang interaktif: belajar sebagai siswa atau kelola dan evaluasi data serta progres kelas sebagai instruktur.
-              </p>
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-rose-400 transition-colors">Integrated Case Studies</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">Uji kemampuan akhir lewat studi kasus berskala nyata seperti Laporan Gaji & Evaluasi Penggajian Karyawan terpadu.</p>
+              </div>
+              <div className="mt-auto text-[10px] font-mono font-semibold px-3 py-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit flex items-center gap-1.5">
+                <BarChart2 className="w-3.5 h-3.5" /> Payroll Project · VLOOKUP + Nested IF
+              </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* 4. Curriculum / Roadmap Section */}
-      <section id="kurikulum" className="relative z-10 py-24">
+      {/* ═══ MINI PLAYGROUND ═════════════════════════════════════════════════ */}
+      <section id="playground" className="relative z-10 py-28">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left: Copy */}
+            <div className="flex flex-col gap-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold w-fit">
+                <Play className="w-3.5 h-3.5" /> Live Playground
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                Coba Langsung{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Tanpa Daftar</span>
+              </h2>
+              <p className="text-muted-foreground text-base leading-relaxed">
+                Klik pada kolom <strong className="text-foreground">Total (H)</strong> di tabel sebelah kanan, ketikkan rumus Excel Anda (contoh: <code className="text-emerald-400 font-mono text-sm bg-emerald-500/10 px-1.5 rounded">{"=SUM(F2,G2)"}</code>), lalu tekan <kbd className="px-1.5 py-0.5 rounded border border-border text-xs font-mono">Enter</kbd>.
+              </p>
+              <div className="flex flex-col gap-3">
+                {[
+                  { formula: "=SUM(F2,G2)", desc: "Menjumlahkan Gaji Pokok + Tunjangan" },
+                  { formula: "=F2+G2", desc: "Cara alternatif yang juga diterima" },
+                  { formula: "=SUM(F2:G2)", desc: "Menggunakan range cells" },
+                ].map(hint => (
+                  <div key={hint.formula} className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-card border border-border/60 hover:border-emerald-500/30 transition-colors">
+                    <code className="text-emerald-400 font-mono text-xs bg-emerald-500/10 px-2 py-1 rounded">{hint.formula}</code>
+                    <span className="text-sm text-muted-foreground">→ {hint.desc}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground/60 italic">
+                * Semua variasi dan kombinasi rumus yang logis akan diterima sebagai jawaban yang benar.
+              </p>
+            </div>
+
+            {/* Right: Playground */}
+            <MiniPlayground />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ CURRICULUM ══════════════════════════════════════════════════════ */}
+      <section id="kurikulum" className="relative z-10 py-28 border-y border-border/40 bg-muted/5">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold">
+              <BookOpen className="w-3.5 h-3.5" /> Kurikulum Terstruktur
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Kurikulum Excel Terarah & Sistematis
+              Dari Nol Hingga Mahir
             </h2>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Belajar dari nol hingga mahir dengan kurikulum terstruktur yang mencakup rumus paling populer di dunia kerja.
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Kurikulum terstruktur yang mencakup rumus paling populer dan relevan di dunia kerja.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto relative border-l-2 border-dashed border-emerald-500/20 dark:border-emerald-500/10 ml-4 md:ml-32 pl-8 md:pl-12 space-y-12">
-            
-            {/* Step 1 */}
-            <div className="relative group">
-              <div className="absolute -left-[49px] md:-left-[65px] top-3.5 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-4 border-background flex items-center justify-center text-xs font-bold text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/30 group-hover:scale-110 transition-all duration-300 z-10">
-                1
-              </div>
-              <div className="relative bg-card/30 hover:bg-card/65 border border-border/60 hover:border-emerald-500/30 p-6 rounded-xl space-y-2.5 transition-all duration-300 shadow-xs hover:shadow-lg hover:shadow-emerald-500/[0.02]">
-                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-400">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>Matematika Dasar & Statistik</span>
-                </div>
-                <h4 className="text-lg font-bold text-foreground group-hover:text-emerald-400 transition-colors">Kalkulasi Angka & Ringkasan Data</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Pelajari cara menjumlahkan data, menghitung rata-rata, mencari nilai tertinggi dan terendah menggunakan rumus wajib: <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">SUM</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">AVERAGE</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">MAX</code>, dan <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">MIN</code>.
-                </p>
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {["SUM", "AVERAGE", "MAX", "MIN", "COUNT"].map((formula) => (
-                    <span key={formula} className="px-2 py-0.5 bg-muted/60 dark:bg-slate-800/60 border border-border/40 rounded-md text-[10px] font-mono text-muted-foreground font-semibold hover:border-emerald-500/20 hover:text-emerald-400 transition-colors">
-                      {formula}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            {/* Timeline line */}
+            <div className="relative pl-16 space-y-6">
+              <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gradient-to-b from-emerald-500/40 via-purple-500/20 to-transparent rounded-full" />
 
-            {/* Step 2 */}
-            <div className="relative group">
-              <div className="absolute -left-[49px] md:-left-[65px] top-3.5 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-4 border-background flex items-center justify-center text-xs font-bold text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/30 group-hover:scale-110 transition-all duration-300 z-10">
-                2
-              </div>
-              <div className="relative bg-card/30 hover:bg-card/65 border border-border/60 hover:border-emerald-500/30 p-6 rounded-xl space-y-2.5 transition-all duration-300 shadow-xs hover:shadow-lg hover:shadow-emerald-500/[0.02]">
-                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-400">
-                  <Terminal className="w-3.5 h-3.5" />
-                  <span>Manipulasi Teks (Text Cleanup)</span>
-                </div>
-                <h4 className="text-lg font-bold text-foreground group-hover:text-emerald-400 transition-colors">Penggabungan & Pembersihan Teks Berantakan</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Pelajari cara merapikan nama, menghapus spasi ganda, mengambil huruf dari kiri/tengah/kanan dengan fungsi: <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">TRIM</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">PROPER</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">LEFT</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">MID</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">RIGHT</code>, <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">LEN</code>, dan <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">CONCATENATE</code>.
-                </p>
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {["TRIM", "PROPER", "LEFT", "MID", "RIGHT", "LEN", "CONCATENATE"].map((formula) => (
-                    <span key={formula} className="px-2 py-0.5 bg-muted/60 dark:bg-slate-800/60 border border-border/40 rounded-md text-[10px] font-mono text-muted-foreground font-semibold hover:border-emerald-500/20 hover:text-emerald-400 transition-colors">
-                      {formula}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+              {CURRICULUM_STEPS.map((step, i) => {
+                const c = colorMap[step.color];
+                return (
+                  <motion.div
+                    key={step.num}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ duration: 0.5, delay: i * 0.08 }}
+                    className="relative group"
+                  >
+                    {/* Timeline dot */}
+                    <div className={`absolute -left-10 top-4 w-9 h-9 rounded-full bg-gradient-to-br ${c.dot} border-2 border-background flex items-center justify-center text-xs font-extrabold text-white shadow-md group-hover:scale-110 transition-all duration-300 z-10`}>
+                      {step.num}
+                    </div>
 
-            {/* Step 3 */}
-            <div className="relative group">
-              <div className="absolute -left-[49px] md:-left-[65px] top-3.5 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-4 border-background flex items-center justify-center text-xs font-bold text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/30 group-hover:scale-110 transition-all duration-300 z-10">
-                3
-              </div>
-              <div className="relative bg-card/30 hover:bg-card/65 border border-border/60 hover:border-emerald-500/30 p-6 rounded-xl space-y-2.5 transition-all duration-300 shadow-xs hover:shadow-lg hover:shadow-emerald-500/[0.02]">
-                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-400">
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Logika Dasar & Nested IF</span>
-                </div>
-                <h4 className="text-lg font-bold text-foreground group-hover:text-emerald-400 transition-colors">Evaluasi Kondisi & Logika Bercabang</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Belajar mengambil keputusan otomatis berdasarkan nilai tertentu. Kuasai penggunaan single <code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">IF</code> dan kombinasi <strong className="font-semibold text-foreground">Nested IF (IF Bercabang)</strong> untuk mengkategorikan status gaji atau nilai.
-                </p>
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {["IF", "AND", "OR", "NESTED IF"].map((formula) => (
-                    <span key={formula} className="px-2 py-0.5 bg-muted/60 dark:bg-slate-800/60 border border-border/40 rounded-md text-[10px] font-mono text-muted-foreground font-semibold hover:border-emerald-500/20 hover:text-emerald-400 transition-colors">
-                      {formula}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+                    <div className="relative bg-card/50 hover:bg-card/80 border border-border/60 hover:border-emerald-500/20 p-6 rounded-2xl space-y-3 transition-all duration-300 hover:shadow-xl group-hover:shadow-emerald-500/5 backdrop-blur-sm">
+                      {/* Hover glow */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none" />
 
-            {/* Step 4 */}
-            <div className="relative group">
-              <div className="absolute -left-[49px] md:-left-[65px] top-3.5 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-4 border-background flex items-center justify-center text-xs font-bold text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/30 group-hover:scale-110 transition-all duration-300 z-10">
-                4
-              </div>
-              <div className="relative bg-card/30 hover:bg-card/65 border border-border/60 hover:border-emerald-500/30 p-6 rounded-xl space-y-2.5 transition-all duration-300 shadow-xs hover:shadow-lg hover:shadow-emerald-500/[0.02]">
-                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-400">
-                  <Table className="w-3.5 h-3.5" />
-                  <span>Lookup & Referensi Data</span>
-                </div>
-                <h4 className="text-lg font-bold text-foreground group-hover:text-emerald-400 transition-colors">VLOOKUP, HLOOKUP, dan XLOOKUP</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Hubungkan tabel utama Anda dengan tabel referensi secara dinamis. Pelajari pencarian vertikal (<code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">VLOOKUP</code>), horizontal (<code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">HLOOKUP</code>), dan fitur pencarian modern (<code className="px-1 py-0.5 bg-muted dark:bg-slate-800/80 rounded font-mono text-emerald-600 dark:text-emerald-400 text-xs">XLOOKUP</code>).
-                </p>
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {["VLOOKUP", "HLOOKUP", "XLOOKUP", "INDEX", "MATCH"].map((formula) => (
-                    <span key={formula} className="px-2 py-0.5 bg-muted/60 dark:bg-slate-800/60 border border-border/40 rounded-md text-[10px] font-mono text-muted-foreground font-semibold hover:border-emerald-500/20 hover:text-emerald-400 transition-colors">
-                      {formula}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+                      <div className={`flex items-center gap-2 text-xs font-bold ${c.badge}`}>
+                        <step.icon className="w-3.5 h-3.5" />
+                        <span>{step.badge}</span>
+                      </div>
 
-            {/* Step 5 */}
-            <div className="relative group">
-              <div className="absolute -left-[49px] md:-left-[65px] top-3.5 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-4 border-background flex items-center justify-center text-xs font-bold text-white shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/30 group-hover:scale-110 transition-all duration-300 z-10">
-                5
-              </div>
-              <div className="relative bg-card/30 hover:bg-card/65 border border-border/60 hover:border-emerald-500/30 p-6 rounded-xl space-y-2.5 transition-all duration-300 shadow-xs hover:shadow-lg hover:shadow-emerald-500/[0.02]">
-                <div className="flex items-center space-x-2 text-xs font-bold text-emerald-400">
-                  <Award className="w-3.5 h-3.5" />
-                  <span>Studi Kasus Integrasi Akhir</span>
-                </div>
-                <h4 className="text-lg font-bold text-foreground group-hover:text-emerald-400 transition-colors">Studi Kasus Laporan Gaji & Evaluasi</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Ujian akhir sesungguhnya: Gabungkan semua rumus pembersihan nama, VLOOKUP golongan gaji, HLOOKUP tunjangan departemen, kalkulasi total gaji, dan Nested IF evaluasi status keaktifan dalam satu simulasi payroll.
-                </p>
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {["LAPORAN GAJI", "NESTED LOGIC", "DATA INTEGRATION", "PAYROLL PROJECT"].map((formula) => (
-                    <span key={formula} className="px-2 py-0.5 bg-muted/60 dark:bg-slate-800/60 border border-border/40 rounded-md text-[10px] font-mono text-muted-foreground font-semibold hover:border-emerald-500/20 hover:text-emerald-400 transition-colors">
-                      {formula}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+                      <h4 className={`text-lg font-bold text-foreground ${c.hover} transition-colors duration-200`}>
+                        {step.title}
+                      </h4>
 
+                      <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+
+                      {/* Formula tags with hover tooltip */}
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {step.formulas.map(formula => (
+                          <span
+                            key={formula}
+                            className={`px-2 py-0.5 bg-muted/50 border border-border/40 rounded-md text-[10px] font-mono text-muted-foreground font-semibold cursor-default transition-all duration-150 ${c.formula}`}
+                          >
+                            {formula}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 5. FAQ Section */}
-      <section id="faq" className="relative z-10 py-24 bg-card/10 border-t border-border/40">
-        <div className="max-w-[1000px] mx-auto px-6">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Pertanyaan Umum</h2>
-            <p className="text-muted-foreground text-sm">Masih ragu? Berikut beberapa informasi tambahan tentang platform ini.</p>
+      {/* ═══ FAQ ACCORDION ═══════════════════════════════════════════════════ */}
+      <section id="faq" className="relative z-10 py-28">
+        <div className="max-w-[860px] mx-auto px-6">
+          <div className="text-center space-y-4 mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60 border border-border/60 text-muted-foreground text-xs font-semibold">
+              <HelpCircle className="w-3.5 h-3.5" /> FAQ
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Pertanyaan Umum</h2>
+            <p className="text-muted-foreground text-sm">Masih ragu? Berikut jawaban dari pertanyaan yang paling sering ditanyakan.</p>
           </div>
+          <FaqAccordion />
+        </div>
+      </section>
 
-          <div className="space-y-6">
-            
-            <div className="bg-card border border-border/60 p-6 rounded-xl">
-              <h4 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                Apakah platform belajar ini gratis?
-              </h4>
-              <p className="text-muted-foreground text-sm leading-relaxed pl-6">
-                Ya! Platform ExcelMaster sepenuhnya gratis dan open-source. Anda tidak perlu membayar langganan apa pun untuk mengakses seluruh materi dan studi kasus penggajian.
+      {/* ═══ CTA BANNER ══════════════════════════════════════════════════════ */}
+      <section className="relative z-10 py-20 border-t border-border/40">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500/10 via-card to-blue-500/10 border border-emerald-500/20 p-10 md:p-16 text-center flex flex-col items-center gap-8">
+            {/* Glow */}
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[60%] h-[200px] bg-emerald-500/15 blur-[80px] rounded-full pointer-events-none" />
+
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-6">
+                <Sparkles className="w-3.5 h-3.5" /> Mulai Gratis Hari Ini
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
+                Siap Jadi Master Excel?
+              </h2>
+              <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+                Bergabunglah dan mulai perjalanan belajar Excel interaktif Anda sekarang. Gratis, tanpa instalasi, tanpa batas.
               </p>
             </div>
 
-            <div className="bg-card border border-border/60 p-6 rounded-xl">
-              <h4 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                Bagaimana platform memvalidasi jawaban saya?
-              </h4>
-              <p className="text-muted-foreground text-sm leading-relaxed pl-6">
-                Platform kami memiliki mesin validator bawaan di sisi klien yang menganalisis sintaks dan struktur rumus yang Anda ketik secara real-time. Mesin ini mendukung variasi penulisan spasi, kapitalisasi huruf, serta separator regional (seperti pemisah koma `,` atau titik koma `;`).
-              </p>
+            <div className="flex flex-col sm:flex-row gap-4 relative">
+              {mounted && user ? (
+                <Link href="/belajar" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm shadow-xl shadow-emerald-500/30 transition-all hover:-translate-y-0.5 cursor-pointer">
+                  Lanjut ke Dashboard Belajar <ArrowRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <>
+                  <button onClick={() => openAuthModal(true)} className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm shadow-xl shadow-emerald-500/30 transition-all hover:-translate-y-0.5 cursor-pointer">
+                    Daftar Gratis Sekarang <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => openAuthModal(false)} className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-border bg-card/50 hover:bg-card text-foreground font-semibold text-sm transition-all hover:-translate-y-0.5 cursor-pointer">
+                    Sudah punya akun? Masuk
+                  </button>
+                </>
+              )}
             </div>
-
-            <div className="bg-card border border-border/60 p-6 rounded-xl">
-              <h4 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                Bagaimana progres belajar saya disimpan?
-              </h4>
-              <p className="text-muted-foreground text-sm leading-relaxed pl-6">
-                Secara default, jika Anda tidak menyambungkan akun database Supabase, progres Anda akan disimpan secara otomatis di memori lokal browser (`localStorage`). Jika Anda menghapus data browser, progres Anda dapat hilang. Anda dapat menghubungkan Supabase untuk menyimpan progres secara permanen di cloud.
-              </p>
-            </div>
-
           </div>
         </div>
       </section>
 
-      {/* 6. Footer */}
-      <footer className="relative z-10 border-t border-border/40 py-12 bg-background">
+      {/* ═══ FOOTER ══════════════════════════════════════════════════════════ */}
+      <footer className="relative z-10 border-t border-border/40 py-10 bg-background">
         <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-white font-mono text-[10px] font-bold">
-              XL
-            </div>
+          <div className="flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-mono text-[11px] font-bold">XL</div>
             <span className="font-bold tracking-tight text-foreground">ExcelMaster</span>
           </div>
-          <p>© {new Date().getFullYear()} Wahana Prestasi.</p>
-          <div className="flex space-x-6">
+          <p className="text-xs">© {new Date().getFullYear()} Wahana Prestasi. Platform pembelajaran Excel interaktif gratis.</p>
+          <div className="flex space-x-6 text-xs">
             <a href="#fitur" className="hover:text-foreground transition-colors">Fitur</a>
             <a href="#kurikulum" className="hover:text-foreground transition-colors">Kurikulum</a>
+            <a href="#playground" className="hover:text-foreground transition-colors">Playground</a>
             {mounted && user ? (
-              <Link href="/belajar" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors cursor-pointer">
-                Mulai Belajar
-              </Link>
+              <Link href="/belajar" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors cursor-pointer">Mulai Belajar</Link>
             ) : (
-              <button 
-                onClick={() => openAuthModal(true)} 
-                className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors cursor-pointer bg-transparent border-none p-0"
-              >
+              <button onClick={() => openAuthModal(true)} className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors cursor-pointer bg-transparent border-none p-0">
                 Mulai Belajar
               </button>
             )}
@@ -873,7 +1210,7 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Authentication modal dialog */}
+      {/* Auth Modal */}
       <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} defaultSignUp={defaultSignUp} />
     </div>
   );

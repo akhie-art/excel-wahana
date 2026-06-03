@@ -6,6 +6,8 @@ drop table if exists public.user_progress cascade;
 -- Create user progress table
 create table public.user_progress (
   user_id uuid references auth.users(id) on delete cascade primary key,
+  email text,
+  name text,
   current_module_id text not null default 'basics',
   current_step_id text not null default 'sum-basics',
   completed_steps text[] not null default '{}',
@@ -20,8 +22,12 @@ create table public.user_progress (
 alter table public.user_progress enable row level security;
 
 -- Policies
-create policy "Users can view own progress" on public.user_progress
-  for select using (auth.uid() = user_id);
+create policy "Users can view own progress or instructors can view all" on public.user_progress
+  for select using (
+    auth.uid() = user_id 
+    or auth.jwt() ->> 'email' = 'instruktur@excel.com' 
+    or auth.jwt() ->> 'email' like '%instruktur%'
+  );
 
 create policy "Users can insert own progress" on public.user_progress
   for insert with check (auth.uid() = user_id);
@@ -33,8 +39,12 @@ create policy "Users can update own progress" on public.user_progress
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.user_progress (user_id)
-  values (new.id)
+  insert into public.user_progress (user_id, email, name)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1))
+  )
   on conflict (user_id) do nothing;
   return new;
 end;
