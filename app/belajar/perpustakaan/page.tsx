@@ -18,46 +18,41 @@ import {
   Grid,
   FileSpreadsheet,
   HelpCircle,
-  Code
+  Code,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { TemplateImageSlider } from "@/components/template-image-slider";
 
 const DUMMY_TEMPLATES = [
   {
     title: "Template Slip Gaji & Payroll Otomatis",
-    category: "Manajemen HRD",
     format: "xlsx (Excel)",
     size: "142 KB",
     downloads: "1,240 unduhan",
-    description: "Template siap pakai lengkap dengan slip gaji interaktif yang terhubung langsung dengan tabel database karyawan menggunakan rumus VLOOKUP.",
-    highlights: ["Slip Gaji Cetak Otomatis", "Rekap Gaji Pokok & Lembur", "Formula Dinamis PPh 21"]
+    description: "Template siap pakai lengkap dengan slip gaji interaktif yang terhubung langsung dengan tabel database karyawan menggunakan rumus VLOOKUP."
   },
   {
     title: "Dashboard KPI Keuangan & Kas Bulanan",
-    category: "Keuangan & Kas",
     format: "xlsx (Excel)",
     size: "98 KB",
     downloads: "850 unduhan",
-    description: "Pantau arus kas masuk dan keluar secara bulanan lengkap dengan grafik tren performa laba rugi otomatis dan ringkasan persentase bulanan.",
-    highlights: ["Visualisasi Chart Dinamis", "Kategori Kas Otomatis", "Statistik Selisih Bulanan"]
+    description: "Pantau arus kas masuk dan keluar secara bulanan lengkap dengan grafik tren performa laba rugi otomatis dan ringkasan persentase bulanan."
   },
   {
     title: "Rekap Nilai Siswa & Raport Guru",
-    category: "Pendidikan",
     format: "xlsx (Excel)",
     size: "115 KB",
     downloads: "590 unduhan",
-    description: "Permudah pembagian rapor dengan sistem pengisi nilai bersyarat menggunakan COUNTIF, AVERAGE, serta konversi Grade otomatis (A, B, C, D).",
-    highlights: ["Sistem Grade Otomatis", "Rekap Rata-Rata Kelas", "Highlight Warna Nilai Merah"]
+    description: "Permudah pembagian rapor dengan sistem pengisi nilai bersyarat menggunakan COUNTIF, AVERAGE, serta konversi Grade otomatis (A, B, C, D)."
   },
   {
     title: "Jadwal Kerja Shift Karyawan Mingguan",
-    category: "Operasional",
     format: "xlsx (Excel)",
     size: "76 KB",
     downloads: "920 unduhan",
-    description: "Template penjadwalan shift kerja bergilir yang menghitung total jam kerja mingguan secara otomatis dan mendeteksi bentrok jadwal.",
-    highlights: ["Deteksi Bentrok Jadwal", "Kalkulator Jam Kerja", "Format Kalender Dinamis"]
+    description: "Template penjadwalan shift kerja bergilir yang menghitung total jam kerja mingguan secara otomatis dan mendeteksi bentrok jadwal."
   }
 ];
 
@@ -77,12 +72,14 @@ export default function PerpustakaanPage() {
   
   // State for formula database & fallbacks
   const [formulas, setFormulas] = useState<any[]>(fallbackFormulas);
+  const [templates, setTemplates] = useState<any[]>(DUMMY_TEMPLATES);
   const [displayLimit, setDisplayLimit] = useState(24);
   const [activeTab, setActiveTab] = useState<"all" | "formulas" | "templates" | "shortcuts">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     loadUserAndProgress();
@@ -113,6 +110,25 @@ export default function PerpustakaanPage() {
     loadDbFormulas();
   }, []);
 
+  // Load templates dynamically from Supabase
+  useEffect(() => {
+    async function loadDbTemplates() {
+      try {
+        const { data, error } = await supabase
+          .from("excel_templates")
+          .select("*");
+        
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setTemplates(data);
+        }
+      } catch (err) {
+        console.warn("Koneksi Supabase offline/belum disemai, menggunakan template lokal.", err);
+      }
+    }
+    loadDbTemplates();
+  }, []);
+
   // Handle formula copy to clipboard
   const handleCopyFormula = (syntax: string, index: number) => {
     navigator.clipboard.writeText(syntax);
@@ -120,12 +136,21 @@ export default function PerpustakaanPage() {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  // Mock template download action
-  const handleDownloadTemplate = (index: number) => {
+  // Real or mock template download action
+  const handleDownloadTemplate = (template: any, index: number) => {
     setDownloadingIndex(index);
     setTimeout(() => {
       setDownloadingIndex(null);
-      alert("Template berhasil diunduh (Simulasi)! Terima kasih telah mencoba.");
+      if (template.file_url) {
+        const link = document.createElement("a");
+        link.href = template.file_url;
+        link.download = template.file_name || "template.xlsx";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert("Template berhasil diunduh (Simulasi)! Terima kasih telah mencoba.");
+      }
     }, 1500);
   };
 
@@ -157,9 +182,8 @@ export default function PerpustakaanPage() {
 
   const displayedFormulas = filteredFormulas.slice(0, displayLimit);
 
-  const filteredTemplates = DUMMY_TEMPLATES.filter(template => 
+  const filteredTemplates = templates.filter(template => 
     template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     template.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -409,18 +433,25 @@ export default function PerpustakaanPage() {
                   Tidak ada template yang cocok dengan pencarian Anda.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredTemplates.map((template, idx) => (
                     <div 
-                      key={template.title} 
-                      className="group relative overflow-hidden bg-card/65 backdrop-blur-sm border border-border/60 hover:border-emerald-500/40 rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5"
+                      key={template.id || template.title} 
+                      className="group relative overflow-hidden bg-card/65 backdrop-blur-sm border border-border/60 hover:border-emerald-500/40 rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/5"
                     >
                       <div className="space-y-4">
+                        
+                        {/* Screenshots Preview Strip */}
+                        {template.images && template.images.length > 0 && (
+                          <TemplateImageSlider 
+                            images={template.images} 
+                            onImageClick={setPreviewImageUrl} 
+                            title={template.title} 
+                          />
+                        )}
+
                         <div className="flex justify-between items-start">
                           <div className="space-y-1">
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/15">
-                              {template.category}
-                            </span>
                             <h3 className="text-base font-extrabold text-foreground group-hover:text-emerald-400 transition-colors pt-1">
                               {template.title}
                             </h3>
@@ -433,21 +464,9 @@ export default function PerpustakaanPage() {
                         <p className="text-xs text-muted-foreground leading-relaxed">
                           {template.description}
                         </p>
-
-                        <div className="space-y-1.5">
-                          <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-extrabold">Fitur Ungkulan:</div>
-                          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-foreground/80 pl-1">
-                            {template.highlights.map(item => (
-                              <li key={item} className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                                <span className="truncate">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
                       </div>
 
-                      <div className="pt-5 mt-5 border-t border-border/20 flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="pt-3 mt-3 border-t border-border/20 flex items-center justify-between text-[11px] text-muted-foreground">
                         <div className="flex items-center gap-3">
                           <span>Ukuran: <strong className="font-mono text-foreground font-semibold">{template.size}</strong></span>
                           <span>|</span>
@@ -455,7 +474,7 @@ export default function PerpustakaanPage() {
                         </div>
 
                         <Button 
-                          onClick={() => handleDownloadTemplate(idx)}
+                          onClick={() => handleDownloadTemplate(template, idx)}
                           className="h-8 gap-1.5 text-[11px] font-bold bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-4 cursor-pointer"
                           disabled={downloadingIndex === idx}
                         >
@@ -524,6 +543,29 @@ export default function PerpustakaanPage() {
         </div>
 
       </main>
+
+      {/* Image Preview Lightbox Modal */}
+      <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
+        <DialogContent className="sm:max-w-5xl w-[95vw] border-none bg-black/95 backdrop-blur-md p-0 overflow-hidden shadow-2xl rounded-2xl flex flex-col items-center justify-center">
+          {previewImageUrl && (
+            <div className="relative w-full h-[80vh] flex items-center justify-center p-4">
+              <button 
+                type="button"
+                onClick={() => setPreviewImageUrl(null)}
+                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/60 border border-white/10 text-white hover:bg-black/80 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer z-50"
+                title="Tutup Preview"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <img 
+                src={previewImageUrl} 
+                alt="Pratinjau Resolusi Penuh" 
+                className="max-w-full max-h-full object-contain rounded-lg border border-white/5 select-none"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

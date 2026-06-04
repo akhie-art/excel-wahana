@@ -332,7 +332,7 @@ export function ChallengesListTab() {
 
       {/* Modal Dialog for Creating/Editing Challenge */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && setIsModalOpen(false)}>
-        <DialogContent className="max-w-6xl lg:max-w-7xl w-[95vw] max-h-[90vh] overflow-y-auto border border-border/80 bg-background/95 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+        <DialogContent className="sm:max-w-6xl lg:max-w-7xl w-[95vw] max-h-[90vh] overflow-y-auto border border-border/80 bg-background/95 backdrop-blur-md p-6 rounded-2xl shadow-xl">
           <DialogHeader className="sr-only">
             <DialogTitle>{editingStepInfo ? "Edit Tantangan" : "Buat Tantangan Baru"}</DialogTitle>
           </DialogHeader>

@@ -335,6 +335,142 @@ if (isSupabaseConfigured) {
         };
       }
 
+      if (table === "excel_templates") {
+        const getTemplates = () => {
+          if (typeof window === "undefined") return [];
+          const dataStr = localStorage.getItem("excel_lms_templates");
+          if (!dataStr) {
+            // Seed with initial templates
+            const initial = [
+              {
+                id: "tmpl-1",
+                title: "Template Slip Gaji & Payroll Otomatis",
+                format: "xlsx (Excel)",
+                size: "142 KB",
+                downloads: "1,240 unduhan",
+                description: "Template siap pakai lengkap dengan slip gaji interaktif yang terhubung langsung dengan tabel database karyawan menggunakan rumus VLOOKUP.",
+                file_url: "https://raw.githubusercontent.com/excel-wahana/templates/main/payroll-template.xlsx",
+                file_name: "payroll_template.xlsx",
+                images: [
+                  "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=60",
+                  "https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?w=600&auto=format&fit=crop&q=60"
+                ]
+              },
+              {
+                id: "tmpl-2",
+                title: "Dashboard KPI Keuangan & Kas Bulanan",
+                format: "xlsx (Excel)",
+                size: "98 KB",
+                downloads: "850 unduhan",
+                description: "Pantau arus kas masuk dan keluar secara bulanan lengkap dengan grafik tren performa laba rugi otomatis dan ringkasan persentase bulanan.",
+                file_url: "https://raw.githubusercontent.com/excel-wahana/templates/main/finance-dashboard.xlsx",
+                file_name: "finance_dashboard.xlsx",
+                images: [
+                  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=60",
+                  "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=60"
+                ]
+              },
+              {
+                id: "tmpl-3",
+                title: "Rekap Nilai Siswa & Raport Guru",
+                format: "xlsx (Excel)",
+                size: "115 KB",
+                downloads: "590 unduhan",
+                description: "Permudah pembagian rapor dengan sistem pengisi nilai bersyarat menggunakan COUNTIF, AVERAGE, serta konversi Grade otomatis (A, B, C, D).",
+                file_url: "https://raw.githubusercontent.com/excel-wahana/templates/main/grading-system.xlsx",
+                file_name: "grading_system.xlsx",
+                images: [
+                  "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&auto=format&fit=crop&q=60",
+                  "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600&auto=format&fit=crop&q=60"
+                ]
+              },
+              {
+                id: "tmpl-4",
+                title: "Jadwal Kerja Shift Karyawan Mingguan",
+                format: "xlsx (Excel)",
+                size: "76 KB",
+                downloads: "920 unduhan",
+                description: "Template penjadwalan shift kerja bergilir yang menghitung total jam kerja mingguan secara otomatis dan mendeteksi bentrok jadwal.",
+                file_url: "https://raw.githubusercontent.com/excel-wahana/templates/main/weekly-schedule.xlsx",
+                file_name: "weekly_schedule.xlsx",
+                images: [
+                  "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&auto=format&fit=crop&q=60",
+                  "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&auto=format&fit=crop&q=60"
+                ]
+              }
+            ];
+            localStorage.setItem("excel_lms_templates", JSON.stringify(initial));
+            return initial;
+          }
+          return JSON.parse(dataStr);
+        };
+
+        const setTemplates = (templates: any[]) => {
+          if (typeof window === "undefined") return;
+          localStorage.setItem("excel_lms_templates", JSON.stringify(templates));
+        };
+
+        return {
+          select: () => ({
+            then: (cb: any) => Promise.resolve({ data: getTemplates(), error: null }).then(cb),
+            order: (col: string, { ascending }: any = {}) => {
+              const sorted = [...getTemplates()];
+              sorted.sort((a: any, b: any) => {
+                const valA = String(a[col] || "").toLowerCase();
+                const valB = String(b[col] || "").toLowerCase();
+                if (valA < valB) return ascending ? -1 : 1;
+                if (valA > valB) return ascending ? 1 : -1;
+                return 0;
+              });
+              return {
+                then: (cb: any) => Promise.resolve({ data: sorted, error: null }).then(cb)
+              };
+            }
+          }),
+          insert: (newTemplate: any) => ({
+            then: (cb: any) => {
+              const current = getTemplates();
+              const tmplsArray = Array.isArray(newTemplate) ? newTemplate : [newTemplate];
+              // Ensure id is present
+              const tmplsWithId = tmplsArray.map(t => ({
+                id: t.id || "tmpl-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9),
+                format: t.format || "xlsx (Excel)",
+                downloads: t.downloads || "0 unduhan",
+                ...t
+              }));
+              const updated = [...current, ...tmplsWithId];
+              setTemplates(updated);
+              return Promise.resolve({ data: tmplsWithId, error: null }).then(cb);
+            }
+          }),
+          delete: () => ({
+            eq: (col: string, val: any) => ({
+              then: (cb: any) => {
+                const current = getTemplates();
+                const updated = current.filter((t: any) => t[col] !== val);
+                setTemplates(updated);
+                return Promise.resolve({ data: null, error: null }).then(cb);
+              }
+            })
+          }),
+          update: (data: any) => ({
+            eq: (col: string, val: any) => ({
+              then: (cb: any) => {
+                const current = getTemplates();
+                const updated = current.map((t: any) => {
+                  if (t[col] === val) {
+                    return { ...t, ...data };
+                  }
+                  return t;
+                });
+                setTemplates(updated);
+                return Promise.resolve({ data: data, error: null }).then(cb);
+              }
+            })
+          })
+        };
+      }
+
       return {
         select: () => ({
           eq: () => ({

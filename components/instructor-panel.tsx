@@ -5,13 +5,14 @@ import { StudentsTab } from "./instructor/students-tab";
 import { ChallengesListTab } from "./instructor/challenges-list-tab";
 import { LiveSpectateView } from "./instructor/live-spectate-view";
 import { LiveMonitoringTab } from "./instructor/live-monitoring-tab";
+import { TemplatesTab } from "./instructor/templates-tab";
 import { useAppStore } from "@/lib/store";
 import { useShallow } from "zustand/react/shallow";
-import { Users, List, Radio } from "lucide-react";
+import { Users, List, Radio, FileSpreadsheet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function InstructorPanel() {
-  const [activeTab, setActiveTab] = useState<"live" | "students" | "list">("students");
+  const [activeTab, setActiveTab] = useState<"live" | "students" | "list" | "templates">("students");
   const [spectatedStudentId, setSpectatedStudentId] = useState<string | null>(null);
 
   const { peerStates } = useAppStore(
@@ -88,6 +89,22 @@ export function InstructorPanel() {
           <List className="h-4 w-4" />
           <span>Daftar Tantangan</span>
         </button>
+
+        <button
+          onClick={() => {
+            setActiveTab("templates");
+            setSpectatedStudentId(null);
+          }}
+          className={cn(
+            "w-full text-left flex items-center space-x-2.5 p-3 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer",
+            activeTab === "templates" && !spectatedStudentId
+              ? "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+          )}
+        >
+          <FileSpreadsheet className="h-4 w-4" />
+          <span>Kelola Template</span>
+        </button>
       </div>
 
       {/* Main Panel Content (Scrollable) */}
@@ -114,6 +131,11 @@ export function InstructorPanel() {
             {/* Tab 3: List challenges with nested dialog for Create/Edit */}
             {activeTab === "list" && (
               <ChallengesListTab />
+            )}
+
+            {/* Tab 4: Manage templates CRUD */}
+            {activeTab === "templates" && (
+              <TemplatesTab />
             )}
           </>
         )}
