@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { AuthModal } from "@/components/auth-modal";
 import { useTheme } from "next-themes";
+import { supabase } from "@/lib/supabase";
 import {
   Dialog,
   DialogContent,
@@ -751,12 +752,16 @@ export default function LandingPage() {
   const router = useRouter();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [defaultSignUp, setDefaultSignUp] = useState(false);
+  const [defaultResetPassword, setDefaultResetPassword] = useState(false);
+  const [defaultErrorMessage, setDefaultErrorMessage] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [visibleArticles, setVisibleArticles] = useState(6);
   const [activeReadingArticle, setActiveReadingArticle] = useState<typeof DUMMY_ARTICLES[0] | null>(null);
 
-  const openAuthModal = (signUp: boolean) => {
+  const openAuthModal = (signUp: boolean, resetPasswordMode = false, errorMessage = "") => {
     setDefaultSignUp(signUp);
+    setDefaultResetPassword(resetPasswordMode);
+    setDefaultErrorMessage(errorMessage);
     setIsAuthModalOpen(true);
   };
 
@@ -773,6 +778,48 @@ export default function LandingPage() {
       }
     }
   }, [router]);
+
+  useEffect(() => {
+    // 1. Listen to Supabase auth events (specifically PASSWORD_RECOVERY)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // Clear hash/parameters to keep the URL clean
+        window.history.replaceState(null, "", window.location.pathname);
+        openAuthModal(false, true, "");
+      }
+    });
+
+    // 2. URL search parameters/hash checking for errors or initial load recovery
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const hash = window.location.hash;
+      const isRecovery = hash && (hash.includes("type=recovery") || hash.includes("access_token="));
+      const hasError = params.get("error") || (hash && hash.includes("error="));
+
+      if (hasError) {
+        let errorMsg = "";
+        const errorCode = params.get("error_code") || (hash && hash.match(/error_code=([^&]+)/)?.[1]);
+        if (errorCode === "otp_expired") {
+          errorMsg = "Tautan email reset password telah kedaluwarsa atau sudah digunakan. Silakan kirim ulang permintaan pemulihan kata sandi.";
+        } else {
+          const errorDesc = params.get("error_description") || (hash && hash.match(/error_description=([^&]+)/)?.[1]);
+          errorMsg = errorDesc ? decodeURIComponent(errorDesc.replace(/\+/g, " ")) : "Terjadi kesalahan saat pemulihan kata sandi.";
+        }
+
+        // Clean up URL search parameters and hash
+        window.history.replaceState(null, "", window.location.pathname);
+
+        openAuthModal(false, false, errorMsg);
+      } else if (isRecovery) {
+        window.history.replaceState(null, "", window.location.pathname);
+        openAuthModal(false, true, "");
+      }
+    }
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // ─── Typing animation for formula bar ─────────────────────────────────────
   const formulas = [
@@ -1516,7 +1563,13 @@ export default function LandingPage() {
       </footer>
 
       {/* Auth Modal */}
-      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} defaultSignUp={defaultSignUp} />
+      <AuthModal 
+        open={isAuthModalOpen} 
+        onOpenChange={setIsAuthModalOpen} 
+        defaultSignUp={defaultSignUp} 
+        defaultResetPassword={defaultResetPassword} 
+        defaultErrorMessage={defaultErrorMessage}
+      />
 
       {/* Article Detail Modal */}
       <Dialog open={activeReadingArticle !== null} onOpenChange={(open) => !open && setActiveReadingArticle(null)}>

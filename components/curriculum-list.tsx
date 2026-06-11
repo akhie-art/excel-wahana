@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { Check, BookOpen, ChevronRight, ChevronDown } from "lucide-react";
+import { Check, BookOpen, ChevronRight, ChevronDown, Layers } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -31,14 +32,18 @@ export function CurriculumList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-2 pb-2 border-b border-border/80">
-        <BookOpen className="h-4 w-4 text-emerald-500" />
-        <h3 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">
-          Daftar Kurikulum
+      {/* Header Panel */}
+      <div className="flex items-center space-x-2 pb-3 border-b border-border/60 select-none">
+        <div className="h-6 w-6 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+          <BookOpen className="h-3.5 w-3.5" />
+        </div>
+        <h3 className="font-extrabold text-xs text-foreground uppercase tracking-wider">
+          Daftar Kurikulum & Latihan
         </h3>
       </div>
 
-      <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
+      {/* Curriculum Steps List */}
+      <div className="space-y-4 max-h-[550px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-border/80 hover:scrollbar-thumb-border">
         {modules.map((module, modIdx) => {
           const completedInModule = module.steps.filter((s) =>
             progress?.completed_steps?.includes(s.id)
@@ -73,20 +78,26 @@ export function CurriculumList() {
             }
           }
 
+          const isModuleActive = modIdx === currentModuleIndex;
+
           return (
-            <div key={module.id} className="space-y-1">
+            <div key={module.id} className="space-y-2">
               {/* Module header */}
-              <div className="flex items-center justify-between px-2 py-1 select-none">
-                <span className="text-xs font-bold text-foreground/80 truncate">
+              <div className="flex items-center justify-between px-2.5 py-1.5 select-none bg-muted/30 border border-border/40 rounded-xl">
+                <span className={cn(
+                  "text-xs font-black tracking-tight flex items-center gap-1.5",
+                  isModuleActive ? "text-emerald-500 dark:text-emerald-400" : "text-foreground/80"
+                )}>
+                  <Layers className="h-3.5 w-3.5 shrink-0" />
                   {module.title}
                 </span>
-                <span className="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded font-medium">
-                  {completedInModule}/{module.steps.length}
+                <span className="text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full border border-emerald-500/15 shrink-0">
+                  {completedInModule}/{module.steps.length} selesai
                 </span>
               </div>
 
-              {/* Rows */}
-              <div className="space-y-0.5 pl-2 border-l border-border/60 ml-2">
+              {/* Rows List */}
+              <div className="space-y-1.5 pl-2.5 border-l border-border/60 ml-3.5">
                 {rows.map((row) => {
                   // ── Individual step ──────────────────────────────────────
                   if (row.kind === "step") {
@@ -100,29 +111,32 @@ export function CurriculumList() {
                         key={item.id}
                         onClick={() => jumpToStep(modIdx, item.originalIdx)}
                         className={cn(
-                          "w-full text-left flex items-center justify-between p-2 rounded-lg text-xs transition-all duration-150 group",
+                          "w-full text-left flex items-center justify-between p-2 rounded-xl text-xs transition-all duration-200 group border relative cursor-pointer",
                           isActive
-                            ? "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 font-semibold"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            ? "bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30 text-emerald-500 dark:text-emerald-400 font-bold shadow-xs"
+                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
                         )}
                       >
-                        <div className="flex items-center space-x-2 truncate">
+                        <div className="flex items-center space-x-2.5 min-w-0 flex-1">
                           {isCompleted ? (
-                            <div className="h-4 w-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
-                              <Check className="h-2.5 w-2.5 stroke-[3px]" />
+                            <div className="h-5 w-5 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                              <Check className="h-3 w-3 stroke-[3px]" />
                             </div>
                           ) : (
-                            <div className="h-4 w-4 rounded-full border border-border/80 flex items-center justify-center shrink-0 group-hover:border-emerald-500/40 transition-colors">
-                              <span className="text-[8px] font-mono text-muted-foreground/60 group-hover:text-emerald-500">
-                                {item.originalIdx + 1}
-                              </span>
+                            <div className={cn(
+                              "h-5 w-5 rounded-lg border flex items-center justify-center shrink-0 transition-all font-mono text-[9px] font-bold",
+                              isActive
+                                ? "border-emerald-500/40 bg-emerald-500/5 text-emerald-500"
+                                : "border-border bg-muted/20 text-muted-foreground/60 group-hover:border-emerald-500/40 group-hover:text-emerald-500"
+                            )}>
+                              {item.originalIdx + 1}
                             </div>
                           )}
-                          <span className="truncate">{item.title}</span>
+                          <span className="truncate flex-1 pr-2 leading-none pt-0.5">{item.title}</span>
                         </div>
                         <ChevronRight
                           className={cn(
-                            "h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 shrink-0",
+                            "h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0 text-muted-foreground",
                             isActive && "opacity-100 translate-x-0 text-emerald-500"
                           )}
                         />
@@ -130,7 +144,7 @@ export function CurriculumList() {
                     );
                   }
 
-                  // ── Grouped steps (1 item in list, expandable) ───────────
+                  // ── Grouped steps (expandable folder style) ──────────────────
                   const { groupId, groupLabel, items } = row;
                   const isExpanded = !collapsed[groupId]; // default: expanded
                   const completedInGroup = items.filter((s) =>
@@ -141,56 +155,46 @@ export function CurriculumList() {
                     (s) => modIdx === currentModuleIndex && s.originalIdx === currentStepIndex
                   );
 
-                  // Click the group header → jump to first incomplete step
-                  const handleGroupHeaderClick = () => {
-                    const firstIncomplete = items.find(
-                      (s) => !progress?.completed_steps?.includes(s.id)
-                    );
-                    jumpToStep(modIdx, (firstIncomplete ?? items[items.length - 1]).originalIdx);
-                  };
-
                   return (
-                    <div key={groupId} className="space-y-0.5">
+                    <div key={groupId} className="space-y-1">
                       {/* Group header row */}
                       <div
                         className={cn(
-                          "w-full flex items-center justify-between p-2 rounded-lg text-xs transition-all duration-150",
+                          "w-full flex items-center justify-between p-2 rounded-xl text-xs transition-all duration-200 border",
                           isGroupActive
-                            ? "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 font-semibold"
-                            : "text-muted-foreground"
+                            ? "bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/20 text-emerald-500 dark:text-emerald-400 font-bold"
+                            : "border-transparent text-muted-foreground"
                         )}
                       >
                         {/* Expand/collapse toggle */}
                         <button
                           onClick={() => toggle(groupId)}
-                          className="flex items-center space-x-2 flex-1 truncate text-left"
+                          className="flex items-center space-x-2.5 min-w-0 flex-1 text-left cursor-pointer"
                         >
                           {/* Status icon */}
                           {allDone ? (
-                            <div className="h-4 w-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
-                              <Check className="h-2.5 w-2.5 stroke-[3px]" />
+                            <div className="h-5 w-5 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                              <Check className="h-3 w-3 stroke-[3px]" />
                             </div>
                           ) : (
                             <div
                               className={cn(
-                                "h-4 w-4 rounded-full border flex items-center justify-center shrink-0 transition-colors",
+                                "h-5 w-5 rounded-lg border flex items-center justify-center shrink-0 transition-all font-mono text-[9px] font-black",
                                 isGroupActive
-                                  ? "border-emerald-500 bg-emerald-500/10"
-                                  : "border-border/80"
+                                  ? "border-emerald-500/40 bg-emerald-500/5 text-emerald-500"
+                                  : "border-border bg-muted/20 text-muted-foreground/60"
                               )}
                             >
-                              <span className="text-[7px] font-bold font-mono leading-none">
-                                {completedInGroup}/{items.length}
-                              </span>
+                              {completedInGroup}/{items.length}
                             </div>
                           )}
-                          <span className="truncate font-medium">{groupLabel}</span>
+                          <span className="truncate flex-1 pr-2 font-extrabold text-foreground leading-none pt-0.5">{groupLabel}</span>
                         </button>
 
                         {/* Chevron toggle */}
                         <button
                           onClick={() => toggle(groupId)}
-                          className="shrink-0 ml-1 p-0.5 hover:text-foreground"
+                          className="shrink-0 ml-1 p-1 hover:text-foreground text-muted-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
                           title={isExpanded ? "Sembunyikan" : "Tampilkan"}
                         >
                           {isExpanded ? (
@@ -201,43 +205,62 @@ export function CurriculumList() {
                         </button>
                       </div>
 
-                      {/* Sub-steps (visible when expanded) */}
-                      {isExpanded && (
-                        <div className="pl-6 space-y-0.5">
-                          {items.map((s, subIdx) => {
-                            const isSubActive =
-                              modIdx === currentModuleIndex && s.originalIdx === currentStepIndex;
-                            const isSubCompleted =
-                              progress?.completed_steps?.includes(s.id) ?? false;
-                            // Extract suffix after last " - "
-                            const subLabel = s.title.includes(" - ")
-                              ? s.title.split(" - ").slice(-1)[0]
-                              : s.title;
+                      {/* Sub-steps (animated drop-down container) */}
+                      <AnimatePresence initial={false}>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2, ease: "easeInOut" }}
+                            className="pl-5 space-y-1 border-l border-border/40 ml-4.5 overflow-hidden"
+                          >
+                            {items.map((s, subIdx) => {
+                              const isSubActive =
+                                modIdx === currentModuleIndex && s.originalIdx === currentStepIndex;
+                              const isSubCompleted =
+                                progress?.completed_steps?.includes(s.id) ?? false;
+                              // Extract suffix after last " - "
+                              const subLabel = s.title.includes(" - ")
+                                ? s.title.split(" - ").slice(-1)[0]
+                                : s.title;
 
-                            return (
-                              <button
-                                key={s.id}
-                                onClick={() => jumpToStep(modIdx, s.originalIdx)}
-                                className={cn(
-                                  "w-full text-left flex items-center space-x-1.5 px-2 py-1 rounded-md text-[11px] transition-all duration-150",
-                                  isSubActive
-                                    ? "text-emerald-500 dark:text-emerald-400 font-semibold"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
-                                )}
-                              >
-                                {isSubCompleted ? (
-                                  <Check className="h-3 w-3 text-emerald-500 shrink-0" />
-                                ) : (
-                                  <span className="text-[9px] font-mono shrink-0">
-                                    {subIdx + 1}.
-                                  </span>
-                                )}
-                                <span className="truncate">{subLabel}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
+                              return (
+                                <button
+                                  key={s.id}
+                                  onClick={() => jumpToStep(modIdx, s.originalIdx)}
+                                  className={cn(
+                                    "w-full text-left flex items-center justify-between px-3 py-2 rounded-xl text-[11px] transition-all duration-200 group border cursor-pointer",
+                                    isSubActive
+                                      ? "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 text-emerald-500 dark:text-emerald-400 font-bold"
+                                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                                  )}
+                                >
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    {isSubCompleted ? (
+                                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                                    ) : (
+                                      <span className={cn(
+                                        "text-[9px] font-mono shrink-0 w-4 font-bold",
+                                        isSubActive ? "text-emerald-500" : "text-muted-foreground/60"
+                                      )}>
+                                        {subIdx + 1}.
+                                      </span>
+                                    )}
+                                    <span className="truncate flex-1 pr-2 leading-none pt-0.5">{subLabel}</span>
+                                  </div>
+                                  <ChevronRight
+                                    className={cn(
+                                      "h-3 w-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0 text-muted-foreground",
+                                      isSubActive && "opacity-100 translate-x-0 text-emerald-500"
+                                    )}
+                                  />
+                                </button>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 })}

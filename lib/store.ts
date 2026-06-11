@@ -73,6 +73,9 @@ interface AppState {
   loadStudents: () => Promise<void>;
   signInWithPassword: (email: string, password?: string) => Promise<{ error: any }>;
   signUp: (email: string, password?: string, fullName?: string) => Promise<{ error: any }>;
+  signInWithGoogle: () => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+  updatePassword: (password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   
   setFormulaInput: (input: string) => void;
@@ -563,6 +566,38 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!error) {
       await get().loadUserAndProgress();
     }
+    return { error };
+  },
+
+  signInWithGoogle: async () => {
+    const redirectTo = typeof window !== "undefined"
+      ? `${window.location.origin}/belajar`
+      : undefined;
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo,
+      },
+    });
+
+    return { error };
+  },
+
+  resetPassword: async (email: string) => {
+    const redirectTo = typeof window !== "undefined"
+      ? `${window.location.origin}/`
+      : undefined;
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
+    return { error };
+  },
+
+  updatePassword: async (password: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password,
+    });
     return { error };
   },
 

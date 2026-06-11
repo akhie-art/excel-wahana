@@ -26,7 +26,7 @@ export function LeftPanel() {
 
   const [isCurriculumOpen, setIsCurriculumOpen] = useState(false);
 
-  const module = getCurrentModule();
+  const activeModule = getCurrentModule();
   const step = getCurrentStep();
 
   const isFirstStep = currentModuleIndex === 0 && currentStepIndex === 0;
@@ -48,9 +48,9 @@ export function LeftPanel() {
             {/* Breadcrumb */}
             <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-semibold">
               <span className="text-emerald-500">
-                {module.title.includes("===")
-                  ? module.title.replace(/===/g, "").trim()
-                  : module.title.split(".")[0]}
+                {activeModule.title.includes("===")
+                  ? activeModule.title.replace(/===/g, "").trim()
+                  : activeModule.title.split(".")[0]}
               </span>
               <span className="opacity-40">/</span>
               <span className="truncate max-w-[120px]">{step.title}</span>
@@ -257,7 +257,7 @@ export function LeftPanel() {
 
       {/* Dialog Modal for Curriculum List Selection */}
       <Dialog open={isCurriculumOpen} onOpenChange={(open) => !open && setIsCurriculumOpen(false)}>
-        <DialogContent className="max-w-md w-[90vw] max-h-[80vh] overflow-y-auto border border-border/80 bg-background/95 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+        <DialogContent className="sm:max-w-5xl w-[90vw] max-h-[85vh] overflow-y-auto border border-border/80 bg-background/95 backdrop-blur-md p-6 rounded-2xl shadow-xl">
           <DialogHeader className="sr-only">
             <DialogTitle>Daftar Kurikulum & Materi</DialogTitle>
           </DialogHeader>

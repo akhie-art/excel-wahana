@@ -139,15 +139,29 @@ if (isSupabaseConfigured) {
         listeners.forEach((cb) => cb("SIGNED_OUT", null));
         return { error: null };
       },
-      signInWithOAuth: async ({ provider }: { provider: string }) => {
+      signInWithOAuth: async ({ provider, options }: { provider: string; options?: any }) => {
         const mockUser = {
           id: "mock-user-oauth",
           email: `${provider}-user@example.com`,
-          user_metadata: { name: `GitHub Explorer` },
+          user_metadata: { 
+            name: provider === "google" ? "Google User" : `${provider.charAt(0).toUpperCase() + provider.slice(1)} Explorer` 
+          },
         };
         localStorage.setItem(mockStorageKey, JSON.stringify(mockUser));
-        window.location.reload();
+        if (typeof window !== "undefined") {
+          if (options?.redirectTo) {
+            window.location.href = options.redirectTo;
+          } else {
+            window.location.reload();
+          }
+        }
+        return { data: { provider }, error: null };
+      },
+      resetPasswordForEmail: async (email: string, options?: any) => {
         return { data: {}, error: null };
+      },
+      updateUser: async ({ password }: { password?: string }) => {
+        return { data: { user: getMockUser() }, error: null };
       },
       onAuthStateChange: (callback: (event: string, session: any) => void) => {
         listeners.add(callback);

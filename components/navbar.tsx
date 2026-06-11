@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, CheckCircle2, LogOut, BookOpen } from "lucide-react";
+import { Moon, Sun, CheckCircle2, LogOut, BookOpen, Gamepad2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -93,6 +93,28 @@ export function Navbar() {
 
         {/* Action Controls */}
         <div className="flex items-center space-x-3">
+
+          {/* AI Solver Button */}
+          <Link href="/belajar/ai-solver">
+            <Button
+              variant="ghost"
+              className="h-9 gap-1.5 text-muted-foreground hover:text-foreground rounded-lg border border-border/40 hover:bg-accent/40 px-3 text-xs font-semibold cursor-pointer"
+            >
+              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <span className="hidden sm:inline">AI Solver</span>
+            </Button>
+          </Link>
+
+          {/* Game TTS Button */}
+          <Link href="/belajar/tts">
+            <Button
+              variant="ghost"
+              className="h-9 gap-1.5 text-muted-foreground hover:text-foreground rounded-lg border border-border/40 hover:bg-accent/40 px-3 text-xs font-semibold cursor-pointer"
+            >
+              <Gamepad2 className="h-4 w-4 text-emerald-500" />
+              <span className="hidden sm:inline">Game TTS</span>
+            </Button>
+          </Link>
 
           {/* Perpustakaan Button */}
           <Link href="/belajar/perpustakaan">
