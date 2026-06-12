@@ -234,6 +234,23 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
       set({ modules: baseModules });
 
+      // 1.5. Exchange OAuth PKCE code for session client-side if present
+      if (typeof window !== "undefined" && isSupabaseConfigured) {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+        if (code) {
+          try {
+            await supabase.auth.exchangeCodeForSession(code);
+            // Clean up code query parameter from URL
+            const url = new URL(window.location.href);
+            url.searchParams.delete("code");
+            window.history.replaceState(null, "", url.pathname + url.search);
+          } catch (err) {
+            console.error("Failed to exchange auth code for session:", err);
+          }
+        }
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user || null;
       set({ user });
